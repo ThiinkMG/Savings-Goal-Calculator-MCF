@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Goal Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Reusing the same base styles */
+        :root {
+            --primary-blue: #173F8F;
+            --light-blue: #4169E1;
+            --wants-color: #10b981;
+            --savings-color: #8b5cf6;
+            --border-radius: 8px;
+        }
+
+        .light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1f2937;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --header-color: var(--primary-blue);
+            --input-bg: #ffffff;
+            --input-text: #1f2937;
+            --card-bg: #f1f5f9;
+            --breakdown-bg: #f1f5f9;
+            --breakdown-text: #1f2937;
+            --categories-bg: #10b981;
+            --error-bg: #ef4444;
+            --categories-text: #ffffff;
+            --icon-color: #64748b;
+            --button-bg: #020300;
+            --button-text: #FCFAF9;
+        }
+
+        .dark {
+            --bg-primary: #1e293b;
+            --bg-secondary: #0f172a;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --header-color: #38BDF8;
+            --input-bg: #ffffff;
+            --input-text: #1f2937;
+            --card-bg: #283548;
+            --breakdown-bg: #6b7280;
+            --breakdown-text: #ffffff;
+            --categories-bg: #10b981;
+            --error-bg: #ef4444;
+            --categories-text: #ffffff;
+            --icon-color: #cbd5e1;
+            --button-bg: #FCFAF9;
+            --button-text: #020300;
+        }
+
+       * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-secondary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            padding: 32px;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--icon-color);
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            color: var(--header-color);
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .personal-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .dollar-sign {
+            position: absolute;
+            left: -15px;
+            top: 43px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            outline: none;
+        }
+
+        .results {
+            display: none;
+            margin: 24px 0;
+            background: var(--breakdown-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .results h3 {
+            color: var(--breakdown-text);
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .result-item {
+            color: var(--breakdown-text);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .categories {
+            background: var(--categories-bg);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin: 24px 0;
+            color: var(--categories-text);
+        }
+
+        .categories h2 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .category {
+            margin-bottom: 16px;
+        }
+
+        .category-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .category-desc {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .timeline-info.error {
+            background: #ef4444;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 24px;
+            padding: 12px 24px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn:hover {
+            opacity: 0.9;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .goal-type-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            outline: none;
+            margin-bottom: 16px;
+        }
+
+        .timeline-info {
+            background: var(--categories-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 24px;
+            color: var(--categories-text);
+           
+        }
+        
+        .timeline-info.error {
+           background: #ef4444;
+        }
+
+        .monthly-savings {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--categories-bg);
+            transition: width 0.3s ease;
+        }
+
+        /* Rest of the existing styles... */
+    </style>
+</head>
+<body>
+    <div class="calculator-container" id="calculator">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path class="sun-icon" style="display: none;" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                <path class="moon-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
+
+        <div class="header">
+            <h1>Savings Goal Calculator</h1>
+            <p>Calculate how much you need to save monthly to reach your goal</p>
+        </div>
+
+        <div class="personal-info">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <div class="input-wrapper">
+                    <input type="text" id="name" placeholder="Your name">
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="date">Start Date</label>
+                <div class="input-wrapper">
+                    <input type="date" id="date">
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="goal-type">Savings Goal Type</label>
+            <select id="goal-type" class="goal-type-select">
+                   <option value="education">Education</option>
+                <option value="emergency_fund">Emergency Fund</option>
+                <option value="down_payment">Down Payment</option>
+                <option value="vacation">Vacation</option>
+                <option value="car_purchase">Car Purchase</option>
+                <option value="retirement">Retirement</option>
+                <option value="investment">Investment</option>
+                <option value="home_improvements">Home Improvements</option>
+                <option value="purchase">Major Purchase</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="goal-amount">Target Amount</label>
+            <span class="dollar-sign">$</span>
+            <div class="input-wrapper">
+                <input type="number" id="goal-amount" placeholder="0" min="0">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="current-savings">Current Savings</label>
+            <span class="dollar-sign">$</span>
+            <div class="input-wrapper">
+                <input type="number" id="current-savings" placeholder="0" min="0">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="target-date">Target Date</label>
+            <div class="input-wrapper">
+                <input type="date" id="target-date">
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <h3>Your Savings Plan:</h3>
+            <div class="monthly-savings" id="monthly-required"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div id="progress-text" class="result-item"></div>
+            <div id="timeline-text" class="result-item"></div>
+        </div>
+
+        <div class="timeline-info">
+            <h2>Your Timeline Details:</h2>
+            <div class="category">
+                <div class="category-title">Total Amount Needed:</div>
+                <div class="category-desc" id="total-needed"></div>
+            </div>
+            <div class="category">
+                <div class="category-title">Current Progress:</div>
+                <div class="category-desc" id="current-progress"></div>
+            </div>
+            <div class="category">
+                <div class="category-title">Time Remaining:</div>
+                <div class="category-desc" id="time-remaining"></div>
+            </div>
+        </div>
+
+        <button class="download-btn" id="download-pdf">
+            Download Savings Plan PDF
+        </button>
+    </div>
+
+    <script>
+        const goalAmount = document.getElementById('goal-amount');
+        const currentSavings = document.getElementById('current-savings');
+        const targetDate = document.getElementById('target-date');
+        const resultsContainer = document.getElementById('results');
+        const monthlyRequired = document.getElementById('monthly-required');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const timelineText = document.getElementById('timeline-text');
+        const totalNeeded = document.getElementById('total-needed');
+        const currentProgress = document.getElementById('current-progress');
+        const timeRemaining = document.getElementById('time-remaining');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        
+        let isDarkMode = false;
+        
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.className = isDarkMode ? 'dark' : 'light';
+            sunIcon.style.display = isDarkMode ? 'block' : 'none';
+            moonIcon.style.display = isDarkMode ? 'none' : 'block';
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function calculateMonths(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+        }
+
+        function calculateSavings() {
+    const goal = parseFloat(goalAmount.value) || 0;
+    const current = parseFloat(currentSavings.value) || 0;
+    const today = new Date();
+    const end = new Date(targetDate.value);
+    const timelineDiv = document.querySelector('.timeline-info');
+    const remaining = goal - current;
+    const months = calculateMonths(today, end);
+    const monthlyAmount = remaining / months;
+
+    // Check for invalid conditions
+    if (goal <= 0 || 
+        end <= today || 
+        current > goal || 
+        monthlyAmount > 1000000 || 
+        monthlyAmount < 0 || 
+        months <= 0 || 
+        isNaN(monthlyAmount)) {
+        timelineDiv.classList.add('error');
+        resultsContainer.classList.remove('visible');
+        return;
+    }
+
+    timelineDiv.classList.remove('error');
+
+    const progressPercentage = (current / goal) * 100;
+
+    monthlyRequired.textContent = `Monthly Savings Required: ${formatCurrency(monthlyAmount)}`;
+    progressFill.style.width = `${progressPercentage}%`;
+    progressText.textContent = `Progress: ${progressPercentage.toFixed(1)}%`;
+    timelineText.textContent = `Months until goal: ${months}`;
+    
+    totalNeeded.textContent = formatCurrency(goal);
+    currentProgress.textContent = `${formatCurrency(current)} saved (${progressPercentage.toFixed(1)}%)`;
+    timeRemaining.textContent = `${months} months (Target: ${end.toLocaleDateString()})`;
+
+    resultsContainer.classList.add('visible');
+}
+
+        [goalAmount, currentSavings, targetDate].forEach(input => {
+            input.addEventListener('input', calculateSavings);
+        });
+
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Set target date default to 1 year from now
+        const defaultTargetDate = new Date();
+        defaultTargetDate.setFullYear(defaultTargetDate.getFullYear() + 1);
+        document.getElementById('target-date').valueAsDate = defaultTargetDate;
+
+        // PDF Generation
+        document.getElementById('download-pdf').addEventListener('click', () => {
+            const element = document.getElementById('calculator');
+            const name = document.getElementById('name').value || 'Anonymous';
+            const date = document.getElementById('date').value || new Date().toLocaleDateString();
+            
+            const opt = {
+                margin: 1,
+                filename: `savings_plan_${name}_${date}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        });
+    </script>
+</body>
+</html>
