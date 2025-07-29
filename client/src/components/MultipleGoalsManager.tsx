@@ -77,7 +77,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
             <p className="text-muted-foreground mb-4">
               Start by creating your first savings goal to track your progress.
             </p>
-            <Button onClick={onAddGoal} className="bg-brand-blue hover:bg-brand-blue/90 text-white">
+            <Button onClick={onAddGoal} className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200">
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Goal
             </Button>

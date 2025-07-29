@@ -106,10 +106,27 @@ export default function HomePage() {
         )}
 
         {showCalculator && (
-          <SavingsCalculator
-            existingGoal={editingGoal}
-            onSave={handleGoalSaved}
-          />
+          <div className="space-y-6">
+            <div className="flex items-center gap-4 mb-6">
+              <Button 
+                onClick={() => {
+                  setShowNewGoalForm(false);
+                  setEditingGoalId(null);
+                }}
+                variant="outline"
+                className="hover:bg-muted"
+              >
+                ← Back to Goals
+              </Button>
+              <h2 className="text-2xl font-bold text-foreground">
+                {editingGoal ? `Edit: ${editingGoal.name}` : 'Create New Goal'}
+              </h2>
+            </div>
+            <SavingsCalculator
+              existingGoal={editingGoal}
+              onSave={handleGoalSaved}
+            />
+          </div>
         )}
       </main>
 
