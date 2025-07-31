@@ -140,6 +140,12 @@ export function WhatIfScenarios({
           onToggle={() => toggleSection("reality-check")}
         >
           <div className="space-y-4">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border-l-4 border-amber-500">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                <strong>How to interpret:</strong> This analysis rates your plan's difficulty and shows success rates for similar goals. 
+                Use this to adjust your timeline or savings amount if needed.
+              </p>
+            </div>
             <div className="flex justify-between items-center p-3 bg-background rounded-lg border">
               <span className="font-medium">Plan Feasibility:</span>
               <span className={`font-semibold ${feasibility.color}`}>
@@ -234,6 +240,12 @@ export function WhatIfScenarios({
           onToggle={() => toggleSection("realistic-tradeoffs")}
         >
           <div className="space-y-3">
+            <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg border-l-4 border-purple-500">
+              <p className="text-sm text-purple-800 dark:text-purple-200">
+                <strong>How to interpret:</strong> These show specific lifestyle changes you could make to reach your goal faster. 
+                Each option shows how much you'd save and how many days sooner you'd finish.
+              </p>
+            </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
                 <span className="text-xl">☕</span>
@@ -297,6 +309,12 @@ export function WhatIfScenarios({
           onToggle={() => toggleSection("timeline-impact")}
         >
           <div className="space-y-4">
+            <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border-l-4 border-green-500">
+              <p className="text-sm text-green-800 dark:text-green-200">
+                <strong>How to interpret:</strong> These show exact dates when you'd reach your goal by saving more or less each month. 
+                Use these to see how small changes affect your timeline.
+              </p>
+            </div>
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
                 <span className="text-sm font-medium">Save $25 more per month:</span>
