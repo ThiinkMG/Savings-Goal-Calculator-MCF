@@ -164,13 +164,14 @@ export default function HomePage() {
                 href="https://www.mycollegefinance.com/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="hover:opacity-80 transition-opacity duration-300"
+                className="flex items-center gap-4 hover:opacity-80 transition-opacity duration-300"
               >
                 <img 
                   src={logoPath} 
                   alt="My College Finance Logo" 
                   className="h-16 w-auto"
                 />
+                <span className="font-black text-brand-light-blue text-2xl">MY COLLEGE FINANCE</span>
               </a>
             </div>
             
