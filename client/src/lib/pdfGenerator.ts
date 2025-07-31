@@ -115,94 +115,96 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Create an enhanced professional coin logo with premium styling
+  // Professional Graduation Cap + Chart Logo
   const centerX = logoX + logoWidth/2;
   const centerY = logoY + logoHeight/2;
-  const coinRadius = logoWidth/2 - 2;
   
-  // Multi-layer shadow for realistic depth
-  pdf.setFillColor(80, 80, 80); // Dark shadow
-  pdf.circle(centerX + 2, centerY + 2, coinRadius, 'F');
-  pdf.setFillColor(120, 120, 120); // Medium shadow
-  pdf.circle(centerX + 1, centerY + 1, coinRadius, 'F');
+  // === CHART BASE SECTION (Bottom) ===
+  const chartBaseY = logoY + logoHeight - 8; // Position at bottom of logo area
+  const chartWidth = logoWidth - 4;
+  const chartStartX = logoX + 2;
   
-  // Premium gold gradient simulation
-  // Base gold layer (darkest)
-  pdf.setFillColor(218, 165, 32); // Dark gold base
-  pdf.circle(centerX, centerY, coinRadius, 'F');
+  // Chart bars (ascending heights)
+  const barWidth = 4;
+  const barSpacing = 1;
+  const maxBarHeight = 8;
   
-  // Lighter gold overlay (creates gradient effect)
-  pdf.setFillColor(255, 215, 0); // Bright gold
-  pdf.circle(centerX, centerY - 2, coinRadius - 1, 'F');
+  // Bar 1 (shortest)
+  pdf.setFillColor(255, 255, 255); // Clean white for contrast
+  pdf.rect(chartStartX, chartBaseY - 3, barWidth, 3, 'F');
   
-  // Lightest gold highlight (top section)
-  pdf.setFillColor(255, 235, 59); // Light gold
-  pdf.circle(centerX, centerY - 4, coinRadius - 3, 'F');
+  // Bar 2 (medium)
+  pdf.rect(chartStartX + barWidth + barSpacing, chartBaseY - 5, barWidth, 5, 'F');
   
-  // Professional border and rim system
-  // Outer border - dark gold
-  pdf.setDrawColor(139, 69, 19); // Dark gold border
-  pdf.setLineWidth(2.5);
-  pdf.circle(centerX, centerY, coinRadius, 'S');
+  // Bar 3 (tall)
+  pdf.rect(chartStartX + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth, 7, 'F');
   
-  // Inner rim - medium gold
-  pdf.setDrawColor(184, 134, 11);
-  pdf.setLineWidth(1.5);
-  pdf.circle(centerX, centerY, coinRadius - 2, 'S');
+  // Bar 4 (tallest)
+  pdf.rect(chartStartX + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth, maxBarHeight, 'F');
   
-  // Fine inner detail ring
-  pdf.setDrawColor(255, 223, 0);
-  pdf.setLineWidth(0.8);
-  pdf.circle(centerX, centerY, coinRadius - 4, 'S');
+  // Subtle chart baseline for professional finish
+  pdf.setDrawColor(255, 255, 255);
+  pdf.setLineWidth(0.5);
+  pdf.line(chartStartX, chartBaseY, chartStartX + chartWidth, chartBaseY);
   
-  // Sophisticated shine effects
-  // Primary shine (top-left, most prominent)
+  // === GRADUATION CAP SECTION (Top) ===
+  const capBaseY = logoY + 6; // Position in upper portion
+  const capWidth = 16;
+  const capHeight = 6;
+  const capX = centerX - capWidth/2;
+  
+  // Graduation cap base (mortarboard)
   pdf.setFillColor(255, 255, 255);
-  pdf.circle(centerX - 5, centerY - 6, 3, 'F');
+  pdf.rect(capX, capBaseY, capWidth, 2, 'F'); // Main cap board
   
-  // Secondary shine (smaller, complementary)
+  // Cap "button" (center piece for authenticity)
   pdf.setFillColor(255, 255, 255);
-  pdf.circle(centerX - 3, centerY - 8, 1.5, 'F');
+  pdf.circle(centerX, capBaseY + 1, 1, 'F');
   
-  // Rim shine highlights for premium metallic effect
-  pdf.setFillColor(255, 250, 205);
-  pdf.circle(centerX + 6, centerY - 4, 1, 'F');
-  pdf.circle(centerX - 7, centerY + 3, 0.8, 'F');
-  pdf.circle(centerX + 2, centerY + 7, 0.6, 'F');
+  // Tassel (simple line with end extending to the right)
+  pdf.setDrawColor(255, 255, 255);
+  pdf.setLineWidth(1);
+  pdf.line(centerX + 6, capBaseY + 1, centerX + 9, capBaseY + 4); // Tassel cord
+  pdf.circle(centerX + 9, capBaseY + 4, 0.8, 'F'); // Tassel end
   
-  // Enhanced dollar sign with professional typography
+  // === INTEGRATION ELEMENTS ===
+  // Connecting dots that bridge the chart and cap sections
+  pdf.setFillColor(255, 255, 255);
+  pdf.circle(centerX - 3, capBaseY + 6, 0.5, 'F');
+  pdf.circle(centerX + 2, capBaseY + 7, 0.4, 'F');
+  
+  // === OPTIONAL: DOLLAR SIGN ACCENT ===
+  // Small $ symbol accent integrated into the design
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(18);
-  const dollarSign = '$';
-  const dollarWidth = pdf.getTextWidth(dollarSign);
-  
-  // Deep shadow layer
-  pdf.setTextColor(101, 67, 33); // Dark brown shadow
-  pdf.text(dollarSign, centerX - dollarWidth/2 + 1, centerY + 4);
-  
-  // Medium shadow layer
-  pdf.setTextColor(139, 69, 19); // Medium brown
-  pdf.text(dollarSign, centerX - dollarWidth/2 + 0.5, centerY + 3.5);
-  
-  // Main dollar sign
-  pdf.setTextColor(255, 255, 255);
-  pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 3);
-  
-  // Refined decorative elements
-  pdf.setFillColor(255, 223, 0);
-  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('$', centerX + 7, capBaseY - 1);
   
-  // Premium star decorations (better positioned)
-  pdf.text('✦', centerX - 1, centerY - coinRadius - 5); // Top star
-  pdf.text('✦', centerX - coinRadius - 6, centerY + 1); // Left star
-  pdf.text('✦', centerX + coinRadius + 3, centerY + 1); // Right star
+  // === ALTERNATIVE VERSION: More Geometric (Commented) ===
+  /*
+  // For a more geometric/modern approach with rounded bar tops:
   
-  // Additional sparkle dots for extra premium feel
-  pdf.setFillColor(255, 240, 120);
-  pdf.circle(centerX + 8, centerY - 6, 0.5, 'F');
-  pdf.circle(centerX - 8, centerY - 3, 0.4, 'F');
-  pdf.circle(centerX + 3, centerY + 8, 0.3, 'F');
+  // Modern chart bars with rounded tops
+  pdf.setFillColor(255, 255, 255);
+  pdf.rect(chartStartX, chartBaseY - 3, barWidth, 3, 'F');
+  pdf.circle(chartStartX + barWidth/2, chartBaseY - 3, barWidth/2, 'F');
+  
+  pdf.rect(chartStartX + barWidth + barSpacing, chartBaseY - 5, barWidth, 5, 'F');
+  pdf.circle(chartStartX + barWidth/2 + barWidth + barSpacing, chartBaseY - 5, barWidth/2, 'F');
+  
+  pdf.rect(chartStartX + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth, 7, 'F');
+  pdf.circle(chartStartX + barWidth/2 + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth/2, 'F');
+  
+  pdf.rect(chartStartX + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth, maxBarHeight, 'F');
+  pdf.circle(chartStartX + barWidth/2 + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth/2, 'F');
+  
+  // Simplified geometric cap
+  pdf.setFillColor(255, 255, 255);
+  // Cap as simple trapezoid/rectangle
+  pdf.rect(capX, capBaseY, capWidth, 3, 'F');
+  // Simple tassel as small rectangle
+  pdf.rect(centerX + 6, capBaseY + 2, 2, 4, 'F');
+  */
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');

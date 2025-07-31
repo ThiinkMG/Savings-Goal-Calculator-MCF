@@ -1,0 +1,89 @@
+// Professional Graduation Cap + Chart Logo
+const logoX = 15;
+const logoY = 12;
+const logoWidth = 26;
+const logoHeight = 26;
+
+const centerX = logoX + logoWidth/2;
+const centerY = logoY + logoHeight/2;
+
+// === CHART BASE SECTION (Bottom) ===
+const chartBaseY = logoY + logoHeight - 8; // Position at bottom of logo area
+const chartWidth = logoWidth - 4;
+const chartStartX = logoX + 2;
+
+// Chart bars (ascending heights)
+const barWidth = 4;
+const barSpacing = 1;
+const maxBarHeight = 8;
+
+// Bar 1 (shortest)
+pdf.setFillColor(255, 255, 255, 0.9); // White with slight transparency
+pdf.rect(chartStartX, chartBaseY - 3, barWidth, 3, 'F');
+
+// Bar 2 (medium)
+pdf.rect(chartStartX + barWidth + barSpacing, chartBaseY - 5, barWidth, 5, 'F');
+
+// Bar 3 (tall)
+pdf.rect(chartStartX + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth, 7, 'F');
+
+// Bar 4 (tallest)
+pdf.rect(chartStartX + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth, maxBarHeight, 'F');
+
+// Optional: Add subtle chart baseline
+pdf.setDrawColor(255, 255, 255, 0.7);
+pdf.setLineWidth(0.5);
+pdf.line(chartStartX, chartBaseY, chartStartX + chartWidth, chartBaseY);
+
+// === GRADUATION CAP SECTION (Top) ===
+const capBaseY = logoY + 6; // Position in upper portion
+const capWidth = 16;
+const capHeight = 6;
+const capX = centerX - capWidth/2;
+
+// Graduation cap base (mortarboard)
+pdf.setFillColor(255, 255, 255);
+pdf.rect(capX, capBaseY, capWidth, 2, 'F'); // Main cap board
+
+// Cap "button" (center piece)
+pdf.setFillColor(255, 255, 255);
+pdf.circle(centerX, capBaseY + 1, 1, 'F');
+
+// Tassel (simple line with end)
+pdf.setDrawColor(255, 255, 255);
+pdf.setLineWidth(1);
+pdf.line(centerX + 6, capBaseY + 1, centerX + 9, capBaseY + 4); // Tassel cord
+pdf.circle(centerX + 9, capBaseY + 4, 0.8, 'F'); // Tassel end
+
+// === INTEGRATION ELEMENTS ===
+// Subtle connecting dots/elements between chart and cap
+pdf.setFillColor(255, 255, 255, 0.6);
+pdf.circle(centerX - 3, capBaseY + 6, 0.5, 'F');
+pdf.circle(centerX + 2, capBaseY + 7, 0.4, 'F');
+
+// === OPTIONAL: DOLLAR SIGN ACCENT ===
+// Small $ symbol integrated into the design
+pdf.setFont('helvetica', 'bold');
+pdf.setFontSize(8);
+pdf.setTextColor(255, 255, 255, 0.8);
+pdf.text('$', centerX + 7, capBaseY - 1);
+
+// === ALTERNATIVE VERSION: More Geometric ===
+/*
+// For a more geometric/modern approach, replace the above with:
+
+// Modern chart bars with rounded tops
+pdf.setFillColor(255, 255, 255);
+pdf.rect(chartStartX, chartBaseY - 3, barWidth, 3, 'F');
+pdf.circle(chartStartX + barWidth/2, chartBaseY - 3, barWidth/2, 'F');
+
+pdf.rect(chartStartX + barWidth + barSpacing, chartBaseY - 5, barWidth, 5, 'F');
+pdf.circle(chartStartX + barWidth/2 + barWidth + barSpacing, chartBaseY - 5, barWidth/2, 'F');
+
+// Simplified geometric cap
+pdf.setFillColor(255, 255, 255);
+// Cap as simple trapezoid/rectangle
+pdf.rect(capX, capBaseY, capWidth, 3, 'F');
+// Simple tassel as small rectangle
+pdf.rect(centerX + 6, capBaseY + 2, 2, 4, 'F');
+*/
