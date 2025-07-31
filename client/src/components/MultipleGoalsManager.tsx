@@ -66,7 +66,8 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
   };
   const getProgressPercent = (goal: SavingsGoal) => {
     if (goal.targetAmount <= 0) return 0;
-    return Math.min(100, (goal.currentSavings / goal.targetAmount) * 100);
+    const currentSavings = goal.currentSavings || 0;
+    return Math.min(100, (currentSavings / goal.targetAmount) * 100);
   };
 
   const getStatusBadge = (goal: SavingsGoal) => {
@@ -83,7 +84,8 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
       return <Badge variant="destructive">Overdue</Badge>;
     }
     
-    const remainingAmount = goal.targetAmount - goal.currentSavings;
+    const currentSavings = goal.currentSavings || 0;
+    const remainingAmount = goal.targetAmount - currentSavings;
     const requiredMonthly = remainingAmount / monthsRemaining;
     const capacity = goal.monthlyCapacity || 0;
     
@@ -98,7 +100,8 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     const today = new Date();
     const target = new Date(goal.targetDate);
     const monthsRemaining = Math.max(1, Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)));
-    const remainingAmount = Math.max(0, goal.targetAmount - goal.currentSavings);
+    const currentSavings = goal.currentSavings || 0;
+    const remainingAmount = Math.max(0, goal.targetAmount - currentSavings);
     return Math.round(remainingAmount / monthsRemaining);
   };
 
@@ -161,7 +164,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                     
                     <div className="mb-3">
                       <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                        <span>${goal.currentSavings.toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
+                        <span>${(goal.currentSavings || 0).toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
                         <span>{Math.round(progress)}%</span>
                       </div>
                       <Progress value={progress} className="h-2" />
@@ -172,8 +175,11 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         <TrendingUp className="w-3 h-3" />
                         ${monthlyRequired}/month
                       </div>
-                      <div>
-                        {monthsLeft} months left
+                      <div className="flex justify-between items-center">
+                        <span>{monthsLeft} months left</span>
+                        <span className="text-xs">
+                          Edited: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'} {goal.updatedAt ? new Date(goal.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
                       </div>
                     </div>
                   </div>

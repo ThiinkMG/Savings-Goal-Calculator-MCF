@@ -107,6 +107,18 @@ export default function HomePage() {
               </div>
             </section>
 
+            {/* Create New Goal Button */}
+            <div className="text-center mb-8">
+              <Button 
+                onClick={handleAddGoal}
+                size="lg"
+                className="bg-brand-blue hover:bg-brand-blue/90 text-[#030711] px-8 py-3 text-lg font-semibold"
+              >
+                <GraduationCap className="w-5 h-5 mr-2" />
+                Create New Savings Goal
+              </Button>
+            </div>
+
             {/* Multiple Goals Dashboard */}
             <MultipleGoalsManager
               goals={goals}
