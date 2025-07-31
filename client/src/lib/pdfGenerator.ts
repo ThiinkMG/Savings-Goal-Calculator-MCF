@@ -195,74 +195,128 @@ export async function generateSavingsPlanPDF(
     pdf.text(card.subtitle, cardX + (cardWidth - subtitleWidth) / 2, startY + 40);
   });
 
-  // Progress section
-  const progressSectionY = startY + cardHeight + 20;
-  const progressCardWidth = Math.floor(totalCardsWidth * 0.6);
+  // Enhanced Progress section with modern styling
+  const progressSectionY = startY + cardHeight + 25;
+  const progressCardWidth = Math.floor(totalCardsWidth * 0.65);
   const detailsCardWidth = totalCardsWidth - progressCardWidth - cardSpacing;
-  const sectionHeight = 80;
+  const sectionHeight = 95;
 
-  // Main progress card
+  // Main progress card with enhanced styling
   drawCleanCard(cardsStartX, progressSectionY, progressCardWidth, sectionHeight);
 
-  // Progress card header
+  // Progress card header with gradient-like effect
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.rect(cardsStartX, progressSectionY, progressCardWidth, 4, 'F');
+  pdf.rect(cardsStartX, progressSectionY, progressCardWidth, 6, 'F');
+  
+  // Add subtle header shadow
+  pdf.setFillColor(0, 0, 0, 0.1);
+  pdf.rect(cardsStartX, progressSectionY + 6, progressCardWidth, 1, 'F');
 
-  pdf.setFontSize(12);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Progress Overview', cardsStartX + 12, progressSectionY + 18);
-
-  // Progress circle using the existing function
-  drawProgressCircle(cardsStartX + 15, progressSectionY + 25, 20, calculations.progressPercent);
-
-  // Progress details
-  const detailsX = cardsStartX + 60;
-  pdf.setFontSize(8);
-  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Remaining:', detailsX, progressSectionY + 30);
-
+  // Enhanced header typography
+  pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(14);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  const remaining = (goal.targetAmount ?? 0) - (goal.currentSavings ?? 0);
-  pdf.text(formatCurrency(remaining), detailsX, progressSectionY + 42);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('Progress Overview', cardsStartX + 15, progressSectionY + 20);
 
-  pdf.setFontSize(8);
+  // Progress circle with enhanced positioning and larger size
+  const circleX = cardsStartX + 20;
+  const circleY = progressSectionY + 35;
+  const circleRadius = 24;
+  drawProgressCircle(circleX, circleY, circleRadius, calculations.progressPercent);
+
+  // Enhanced progress details with better spacing and typography
+  const detailsX = cardsStartX + 75;
+  
+  // Remaining amount section
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Time left:', detailsX, progressSectionY + 55);
+  pdf.text('Remaining:', detailsX, progressSectionY + 32);
 
-  pdf.setFontSize(12);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(`${calculations.monthsRemaining} months`, detailsX, progressSectionY + 67);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(18);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  const remaining = (goal.targetAmount ?? 0) - (goal.currentSavings ?? 0);
+  pdf.text(formatCurrency(remaining), detailsX, progressSectionY + 46);
 
-  // Timeline card
+  // Time left section with enhanced styling
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Time left:', detailsX, progressSectionY + 62);
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(14);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  const timeText = calculations.monthsRemaining === 1 ? '1 month' : `${calculations.monthsRemaining} months`;
+  pdf.text(timeText, detailsX, progressSectionY + 76);
+
+  // Add progress status indicator
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  const statusColor = calculations.progressPercent >= 75 ? colors.success : 
+                     calculations.progressPercent >= 50 ? colors.warning : colors.primary;
+  pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+  const statusText = calculations.progressPercent >= 75 ? 'On track!' : 
+                    calculations.progressPercent >= 50 ? 'Good progress' : 'Keep going!';
+  pdf.text(statusText, detailsX, progressSectionY + 85);
+
+  // Enhanced Timeline & Details card
   const timelineX = cardsStartX + progressCardWidth + cardSpacing;
   drawCleanCard(timelineX, progressSectionY, detailsCardWidth, sectionHeight);
 
-  // Timeline header
+  // Timeline header with enhanced styling
   pdf.setFillColor(colors.success[0], colors.success[1], colors.success[2]);
-  pdf.rect(timelineX, progressSectionY, detailsCardWidth, 4, 'F');
+  pdf.rect(timelineX, progressSectionY, detailsCardWidth, 6, 'F');
+  
+  // Add subtle header shadow
+  pdf.setFillColor(0, 0, 0, 0.1);
+  pdf.rect(timelineX, progressSectionY + 6, detailsCardWidth, 1, 'F');
 
-  pdf.setFontSize(12);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Timeline', timelineX + 8, progressSectionY + 18);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(14);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('Goal Details', timelineX + 12, progressSectionY + 20);
 
-  // Progress bars
+  // Enhanced progress bar with label
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Overall Progress', timelineX + 12, progressSectionY + 35);
+  
+  // Progress percentage display
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.text(`${Math.round(calculations.progressPercent)}%`, timelineX + detailsCardWidth - 25, progressSectionY + 35);
+  
+  drawProgressBar(timelineX + 12, progressSectionY + 39, detailsCardWidth - 24, 4, calculations.progressPercent, colors.success);
+
+  // Goal category with enhanced styling and icon-like indicator
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2], 0.1);
+  pdf.rect(timelineX + 12, progressSectionY + 52, detailsCardWidth - 24, 12, 'F');
+  
+  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Overall Progress', timelineX + 8, progressSectionY + 32);
-  drawProgressBar(timelineX + 8, progressSectionY + 36, detailsCardWidth - 16, 3, calculations.progressPercent, colors.success);
+  pdf.text('Goal Category:', timelineX + 16, progressSectionY + 58);
+  
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  const goalTypeCapitalized = (goal.goalType ?? 'General').charAt(0).toUpperCase() + (goal.goalType ?? 'general').slice(1);
+  pdf.text(goalTypeCapitalized, timelineX + 16, progressSectionY + 68);
 
-  // Goal info
+  // Enhanced user info section
+  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Goal Category:', timelineX + 8, progressSectionY + 50);
+  pdf.text('Created by:', timelineX + 12, progressSectionY + 82);
+  
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text((goal.goalType ?? 'General').charAt(0).toUpperCase() + (goal.goalType ?? 'general').slice(1), timelineX + 8, progressSectionY + 60);
-
-  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Created by:', timelineX + 8, progressSectionY + 72);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(userInfo.name ?? 'User', timelineX + 35, progressSectionY + 72);
+  pdf.text(userInfo.name ?? 'User', timelineX + 42, progressSectionY + 82);
 
   // Scenarios section
   const scenariosY = progressSectionY + sectionHeight + 15;
