@@ -129,14 +129,16 @@ export async function generateSavingsPlanPDF(
   pdf.setFont('helvetica', 'bold'); // Simulating Poppins Bold
   pdf.setFontSize(20);
   pdf.setTextColor(255, 255, 255);
-  const goalNumber = goal.id || 1;
+  
+  // Goal number logic: use goal.id if it exists and isn't 'temp-id', otherwise default to 1
+  const goalNumber = (goal.id && goal.id !== 'temp-id') ? goal.id : 1;
   const personalizedTitle = `${userInfo.name}: Goal #${goalNumber} Report`;
   pdf.text(personalizedTitle, 20, 28);
 
-  // Brand name with improved styling
+  // Brand name with WHITE and BOLD styling as requested
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(15); // Simulating Lato Semi-Bold scaled for PDF
-  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.setTextColor(255, 255, 255); // WHITE as requested
   pdf.text('My College Finance', 20, 45);
 
   // Subtitle

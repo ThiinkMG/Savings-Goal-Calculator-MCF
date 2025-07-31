@@ -27,7 +27,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
   const queryClient = useQueryClient();
 
   // Form state
-  const [name, setName] = useState(existingGoal?.name || '');
+  const [userName, setUserName] = useState('Student'); // Default user name for PDF
   const [startDate, setStartDate] = useState(
     existingGoal ? new Date(existingGoal.createdAt!).toISOString().split('T')[0] : 
     new Date().toISOString().split('T')[0]
@@ -192,7 +192,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
 
       await generateSavingsPlanPDF(
         goalData,
-        { name: name || 'Anonymous', startDate: new Date(startDate) },
+        { name: userName || 'Student', startDate: new Date(startDate) },
         theme === 'dark'
       );
 
@@ -267,8 +267,8 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
                   placeholder="Enter your name"
                   className="mt-2"
                 />
