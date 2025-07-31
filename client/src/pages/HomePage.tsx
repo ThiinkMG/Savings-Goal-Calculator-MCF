@@ -71,10 +71,20 @@ export default function HomePage() {
               <h2 className="text-4xl font-black brand-blue mb-4">
                 Savings Goal Calculator
               </h2>
-              <p className="text-xl text-muted-foreground mb-6 max-w-3xl mx-auto">
+              <p className="text-xl text-muted-foreground mb-4 max-w-3xl mx-auto">
                 Take control of your financial future with our intelligent savings calculator. 
                 Set goals, track progress, and achieve your dreams.
               </p>
+              <div className="mb-6 text-center">
+                <a 
+                  href="https://www.mycollegefinance.com/online-finance-courses" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-brand-blue hover:text-brand-amber transition-colors font-medium"
+                >
+                  See our <span className="underline">latest courses →</span>
+                </a>
+              </div>
               <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <div className="p-2 bg-brand-green/10 rounded-lg">

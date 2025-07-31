@@ -47,7 +47,9 @@ export const insertSavingsGoalSchema = createInsertSchema(savingsGoals).omit({
   goalType: z.enum(goalTypes),
   targetAmount: z.number().positive(),
   currentSavings: z.number().min(0).default(0),
-  monthlyCapacity: z.number().positive().optional(),
+  monthlyCapacity: z.number().positive().nullable().optional(),
+  userId: z.string().nullable().optional(),
+  targetDate: z.string().or(z.date()).transform((val) => new Date(val)),
 });
 
 export const updateSavingsGoalSchema = insertSavingsGoalSchema.partial();
