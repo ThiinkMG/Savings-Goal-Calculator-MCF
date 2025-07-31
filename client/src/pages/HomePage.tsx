@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
 import { BrandHeader } from '@/components/BrandHeader';
 import { SavingsCalculator } from '@/components/SavingsCalculator';
 import { MultipleGoalsManager } from '@/components/MultipleGoalsManager';
 import { type SavingsGoal } from '@shared/schema';
-import { GraduationCap, TrendingUp, Smartphone } from 'lucide-react';
+import { GraduationCap, TrendingUp, Smartphone, ArrowLeft } from 'lucide-react';
 
 export default function HomePage() {
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
@@ -15,7 +16,7 @@ export default function HomePage() {
     queryKey: ['/api/savings-goals'],
   });
 
-  const editingGoal = editingGoalId ? goals.find(g => g.id === editingGoalId) : null;
+  const editingGoal = editingGoalId ? goals.find(g => g.id === editingGoalId) : undefined;
   const showCalculator = showNewGoalForm || editingGoal;
 
   const handleAddGoal = () => {

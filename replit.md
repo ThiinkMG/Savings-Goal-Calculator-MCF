@@ -22,10 +22,11 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js framework
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: PostgreSQL with Drizzle ORM (Active)
 - **Database Provider**: Neon Database (serverless PostgreSQL)
 - **Session Management**: Express sessions with PostgreSQL storage
 - **API Design**: RESTful API with structured error handling
+- **Storage**: DatabaseStorage class for persistent data storage
 
 ### Development Setup
 - **Development Server**: Vite dev server with HMR
@@ -121,10 +122,11 @@ Preferred communication style: Simple, everyday language.
 - Database migrations through Drizzle Kit
 
 ### Database Strategy
-- PostgreSQL as primary database (Neon serverless)
+- PostgreSQL as primary database (Neon serverless) - ACTIVE
 - Drizzle ORM for type-safe database operations
-- Migration system for schema evolution
-- Fallback to in-memory storage for development
+- Migration system for schema evolution with drizzle-kit push
+- DatabaseStorage class implementation for persistent data
+- Tables: users, savings_goals with proper relationships and indexing
 
 ### Configuration Management
 - Environment variables for database URLs
