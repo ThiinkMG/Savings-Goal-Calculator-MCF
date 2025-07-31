@@ -104,29 +104,50 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Header with brand blue
-  const headerHeight = 50;
+  // Enhanced header with brand blue gradient effect
+  const headerHeight = 60;
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
+  
+  // Add subtle gradient effect with lighter blue
+  pdf.setFillColor(colors.primary[0] + 20, colors.primary[1] + 20, colors.primary[2]);
+  pdf.rect(0, 0, pageWidth, 8, 'F');
 
-  // Clean typography-only header - no logo
+  // Personalized header with user's name - Poppins Bold style simulation
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(20);
+  pdf.setFontSize(18);
   pdf.setTextColor(255, 255, 255);
-  pdf.text('My College Finance', 20, 25);
+  const goalNumber = goal.id || 1;
+  const personalizedTitle = `${userInfo.name}: Goal #${goalNumber} Report`;
+  pdf.text(personalizedTitle, 20, 25);
 
-  // Clean subtitle
+  // Brand name with enhanced styling - Lato Semi-Bold simulation
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(14);
+  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]); // Caramel accent
+  pdf.text('My College Finance', 20, 40);
+
+  // Subtitle with improved styling - Open Sans Regular simulation
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
-  pdf.setTextColor(220, 220, 255);
-  pdf.text('SAVINGS GOAL REPORT', 20, 35);
+  pdf.setTextColor(220, 230, 255);
+  pdf.text('SAVINGS GOAL ANALYSIS REPORT', 20, 50);
 
-  // Date in header
-  pdf.setFontSize(8);
-  pdf.setTextColor(200, 200, 255);
-  const dateText = formatDate(new Date());
+  // Enhanced date section in header
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.setTextColor(200, 220, 255);
+  const dateText = `Generated: ${formatDate(new Date())}`;
   const dateWidth = pdf.getTextWidth(dateText);
-  pdf.text(dateText, pageWidth - 20 - dateWidth, 25);
+  pdf.text(dateText, pageWidth - 20 - dateWidth, 30);
+  
+  // Goal type indicator
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  const goalTypeText = `${(goal.goalType ?? 'General').toUpperCase()} GOAL`;
+  const goalTypeWidth = pdf.getTextWidth(goalTypeText);
+  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 45);
 
   // Safe calculations with null checks
   const calculations = calculateSavings(
@@ -136,8 +157,15 @@ export async function generateSavingsPlanPDF(
     goal.monthlyCapacity ?? 300
   );
 
+  // Enhanced section positioning with brand styling
+  const startY = headerHeight + 25;
+  
+  // Add brand accent line below header
+  pdf.setDrawColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.setLineWidth(2);
+  pdf.line(20, headerHeight + 10, pageWidth - 20, headerHeight + 10);
+
   // Metric cards layout
-  const startY = headerHeight + 20;
   const cardHeight = 50;
   const cardWidth = 55;
   const cardSpacing = 8;
@@ -177,22 +205,25 @@ export async function generateSavingsPlanPDF(
     pdf.setLineWidth(2);
     pdf.line(cardX, startY, cardX + cardWidth, startY);
 
-    // Card content with typography focus
-    pdf.setFontSize(7);
+    // Enhanced card content with brand typography
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(8);
     pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
     pdf.text(card.title, cardX + 8, startY + 15);
 
-    // Main value - large and centered
-    pdf.setFontSize(16);
+    // Main value - large and centered with brand styling
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
     pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
     const valueWidth = pdf.getTextWidth(card.value);
-    pdf.text(card.value, cardX + (cardWidth - valueWidth) / 2, startY + 28);
+    pdf.text(card.value, cardX + (cardWidth - valueWidth) / 2, startY + 30);
 
-    // Subtitle
+    // Enhanced subtitle with brand color
+    pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(7);
     pdf.setTextColor(card.color[0], card.color[1], card.color[2]);
     const subtitleWidth = pdf.getTextWidth(card.subtitle);
-    pdf.text(card.subtitle, cardX + (cardWidth - subtitleWidth) / 2, startY + 40);
+    pdf.text(card.subtitle, cardX + (cardWidth - subtitleWidth) / 2, startY + 42);
   });
 
   // Enhanced Progress section with modern styling
@@ -362,18 +393,34 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(`${calculations.scenarios?.save100More?.monthsSaved ?? 0} months earlier`, cardsStartX + 22 + scenarioWidth, scenariosY + 38);
 
-  // Footer
-  const footerY = pageHeight - 20;
-  pdf.setFillColor(248, 250, 252);
-  pdf.rect(0, footerY, pageWidth, 20, 'F');
+  // Enhanced footer with brand styling
+  const footerY = pageHeight - 25;
+  pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
+  pdf.rect(0, footerY, pageWidth, 25, 'F');
+  
+  // Brand accent line above footer
+  pdf.setDrawColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.setLineWidth(1);
+  pdf.line(20, footerY, pageWidth - 20, footerY);
 
+  // Enhanced footer content with brand personality
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.text('My College Finance', 20, footerY + 12);
+  
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(7);  
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Knowledgeable • Empowering • Approachable • Reliable • Inclusive', 75, footerY + 12);
+
+  // Enhanced footer right with personalization
+  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(7);
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Generated by My College Finance • Your Financial Education Partner', 20, footerY + 10);
-
-  const footerRight = `Generated ${formatDate(new Date())} • ${isDarkMode ? 'Dark' : 'Light'} Theme`;
+  const footerRight = `${userInfo.name} • ${formatDate(new Date())}`;
   const footerRightWidth = pdf.getTextWidth(footerRight);
-  pdf.text(footerRight, pageWidth - 20 - footerRightWidth, footerY + 14);
+  pdf.text(footerRight, pageWidth - 20 - footerRightWidth, footerY + 18);
 
   // Download with safe filename
   const goalName = goal.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase() ?? 'savings_goal';
