@@ -542,7 +542,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
             <div className="space-y-3">
               <Button
                 onClick={handleExportPDF}
-                className="w-full bg-brand-blue hover:bg-brand-blue/90 text-white"
+                className="w-full bg-brand-blue hover:bg-brand-blue/90 text-[#030711]"
                 disabled={!calculations}
               >
                 <Download className="w-4 h-4 mr-2" />
