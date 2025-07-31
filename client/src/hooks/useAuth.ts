@@ -5,6 +5,9 @@ import { useToast } from '@/hooks/use-toast';
 export interface User {
   id: string;
   username: string;
+  email?: string;
+  fullName?: string;
+  phoneNumber?: string;
 }
 
 export interface AuthResponse {
@@ -42,11 +45,20 @@ export function useAuth() {
     },
   });
 
+  const loginMutation = useMutation({
+    mutationFn: async (user: User) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
+      return user;
+    },
+  });
+
   return {
     user: authData?.user || null,
     isGuest: authData?.isGuest || false,
     isAuthenticated: !!authData?.user,
     isLoading,
+    login: (user: User) => loginMutation.mutate(user),
     logout: () => logoutMutation.mutate(),
     isLoggingOut: logoutMutation.isPending,
   };
