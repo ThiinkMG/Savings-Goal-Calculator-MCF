@@ -42,7 +42,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
   // Delete mutation
   const deleteGoalMutation = useMutation({
     mutationFn: async (goalId: string) => {
-      return apiRequest(`/api/savings-goals/${goalId}`, 'DELETE');
+      return apiRequest('DELETE', `/api/savings-goals/${goalId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
