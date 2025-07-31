@@ -2,8 +2,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, List, Target, TrendingUp } from 'lucide-react';
+import { Plus, List, Target, TrendingUp, Download, Share2 } from 'lucide-react';
 import { type SavingsGoal } from '@shared/schema';
+import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface MultipleGoalsManagerProps {
   goals: SavingsGoal[];
@@ -11,7 +14,56 @@ interface MultipleGoalsManagerProps {
   onEditGoal: (goalId: string) => void;
 }
 
+const shareGoal = async (goal: SavingsGoal) => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `My Savings Goal: ${goal.name}`,
+        text: `Check out my savings goal for ${goal.name}! Target: $${goal.targetAmount.toLocaleString()}, Current: $${goal.currentSavings.toLocaleString()}`,
+        url: window.location.href,
+      });
+    } catch (error) {
+      console.log('Error sharing:', error);
+    }
+  } else {
+    // Fallback for browsers that don't support Web Share API
+    navigator.clipboard.writeText(`My Savings Goal: ${goal.name} - Target: $${goal.targetAmount.toLocaleString()}, Current: $${goal.currentSavings.toLocaleString()}`);
+  }
+};
+
 export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleGoalsManagerProps) {
+  const { theme } = useTheme();
+  const { toast } = useToast();
+
+  const handleDownloadPDF = async (goal: SavingsGoal, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent card click
+    try {
+      await generateSavingsPlanPDF(
+        goal,
+        { name: 'Student', startDate: new Date() },
+        theme === 'dark'
+      );
+      toast({
+        title: "Success!",
+        description: "PDF report downloaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF report",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShareGoal = async (goal: SavingsGoal, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent card click
+    await shareGoal(goal);
+    toast({
+      title: "Shared!",
+      description: "Goal details copied to clipboard",
+    });
+  };
   const getProgressPercent = (goal: SavingsGoal) => {
     if (goal.targetAmount <= 0) return 0;
     return Math.min(100, (goal.currentSavings / goal.targetAmount) * 100);
@@ -94,32 +146,58 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
               return (
                 <div
                   key={goal.id}
-                  className="p-4 border border-border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => onEditGoal(goal.id)}
+                  className="p-4 border border-border rounded-lg hover:shadow-md transition-shadow"
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <h4 className="font-medium text-foreground truncate">
-                      {goal.name}
-                    </h4>
-                    {getStatusBadge(goal)}
+                  <div 
+                    className="cursor-pointer"
+                    onClick={() => onEditGoal(goal.id)}
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <h4 className="font-medium text-foreground truncate">
+                        {goal.name}
+                      </h4>
+                      {getStatusBadge(goal)}
+                    </div>
+                    
+                    <div className="mb-3">
+                      <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                        <span>${goal.currentSavings.toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
+                        <span>{Math.round(progress)}%</span>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                    </div>
+                    
+                    <div className="text-sm text-muted-foreground mb-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        <TrendingUp className="w-3 h-3" />
+                        ${monthlyRequired}/month
+                      </div>
+                      <div>
+                        {monthsLeft} months left
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="mb-3">
-                    <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                      <span>${goal.currentSavings.toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
-                      <span>{Math.round(progress)}%</span>
-                    </div>
-                    <Progress value={progress} className="h-2" />
-                  </div>
-                  
-                  <div className="text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1 mb-1">
-                      <TrendingUp className="w-3 h-3" />
-                      ${monthlyRequired}/month
-                    </div>
-                    <div>
-                      {monthsLeft} months left
-                    </div>
+                  {/* Action buttons */}
+                  <div className="flex gap-2 pt-3 border-t border-border">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 text-xs"
+                      onClick={(e) => handleDownloadPDF(goal, e)}
+                    >
+                      <Download className="w-3 h-3 mr-1" />
+                      PDF
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 text-xs"
+                      onClick={(e) => handleShareGoal(goal, e)}
+                    >
+                      <Share2 className="w-3 h-3 mr-1" />
+                      Share
+                    </Button>
                   </div>
                 </div>
               );
