@@ -110,7 +110,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
             <div className="p-2 bg-brand-blue/10 rounded-lg">
               <List className="w-5 h-5 brand-blue" />
             </div>
-            Multiple Goals Dashboard
+            Savings Tracker Dashboard
           </h3>
           
           <Button 
