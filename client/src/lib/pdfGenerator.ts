@@ -506,6 +506,237 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(5, 150, 105);
   pdf.text(`${calculateAdjustment(50).toFixed(1)} months earlier`, cardsStartX + 110, adjustmentsY + 30);
 
+  // Progress Insights Section
+  const insightsY = adjustmentsY + 50;
+  
+  // Progress Insights Header
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.rect(cardsStartX, insightsY, totalCardsWidth, 20, 'F');
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(12);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('Progress Insights', cardsStartX + 15, insightsY + 13);
+
+  // Generate insights based on progress
+  const generateInsights = () => {
+    const insights = [];
+    
+    if (calculations.progressPercent >= 100) {
+      insights.push({
+        title: 'Goal Achieved!',
+        message: 'Congratulations! You\'ve reached your savings target.',
+        color: colors.success
+      });
+    } else if (calculations.progressPercent >= 75) {
+      insights.push({
+        title: 'Almost There!',
+        message: `You're ${Math.round(calculations.progressPercent)}% complete. Stay consistent to reach your goal.`,
+        color: colors.primary
+      });
+    } else if (calculations.progressPercent >= 50) {
+      insights.push({
+        title: 'Halfway Mark!',
+        message: 'Great progress! You\'ve built a solid foundation for your goal.',
+        color: colors.primaryLight
+      });
+    } else if (calculations.progressPercent >= 25) {
+      insights.push({
+        title: 'Building Momentum',
+        message: 'You\'re off to a good start! Keep up the consistent saving habit.',
+        color: colors.warning
+      });
+    } else {
+      insights.push({
+        title: 'Getting Started',
+        message: 'Every journey begins with a single step. You\'ve got this!',
+        color: colors.primaryDark
+      });
+    }
+
+    // Add capacity warning if needed
+    const isCapacityInsufficient = (goal.monthlyCapacity ?? 0) < calculations.monthlyRequired;
+    if (isCapacityInsufficient && calculations.progressPercent < 100) {
+      insights.push({
+        title: 'Capacity Alert',
+        message: `Your monthly capacity ($${(goal.monthlyCapacity ?? 0).toLocaleString()}) is below what's needed ($${calculations.monthlyRequired.toLocaleString()}).`,
+        color: [255, 165, 0] as [number, number, number] // Orange
+      });
+    }
+
+    return insights.slice(0, 2); // Limit to 2 insights for space
+  };
+
+  const insights = generateInsights();
+  
+  // Draw insights
+  insights.forEach((insight, index) => {
+    const insightCardY = insightsY + 25 + (index * 35);
+    
+    pdf.setFillColor(248, 250, 252);
+    pdf.rect(cardsStartX + 15, insightCardY, totalCardsWidth - 30, 30, 'F');
+    
+    // Colored left border
+    pdf.setFillColor(insight.color[0], insight.color[1], insight.color[2]);
+    pdf.rect(cardsStartX + 15, insightCardY, 3, 30, 'F');
+    
+    // Title
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    pdf.setTextColor(insight.color[0], insight.color[1], insight.color[2]);
+    pdf.text(insight.title, cardsStartX + 25, insightCardY + 12);
+    
+    // Message
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+    
+    // Word wrap for long messages
+    const maxWidth = totalCardsWidth - 50;
+    const words = insight.message.split(' ');
+    let line = '';
+    let yOffset = 0;
+    
+    words.forEach((word, wordIndex) => {
+      const testLine = line + word + ' ';
+      const textWidth = pdf.getTextWidth(testLine);
+      
+      if (textWidth > maxWidth && line !== '') {
+        pdf.text(line.trim(), cardsStartX + 25, insightCardY + 22 + yOffset);
+        line = word + ' ';
+        yOffset += 8;
+      } else {
+        line = testLine;
+      }
+    });
+    
+    if (line.trim() !== '') {
+      pdf.text(line.trim(), cardsStartX + 25, insightCardY + 22 + yOffset);
+    }
+  });
+
+  // Decision Helper Section
+  const decisionHelperY = insightsY + 25 + (insights.length * 35) + 20;
+  const isOverCapacity = (goal.monthlyCapacity ?? 0) < calculations.monthlyRequired;
+  const highSavingsRequired = calculations.monthlyRequired > 300;
+  
+  if (decisionHelperY + 100 < pageHeight - 50) { // Check if we have space
+    pdf.setFillColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+    pdf.rect(cardsStartX, decisionHelperY, totalCardsWidth, 20, 'F');
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(12);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text('Decision Helper', cardsStartX + 15, decisionHelperY + 13);
+
+    let helperContentY = decisionHelperY + 30;
+
+    // Show appropriate message based on goal status
+    if (isOverCapacity) {
+      // Capacity alert
+      pdf.setFillColor(255, 240, 240);
+      pdf.rect(cardsStartX + 15, helperContentY, totalCardsWidth - 30, 35, 'F');
+      
+      // Red left border
+      pdf.setFillColor(239, 68, 68);
+      pdf.rect(cardsStartX + 15, helperContentY, 3, 35, 'F');
+      
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10);
+      pdf.setTextColor(239, 68, 68);
+      pdf.text('Reality Check Alert!', cardsStartX + 25, helperContentY + 12);
+      
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+      pdf.text(`You need $${calculations.monthlyRequired}/month but set capacity at`, cardsStartX + 25, helperContentY + 22);
+      pdf.text(`$${goal.monthlyCapacity}/month. Either increase your savings capacity`, cardsStartX + 25, helperContentY + 30);
+      pdf.text('or extend your timeline.', cardsStartX + 25, helperContentY + 38);
+      
+      helperContentY += 45;
+    } else if (highSavingsRequired) {
+      // High savings recommendations
+      pdf.setFillColor(254, 252, 232);
+      pdf.rect(cardsStartX + 15, helperContentY, totalCardsWidth - 30, 55, 'F');
+      
+      // Amber left border
+      pdf.setFillColor(245, 158, 11);
+      pdf.rect(cardsStartX + 15, helperContentY, 3, 55, 'F');
+      
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10);
+      pdf.setTextColor(245, 158, 11);
+      pdf.text(`To save $${calculations.monthlyRequired}/month, choose 2-3 of these:`, cardsStartX + 25, helperContentY + 12);
+      
+      const recommendations = [
+        'Make coffee at home 5 days/week (saves ~$110/month)',
+        'Pack lunch 3 times/week (saves ~$180/month)',
+        'Cancel 2 streaming services (saves ~$30/month)',
+        'Limit dining out to 2x/month (saves ~$100/month)'
+      ];
+
+      recommendations.forEach((rec, index) => {
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+        pdf.text('✓', cardsStartX + 25, helperContentY + 22 + (index * 10));
+        pdf.text(rec, cardsStartX + 32, helperContentY + 22 + (index * 10));
+      });
+      
+      helperContentY += 65;
+    } else {
+      // Positive confirmation
+      pdf.setFillColor(240, 253, 244);
+      pdf.rect(cardsStartX + 15, helperContentY, totalCardsWidth - 30, 35, 'F');
+      
+      // Green left border
+      pdf.setFillColor(34, 197, 94);
+      pdf.rect(cardsStartX + 15, helperContentY, 3, 35, 'F');
+      
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10);
+      pdf.setTextColor(34, 197, 94);
+      pdf.text('Congratulations, you\'re good to go!', cardsStartX + 25, helperContentY + 12);
+      
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+      pdf.text('Your savings plan looks realistic and achievable. Alerts are only', cardsStartX + 25, helperContentY + 22);
+      pdf.text('displayed when there\'s an issue or problem with your savings goal.', cardsStartX + 25, helperContentY + 30);
+      
+      helperContentY += 45;
+    }
+
+    // Quick Savings Tips Section (if space still allows)
+    const tipsY = helperContentY + 10;
+    if (tipsY + 60 < pageHeight - 50) {
+      pdf.setFillColor(colors.success[0], colors.success[1], colors.success[2]);
+      pdf.rect(cardsStartX, tipsY, totalCardsWidth, 20, 'F');
+
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(12);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('Quick Savings Tips', cardsStartX + 15, tipsY + 13);
+
+      // Trade-off tips
+      const tips = [
+        'Skip coffee shop 3x/week = Save ~$66/month',
+        'Pack lunch 2x/week = Save ~$120/month',
+        'Cancel 1 streaming service = Save ~$15/month',
+        'Limit dining out = Save ~$80/month'
+      ];
+
+      tips.forEach((tip, index) => {
+        if (tipsY + 30 + (index * 12) < pageHeight - 50) {
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(9);
+          pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+          pdf.text(`• ${tip}`, cardsStartX + 20, tipsY + 30 + (index * 12));
+        }
+      });
+    }
+  }
+
   // Clean footer
   const footerY = pageHeight - 30;
 
@@ -544,9 +775,10 @@ export async function generateSavingsPlanPDF(
   const footerRightWidth = pdf.getTextWidth(footerRight);
   pdf.text(footerRight, pageWidth - 20 - footerRightWidth, footerY + 15);
 
-  // Enhanced filename with user name and goal number
+  // Enhanced filename with user name and goal type
   const userName = userInfo.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'user';
-  const goalNameFile = goal.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'savings_goal';
-  const fileName = `${userName}_goal_${goalNumber}_${goalNameFile}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const goalType = goal.goalType?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'savings';
+  const goalNameFile = goal.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'goal';
+  const fileName = `${userName}_${goalType}_${goalNameFile}_${new Date().toISOString().split('T')[0]}.pdf`;
   pdf.save(fileName);
 }
