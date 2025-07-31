@@ -204,6 +204,19 @@
   .animate-bounce-soft {
     animation: bounce-soft 0.6s ease-out forwards;
   }
+
+  /* Custom button animation utilities */
+  .bg-size-200 {
+    background-size: 200% 100%;
+  }
+  
+  .bg-pos-0 {
+    background-position: 200% 0;
+  }
+  
+  .bg-pos-100 {
+    background-position: 0% 0;
+  }
 }
 
 @keyframes slideIn {
