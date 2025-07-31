@@ -1,12 +1,33 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, real, timestamp, json, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, real, timestamp, json, boolean, integer, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  fullName: text("full_name"),
+  email: text("email").notNull().unique(),
+  phoneNumber: varchar("phone_number", { length: 20 }),
+  phoneVerified: boolean("phone_verified").default(false),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  isLocked: boolean("is_locked").default(false),
+  lockoutUntil: timestamp("lockout_until"),
+  failedLoginAttempts: integer("failed_login_attempts").default(0),
+  lastLoginAt: timestamp("last_login_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const verificationCodes = pgTable("verification_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  code: varchar("code", { length: 6 }).notNull(),
+  type: varchar("type", { length: 20 }).notNull(), // 'password_reset', 'username_recovery'
+  method: varchar("method", { length: 10 }).notNull(), // 'email', 'sms'
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const savingsGoals = pgTable("savings_goals", {
@@ -35,8 +56,35 @@ export const goalTypes = [
 ] as const;
 
 export const insertUserSchema = createInsertSchema(users).pick({
+  fullName: true,
+  email: true,
+  phoneNumber: true,
   username: true,
   password: true,
+});
+
+export const loginSchema = z.object({
+  identifier: z.string().min(1, "Email, phone, or username is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const forgotPasswordSchema = z.object({
+  identifier: z.string().min(1, "Email or phone number is required"),
+});
+
+export const verifyCodeSchema = z.object({
+  code: z.string().length(6, "Code must be 6 digits"),
+  identifier: z.string().min(1, "Identifier is required"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+export const insertVerificationCodeSchema = createInsertSchema(verificationCodes).omit({
+  id: true,
+  createdAt: true,
 });
 
 export const insertSavingsGoalSchema = createInsertSchema(savingsGoals).omit({

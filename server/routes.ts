@@ -6,6 +6,8 @@ import { z } from "zod";
 import { requireAuth, register, login, logout, getCurrentUser, type AuthenticatedRequest } from "./auth";
 import { reportScheduler } from './scheduler';
 import { googleSheetsService } from './googleSheetsService';
+import { loginSchema, forgotPasswordSchema, verifyCodeSchema, resetPasswordSchema } from "@shared/schema";
+import { authenticateUser, sendPasswordResetCode, sendUsernameRecovery, verifyResetCode, resetPassword, detectIdentifierType } from './authService';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -13,6 +15,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", login);
   app.post("/api/auth/logout", logout);
   app.get("/api/auth/me", requireAuth, getCurrentUser);
+
+  // Enhanced authentication routes
+  app.post("/api/auth/enhanced-login", async (req, res) => {
+    try {
+      const { identifier, password } = loginSchema.parse(req.body);
+      const result = await authenticateUser(identifier, password);
+      
+      if (!result.success) {
+        return res.status(401).json({ 
+          message: result.error,
+          locked: result.locked,
+          lockoutUntil: result.lockoutUntil
+        });
+      }
+      
+      // Set session
+      req.session.userId = result.user!.id;
+      req.session.user = result.user;
+      
+      res.json({ 
+        user: result.user,
+        message: "Login successful"
+      });
+    } catch (error) {
+      console.error('Enhanced login error:', error);
+      res.status(400).json({ message: "Invalid login data" });
+    }
+  });
+
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { identifier } = forgotPasswordSchema.parse(req.body);
+      const result = await sendPasswordResetCode(identifier);
+      
+      res.json({
+        success: result.success,
+        method: result.method,
+        maskedContact: result.maskedContact,
+        message: result.success 
+          ? `Reset code sent to your ${result.method}` 
+          : result.error
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(400).json({ message: "Invalid request data" });
+    }
+  });
+
+  app.post("/api/auth/forgot-username", async (req, res) => {
+    try {
+      const { identifier } = forgotPasswordSchema.parse(req.body);
+      const result = await sendUsernameRecovery(identifier);
+      
+      res.json({
+        success: result.success,
+        method: result.method,
+        message: result.success 
+          ? `Username sent to your ${result.method}` 
+          : result.error
+      });
+    } catch (error) {
+      console.error('Forgot username error:', error);
+      res.status(400).json({ message: "Invalid request data" });
+    }
+  });
+
+  app.post("/api/auth/verify-reset-code", async (req, res) => {
+    try {
+      const { code, identifier } = verifyCodeSchema.parse(req.body);
+      const result = await verifyResetCode(code, identifier);
+      
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
+      }
+      
+      res.json({
+        success: true,
+        resetToken: result.resetToken,
+        message: "Code verified successfully"
+      });
+    } catch (error) {
+      console.error('Verify reset code error:', error);
+      res.status(400).json({ message: "Invalid verification data" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = resetPasswordSchema.parse(req.body);
+      const result = await resetPassword(token, newPassword);
+      
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
+      }
+      
+      res.json({
+        success: true,
+        message: "Password reset successfully"
+      });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(400).json({ message: "Invalid reset data" });
+    }
+  });
+
+  app.get("/api/auth/check-username/:username", async (req, res) => {
+    try {
+      const { username } = req.params;
+      const user = await storage.getUserByUsername(username);
+      
+      res.json({
+        available: !user,
+        message: user ? "Username is already taken" : "Username is available"
+      });
+    } catch (error) {
+      console.error('Check username error:', error);
+      res.status(500).json({ message: "Failed to check username availability" });
+    }
+  });
   // Get all savings goals (with auth)
   app.get("/api/savings-goals", requireAuth, async (req: AuthenticatedRequest, res) => {
     try {

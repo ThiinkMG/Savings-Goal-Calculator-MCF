@@ -1,0 +1,325 @@
+## **Enhanced Authentication System for Savings Goal Calculator**
+
+### **FEATURE OVERVIEW**
+Implement a comprehensive authentication system with multiple login methods and secure password recovery options.
+
+---
+
+### **1. MULTI-METHOD LOGIN SYSTEM**
+
+#### **Login Options Available:**
+- **Email address** (primary)
+- **Phone number** (with country code)
+- **Username** (user-created handle)
+
+#### **Updated Login Form:**
+```
+┌─────────────────────────────┐
+│ Sign In to Your Account     │
+├─────────────────────────────┤
+│ Email, Phone, or Username   │
+│ [________________]          │
+│                             │
+│ Password                    │
+│ [________________] [👁]     │
+│                             │
+│ [ ] Remember me             │
+│                             │
+│ [     Sign In     ]         │
+│                             │
+│ Forgot Password/Username?   │
+└─────────────────────────────┘
+```
+
+#### **Input Validation Logic:**
+- **Auto-detect input type** based on format:
+  - Contains @ = Email
+  - Starts with + or numbers = Phone
+  - Otherwise = Username
+- **Real-time validation** with visual feedback
+- **Format helpers** (phone number formatting)
+
+---
+
+### **2. ACCOUNT CREATION UPDATES**
+
+#### **Enhanced Registration Form:**
+```
+┌─────────────────────────────┐
+│ Create Your Account         │
+├─────────────────────────────┤
+│ Full Name                   │
+│ [________________]          │
+│                             │
+│ Email Address *             │
+│ [________________]          │
+│                             │
+│ Phone Number (Optional)     │
+│ [+1] [_______________]      │
+│                             │
+│ Username *                  │
+│ [________________]          │
+│ Available ✓ / Taken ✗       │
+│                             │
+│ Password *                  │
+│ [________________] [👁]     │
+│ Strength: [████░░] Strong   │
+│                             │
+│ Confirm Password *          │
+│ [________________] [👁]     │
+│                             │
+│ [    Create Account    ]    │
+└─────────────────────────────┘
+```
+
+#### **Registration Requirements:**
+- **Email** (required) - primary recovery method
+- **Username** (required) - unique identifier
+- **Phone** (optional) - secondary recovery method
+- **Password strength validation**
+- **Real-time username availability check**
+
+---
+
+### **3. FORGOT PASSWORD/USERNAME SYSTEM**
+
+#### **Recovery Entry Point:**
+```
+┌─────────────────────────────┐
+│ Account Recovery            │
+├─────────────────────────────┤
+│ What do you need help with? │
+│                             │
+│ ○ I forgot my password      │
+│ ○ I forgot my username      │
+│ ○ I forgot both             │
+│                             │
+│ [      Continue      ]      │
+└─────────────────────────────┘
+```
+
+#### **Recovery Methods Available:**
+- **Email verification** (if email provided)
+- **SMS verification** (if phone provided)
+- **Security questions** (backup method)
+
+---
+
+### **4. PASSWORD RECOVERY FLOW**
+
+#### **Step 1 - Account Identification:**
+```
+┌─────────────────────────────┐
+│ Reset Your Password         │
+├─────────────────────────────┤
+│ Enter your email or phone   │
+│ number to receive a reset   │
+│ code                        │
+│                             │
+│ Email or Phone              │
+│ [________________]          │
+│                             │
+│ [   Send Reset Code   ]     │
+│                             │
+│ Don't have access to these? │
+│ Try security questions      │
+└─────────────────────────────┘
+```
+
+#### **Step 2 - Verification Method Selection:**
+```
+┌─────────────────────────────┐
+│ Choose Verification Method  │
+├─────────────────────────────┤
+│ How would you like to       │
+│ receive your reset code?    │
+│                             │
+│ ○ Email: j***@email.com     │
+│ ○ Text: +1 (***) ***-1234   │
+│                             │
+│ [     Send Code     ]       │
+│                             │
+│ Code expires in 15 minutes  │
+└─────────────────────────────┘
+```
+
+#### **Step 3 - Code Entry:**
+```
+┌─────────────────────────────┐
+│ Enter Verification Code     │
+├─────────────────────────────┤
+│ We sent a 6-digit code to   │
+│ your selected method        │
+│                             │
+│ [_] [_] [_] [_] [_] [_]     │
+│                             │
+│ [     Verify Code     ]     │
+│                             │
+│ Didn't receive it?          │
+│ Resend code (0:45)          │
+└─────────────────────────────┘
+```
+
+#### **Step 4 - Password Reset:**
+```
+┌─────────────────────────────┐
+│ Create New Password         │
+├─────────────────────────────┤
+│ New Password                │
+│ [________________] [👁]     │
+│ Strength: [████░░] Strong   │
+│                             │
+│ Confirm New Password        │
+│ [________________] [👁]     │
+│                             │
+│ [   Update Password   ]     │
+│                             │
+│ Password Requirements:      │
+│ • 8+ characters            │
+│ • Mix of letters & numbers │
+│ • At least 1 special char  │
+└─────────────────────────────┘
+```
+
+---
+
+### **5. USERNAME RECOVERY FLOW**
+
+#### **Username Recovery Process:**
+```
+┌─────────────────────────────┐
+│ Recover Your Username       │
+├─────────────────────────────┤
+│ Enter the email or phone    │
+│ associated with your account│
+│                             │
+│ Email or Phone              │
+│ [________________]          │
+│                             │
+│ [   Send Username   ]       │
+│                             │
+│ We'll send your username    │
+│ to this contact method      │
+└─────────────────────────────┘
+```
+
+#### **Username Delivery:**
+- **Email:** "Your username is: [username]"
+- **SMS:** "Your Savings Calculator username: [username]"
+
+---
+
+### **6. TECHNICAL IMPLEMENTATION REQUIREMENTS**
+
+#### **Database Schema Updates:**
+```sql
+-- Update users table
+ALTER TABLE users ADD COLUMN phone_number VARCHAR(20);
+ALTER TABLE users ADD COLUMN phone_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN username VARCHAR(50) UNIQUE;
+
+-- Create verification codes table
+CREATE TABLE verification_codes (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    code VARCHAR(6),
+    type VARCHAR(20), -- 'password_reset', 'username_recovery'
+    method VARCHAR(10), -- 'email', 'sms'
+    expires_at TIMESTAMP,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### **API Endpoints Needed:**
+```
+POST /api/auth/login
+- Accept email, phone, or username
+- Validate credentials
+- Return JWT token
+
+POST /api/auth/register
+- Validate unique username/email
+- Create account with multiple identifiers
+
+POST /api/auth/forgot-password
+- Generate verification code
+- Send via email or SMS
+
+POST /api/auth/verify-reset-code
+- Validate 6-digit code
+- Return temporary reset token
+
+POST /api/auth/reset-password
+- Update password with reset token
+
+POST /api/auth/forgot-username
+- Send username via email/SMS
+
+GET /api/auth/check-username
+- Real-time username availability
+```
+
+#### **Security Features:**
+- **Rate limiting** - Max 3 attempts per 15 minutes
+- **Code expiration** - 15-minute timeout
+- **One-time use codes** - Cannot reuse verification codes
+- **Account lockout** - After 5 failed attempts
+- **Input sanitization** - Prevent injection attacks
+
+#### **External Services Integration:**
+- **Email service** (SendGrid, AWS SES, or Resend)
+- **SMS service** (Twilio, AWS SNS)
+- **Phone number validation** library
+
+---
+
+### **7. USER EXPERIENCE ENHANCEMENTS**
+
+#### **Smart Input Detection:**
+- **Auto-format** phone numbers as user types
+- **Validate email** format in real-time
+- **Username suggestions** if taken
+- **Password strength meter** with recommendations
+
+#### **Progressive Disclosure:**
+- **Show recovery options** based on available contact methods
+- **Contextual help** for each step
+- **Clear error messages** with suggested fixes
+- **Success confirmations** at each stage
+
+#### **Accessibility Features:**
+- **Screen reader support** for all forms
+- **Keyboard navigation** throughout flows
+- **High contrast mode** compatibility
+- **Clear focus indicators**
+
+---
+
+### **8. REPLIT IMPLEMENTATION CHECKLIST**
+
+**Phase 1 - Database & API:**
+- [ ] Update user schema with phone/username fields
+- [ ] Create verification codes table
+- [ ] Build authentication API endpoints
+- [ ] Integrate email/SMS services
+
+**Phase 2 - Frontend Updates:**
+- [ ] Update login form with multi-method input
+- [ ] Enhance registration form
+- [ ] Build forgot password flow
+- [ ] Create username recovery flow
+
+**Phase 3 - Security & Validation:**
+- [ ] Implement rate limiting
+- [ ] Add input validation
+- [ ] Set up code expiration
+- [ ] Add account lockout protection
+
+**Phase 4 - Testing & Polish:**
+- [ ] Test all recovery flows
+- [ ] Validate security measures
+- [ ] Check mobile responsiveness
+- [ ] Verify accessibility compliance
+
+This comprehensive system provides users with flexible login options and secure recovery methods while maintaining strong security standards.
