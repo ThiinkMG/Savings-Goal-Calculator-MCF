@@ -82,7 +82,7 @@ export default function HomePage() {
                   rel="noopener noreferrer" 
                   className="text-brand-blue hover:text-brand-amber transition-colors font-medium"
                 >
-                  See our <span className="underline">latest courses →</span>
+                  See our <span className="hover:underline">latest courses →</span>
                 </a>
               </div>
               <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
