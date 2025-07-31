@@ -13,113 +13,191 @@ export async function generateSavingsPlanPDF(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   
-  // Colors based on theme
-  const colors = isDarkMode ? {
-    primary: [35, 63, 143], // Brand blue for dark mode
-    secondary: [16, 185, 129], // Brand green
-    text: [248, 250, 252], // Light text
-    background: [30, 41, 59], // Dark background
-    muted: [100, 116, 139] // Muted text
-  } : {
-    primary: [23, 63, 143], // Brand blue
-    secondary: [16, 185, 129], // Brand green
-    text: [31, 41, 55], // Dark text
-    background: [255, 255, 255], // Light background
-    muted: [100, 116, 139] // Muted text
+  // Modern color palette with proper typing
+  const colors = {
+    primary: [61, 90, 254] as [number, number, number],
+    success: [34, 197, 94] as [number, number, number],
+    warning: [251, 146, 60] as [number, number, number],
+    danger: [239, 68, 68] as [number, number, number],
+    text: [15, 23, 42] as [number, number, number],
+    textLight: [71, 85, 105] as [number, number, number],
+    background: [248, 250, 252] as [number, number, number],
+    cardBg: [255, 255, 255] as [number, number, number],
+    border: [226, 232, 240] as [number, number, number],
+    accent: [139, 92, 246] as [number, number, number]
   };
 
-  // Set background color
-  if (isDarkMode) {
-    pdf.setFillColor(...colors.background);
-    pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-  }
+  // Helper function to draw card
+  const drawCard = (x: number, y: number, width: number, height: number) => {
+    pdf.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
+    pdf.rect(x, y, width, height, 'F');
+    pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+    pdf.setLineWidth(0.5);
+    pdf.rect(x, y, width, height, 'S');
+  };
 
-  // Header
+  // Helper function to draw progress circle (simplified)
+  const drawProgressCircle = (x: number, y: number, radius: number, progress: number) => {
+    const centerX = x + radius;
+    const centerY = y + radius;
+    
+    // Background circle
+    pdf.setDrawColor(226, 232, 240);
+    pdf.setLineWidth(3);
+    pdf.circle(centerX, centerY, radius, 'S');
+    
+    // Progress indicator (simplified as a filled circle for progress > 0)
+    if (progress > 0) {
+      pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+      const progressRadius = (progress / 100) * radius * 0.8;
+      pdf.circle(centerX, centerY, progressRadius, 'F');
+    }
+  };
+
+  // Set background
+  pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
+  pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+
+  // Header with logo placeholder and title
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.rect(0, 0, pageWidth, 50, 'F');
+  
   pdf.setFontSize(24);
-  pdf.setTextColor(...colors.primary);
-  pdf.text('My College Finance', 20, 30);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('My College Finance', 20, 25);
   
   pdf.setFontSize(12);
-  pdf.setTextColor(...colors.muted);
-  pdf.text('EDUCATE • MOTIVATE • ELEVATE', 20, 40);
+  pdf.setTextColor(200, 200, 255);
+  pdf.text('SAVINGS GOAL DASHBOARD', 20, 35);
 
-  // Title
-  pdf.setFontSize(20);
-  pdf.setTextColor(...colors.text);
-  pdf.text('Savings Goal Plan', 20, 60);
-
-  // Personal Information
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.primary);
-  pdf.text('Personal Information', 20, 80);
-  
-  pdf.setFontSize(11);
-  pdf.setTextColor(...colors.text);
-  pdf.text(`Name: ${userInfo.name}`, 20, 95);
-  pdf.text(`Plan Created: ${formatDate(userInfo.startDate)}`, 20, 105);
-
-  // Goal Details
   const calculations = calculateSavings(
     goal.targetAmount,
     goal.currentSavings,
     new Date(goal.targetDate),
-    goal.monthlyCapacity || undefined
+    goal.monthlyCapacity || 300
   );
 
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.primary);
-  pdf.text('Goal Details', 20, 130);
+  // Main metrics cards (top row)
+  const cardY = 65;
+  const cardHeight = 45;
+  const cardWidth = 60;
+  const spacing = 5;
 
-  pdf.setFontSize(11);
-  pdf.setTextColor(...colors.text);
-  const goalDetails = [
-    `Goal Name: ${goal.name}`,
-    `Goal Type: ${goal.goalType.charAt(0).toUpperCase() + goal.goalType.slice(1)}`,
-    `Target Amount: ${formatCurrency(goal.targetAmount)}`,
-    `Current Savings: ${formatCurrency(goal.currentSavings)}`,
-    `Target Date: ${formatDate(new Date(goal.targetDate))}`,
-  ];
+  // Total Goal Card
+  drawCard(20, cardY, cardWidth, cardHeight);
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('TOTAL GOAL', 25, cardY + 12);
+  pdf.setFontSize(18);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatCurrency(goal.targetAmount), 25, cardY + 25);
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.text(`${calculations.progressPercent.toFixed(1)}%`, 25, cardY + 35);
 
-  goalDetails.forEach((detail, index) => {
-    pdf.text(detail, 20, 145 + (index * 10));
-  });
+  // Current Savings Card  
+  drawCard(20 + cardWidth + spacing, cardY, cardWidth, cardHeight);
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('CURRENT SAVINGS', 25 + cardWidth + spacing, cardY + 12);
+  pdf.setFontSize(18);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatCurrency(goal.currentSavings), 25 + cardWidth + spacing, cardY + 25);
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.text('SAVED', 25 + cardWidth + spacing, cardY + 35);
 
-  // Savings Plan
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.primary);
-  pdf.text('Your Savings Plan', 20, 210);
+  // Monthly Required Card
+  drawCard(20 + (cardWidth + spacing) * 2, cardY, cardWidth, cardHeight);
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('MONTHLY REQUIRED', 25 + (cardWidth + spacing) * 2, cardY + 12);
+  pdf.setFontSize(18);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatCurrency(calculations.monthlyRequired), 25 + (cardWidth + spacing) * 2, cardY + 25);
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.text('PER MONTH', 25 + (cardWidth + spacing) * 2, cardY + 35);
 
-  pdf.setFontSize(11);
-  pdf.setTextColor(...colors.text);
-  const planDetails = [
-    `Monthly Savings Required: ${formatCurrency(calculations.monthlyRequired)}`,
-    `Time Remaining: ${calculations.monthsRemaining} months`,
-    `Amount Still Needed: ${formatCurrency(calculations.amountNeeded)}`,
-    `Current Progress: ${calculations.progressPercent.toFixed(1)}%`,
-    `Plan Status: ${calculations.isFeasible ? 'Achievable' : 'Challenging - Consider Adjusting'}`,
-  ];
+  // Progress Visualization Card
+  const progressY = cardY + cardHeight + 15;
+  drawCard(20, progressY, 90, 80);
+  
+  pdf.setFontSize(12);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('Progress Overview', 25, progressY + 15);
+  
+  // Draw progress circle
+  drawProgressCircle(35, progressY + 25, 20, calculations.progressPercent);
+  
+  // Progress percentage in center
+  pdf.setFontSize(16);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.text(`${Math.round(calculations.progressPercent)}%`, 50, progressY + 50);
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('COMPLETE', 47, progressY + 58);
 
-  planDetails.forEach((detail, index) => {
-    pdf.text(detail, 20, 225 + (index * 10));
-  });
+  // Timeline info
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Time Remaining:', 75, progressY + 35);
+  pdf.setFontSize(12);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(`${calculations.monthsRemaining} months`, 75, progressY + 45);
+  
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Target Date:', 75, progressY + 55);
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatDate(new Date(goal.targetDate)), 75, progressY + 65);
 
-  // What-If Scenarios
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.secondary);
-  pdf.text('What-If Scenarios', 20, 290);
+  // Goal Details Card
+  const detailsY = progressY + 90;
+  drawCard(20, detailsY, 170, 60);
+  
+  pdf.setFontSize(12);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('Goal Details', 25, detailsY + 15);
+  
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Goal Name:', 25, detailsY + 30);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(goal.name, 55, detailsY + 30);
+  
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Category:', 25, detailsY + 40);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(goal.goalType.charAt(0).toUpperCase() + goal.goalType.slice(1), 55, detailsY + 40);
+  
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Created by:', 25, detailsY + 50);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(userInfo.name, 55, detailsY + 50);
 
-  pdf.setFontSize(11);
-  pdf.setTextColor(...colors.text);
-  pdf.text(`Save $50 more per month: Reach goal ${calculations.scenarios.save50More.monthsSaved} months earlier`, 20, 305);
-  pdf.text(`Save $100 more per month: Reach goal ${calculations.scenarios.save100More.monthsSaved} months earlier`, 20, 315);
+  // What-If Scenarios Card
+  const scenariosY = detailsY + 70;
+  drawCard(20, scenariosY, 170, 50);
+  
+  pdf.setFontSize(12);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('What-If Scenarios', 25, scenariosY + 15);
+  
+  pdf.setFontSize(9);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.text(`Save $50 more: Reach goal ${calculations.scenarios.save50More.monthsSaved} months earlier`, 25, scenariosY + 28);
+  pdf.setTextColor(colors.accent[0], colors.accent[1], colors.accent[2]);
+  pdf.text(`Save $100 more: Reach goal ${calculations.scenarios.save100More.monthsSaved} months earlier`, 25, scenariosY + 38);
 
   // Footer
   pdf.setFontSize(8);
-  pdf.setTextColor(...colors.muted);
-  pdf.text('Generated by My College Finance - Your Financial Education Partner', 20, pageHeight - 20);
-  pdf.text(`Theme: ${isDarkMode ? 'Dark' : 'Light'} Mode | Generated on ${formatDate(new Date())}`, 20, pageHeight - 10);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('Generated by My College Finance • Your Financial Education Partner', 20, pageHeight - 15);
+  pdf.text(`Created on ${formatDate(new Date())} • ${isDarkMode ? 'Dark' : 'Light'} Theme`, 20, pageHeight - 8);
 
   // Download the PDF
-  const fileName = `${goal.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_savings_plan_${new Date().toISOString().split('T')[0]}.pdf`;
+  const fileName = `${goal.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_dashboard_${new Date().toISOString().split('T')[0]}.pdf`;
   pdf.save(fileName);
 }
