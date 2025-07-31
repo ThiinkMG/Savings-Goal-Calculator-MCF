@@ -115,62 +115,31 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Create a professional money bag savings icon
-  // White background circle for logo
-  pdf.setFillColor(255, 255, 255);
-  pdf.circle(logoX + logoWidth/2, logoY + logoHeight/2, logoWidth/2, 'F');
-  
-  // Blue border for the logo circle
-  pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.setLineWidth(2);
-  pdf.circle(logoX + logoWidth/2, logoY + logoHeight/2, logoWidth/2, 'S');
-  
-  // Money bag savings icon design
+  // Create a simple professional coin logo
   const centerX = logoX + logoWidth/2;
   const centerY = logoY + logoHeight/2;
   
-  // Money bag body (rounded rectangle with green color for financial theme)
-  pdf.setFillColor(34, 197, 94); // Green color for money
-  pdf.rect(centerX - 6, centerY - 2, 12, 10, 'F');
+  // Gold coin background
+  pdf.setFillColor(234, 179, 8); // Gold color
+  pdf.circle(centerX, centerY, logoWidth/2 - 2, 'F');
   
-  // Money bag top (drawstring area)
-  pdf.setFillColor(22, 163, 74); // Darker green
-  pdf.rect(centerX - 6, centerY - 4, 12, 3, 'F');
+  // Darker gold border for depth
+  pdf.setDrawColor(180, 140, 6);
+  pdf.setLineWidth(2);
+  pdf.circle(centerX, centerY, logoWidth/2 - 2, 'S');
   
-  // Drawstring ties
+  // Inner circle for coin detail
+  pdf.setDrawColor(255, 215, 0);
   pdf.setLineWidth(1);
-  pdf.setDrawColor(22, 163, 74);
-  pdf.line(centerX - 2, centerY - 4, centerX - 2, centerY - 6);
-  pdf.line(centerX + 2, centerY - 4, centerX + 2, centerY - 6);
+  pdf.circle(centerX, centerY, logoWidth/2 - 4, 'S');
   
-  // Dollar sign on the bag
+  // Dollar sign on the coin
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
+  pdf.setFontSize(14);
   pdf.setTextColor(255, 255, 255);
   const dollarSign = '$';
   const dollarWidth = pdf.getTextWidth(dollarSign);
-  pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 2);
-  
-  // Coins around the bag (small circles in gold color)
-  pdf.setFillColor(234, 179, 8); // Gold color
-  pdf.circle(centerX - 8, centerY + 4, 1.5, 'F');
-  pdf.circle(centerX + 8, centerY + 3, 1.5, 'F');
-  pdf.circle(centerX + 6, centerY + 7, 1, 'F');
-  
-  // Small dollar signs on coins
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(4);
-  pdf.setTextColor(255, 255, 255);
-  pdf.text('$', centerX - 8.5, centerY + 4.5);
-  pdf.text('$', centerX + 7.5, centerY + 3.5);
-  
-  // "MCF" text at bottom of logo
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(5);
-  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  const mcfText = 'MCF';
-  const mcfWidth = pdf.getTextWidth(mcfText);
-  pdf.text(mcfText, centerX - mcfWidth/2, logoY + logoHeight - 3);
+  pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 3);
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');
