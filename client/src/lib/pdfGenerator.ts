@@ -109,103 +109,17 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Logo integration using attached asset
-  const logoX = 15;
-  const logoY = 12;
-  const logoWidth = 26;
-  const logoHeight = 26;
-  
-  // Graduation cap logo with dollar sign
-  const centerX = logoX + logoWidth/2;
-  const centerY = logoY + logoHeight/2;
-  
-  // Cap base - main rectangular board
-  const capWidth = 18;
-  const capHeight = 3;
-  const capX = centerX - capWidth/2;
-  const capY = centerY - 2;
-  
-  // Shadow for depth
-  pdf.setFillColor(180, 180, 180);
-  pdf.rect(capX + 0.5, capY + 0.5, capWidth, capHeight, 'F');
-  
-  // Main cap board - dark academic blue
-  pdf.setFillColor(25, 25, 112); // Midnight blue
-  pdf.rect(capX, capY, capWidth, capHeight, 'F');
-  
-  // Cap border/trim - gold accent
-  pdf.setDrawColor(255, 215, 0);
-  pdf.setLineWidth(0.8);
-  pdf.rect(capX, capY, capWidth, capHeight, 'S');
-  
-  // Mortarboard top - slightly smaller rectangle on top
-  const topWidth = 16;
-  const topHeight = 2;
-  const topX = centerX - topWidth/2;
-  const topY = capY - 2.5;
-  
-  // Top shadow
-  pdf.setFillColor(150, 150, 150);
-  pdf.rect(topX + 0.5, topY + 0.5, topWidth, topHeight, 'F');
-  
-  // Main top - same academic blue but slightly lighter
-  pdf.setFillColor(30, 30, 130);
-  pdf.rect(topX, topY, topWidth, topHeight, 'F');
-  
-  // Top border - gold trim
-  pdf.setDrawColor(255, 215, 0);
-  pdf.setLineWidth(0.6);
-  pdf.rect(topX, topY, topWidth, topHeight, 'S');
-  
-  // Tassel cord - thin line from center
-  pdf.setDrawColor(255, 215, 0); // Gold cord
-  pdf.setLineWidth(1);
-  pdf.line(centerX + 6, topY, centerX + 8, topY + 8);
-  
-  // Tassel end - small rectangle
-  pdf.setFillColor(255, 215, 0);
-  pdf.rect(centerX + 7, topY + 8, 2, 4, 'F');
-  
-  // Tassel fringe lines
-  pdf.setLineWidth(0.3);
-  for(let i = 0; i < 3; i++) {
-    pdf.line(centerX + 7.2 + (i * 0.6), topY + 12, centerX + 7.2 + (i * 0.6), topY + 14);
-  }
-  
-  // Dollar sign - subtle integration on the cap
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(8);
-  
-  // Dollar sign shadow
-  pdf.setTextColor(15, 15, 80); // Darker blue shadow
-  const dollarSign = '$';
-  const dollarWidth = pdf.getTextWidth(dollarSign);
-  pdf.text(dollarSign, centerX - dollarWidth/2 + 0.3, centerY + 0.8);
-  
-  // Main dollar sign - gold color
-  pdf.setTextColor(255, 215, 0); // Gold
-  pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 0.5);
-  
-  // Subtle shine on cap edge - simple line highlight
-  pdf.setDrawColor(255, 255, 255);
-  pdf.setLineWidth(0.5);
-  pdf.line(capX + 1, capY + 0.5, capX + capWidth - 1, capY + 0.5);
-  
-  // Small highlight dot on mortarboard
-  pdf.setFillColor(255, 255, 255);
-  pdf.circle(centerX - 4, topY + 1, 0.8, 'F');
-
-  // Typography with bold title - positioned next to logo area (x=48)
+  // Clean typography-only header - no logo
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(20);
   pdf.setTextColor(255, 255, 255);
-  pdf.text('My College Finance', 48, 25);
+  pdf.text('My College Finance', 20, 25);
 
-  // Reset font weight and add updated subtitle
+  // Clean subtitle
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
   pdf.setTextColor(220, 220, 255);
-  pdf.text('SAVINGS GOAL REPORT', 48, 35);
+  pdf.text('SAVINGS GOAL REPORT', 20, 35);
 
   // Date in header
   pdf.setFontSize(8);
