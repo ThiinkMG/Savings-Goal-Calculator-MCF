@@ -115,96 +115,85 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Professional Graduation Cap + Chart Logo
+  // Graduation cap logo with dollar sign
   const centerX = logoX + logoWidth/2;
   const centerY = logoY + logoHeight/2;
   
-  // === CHART BASE SECTION (Bottom) ===
-  const chartBaseY = logoY + logoHeight - 8; // Position at bottom of logo area
-  const chartWidth = logoWidth - 4;
-  const chartStartX = logoX + 2;
-  
-  // Chart bars (ascending heights)
-  const barWidth = 4;
-  const barSpacing = 1;
-  const maxBarHeight = 8;
-  
-  // Bar 1 (shortest)
-  pdf.setFillColor(255, 255, 255); // Clean white for contrast
-  pdf.rect(chartStartX, chartBaseY - 3, barWidth, 3, 'F');
-  
-  // Bar 2 (medium)
-  pdf.rect(chartStartX + barWidth + barSpacing, chartBaseY - 5, barWidth, 5, 'F');
-  
-  // Bar 3 (tall)
-  pdf.rect(chartStartX + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth, 7, 'F');
-  
-  // Bar 4 (tallest)
-  pdf.rect(chartStartX + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth, maxBarHeight, 'F');
-  
-  // Subtle chart baseline for professional finish
-  pdf.setDrawColor(255, 255, 255);
-  pdf.setLineWidth(0.5);
-  pdf.line(chartStartX, chartBaseY, chartStartX + chartWidth, chartBaseY);
-  
-  // === GRADUATION CAP SECTION (Top) ===
-  const capBaseY = logoY + 6; // Position in upper portion
-  const capWidth = 16;
-  const capHeight = 6;
+  // Cap base - main rectangular board
+  const capWidth = 18;
+  const capHeight = 3;
   const capX = centerX - capWidth/2;
+  const capY = centerY - 2;
   
-  // Graduation cap base (mortarboard)
-  pdf.setFillColor(255, 255, 255);
-  pdf.rect(capX, capBaseY, capWidth, 2, 'F'); // Main cap board
+  // Shadow for depth
+  pdf.setFillColor(180, 180, 180);
+  pdf.rect(capX + 0.5, capY + 0.5, capWidth, capHeight, 'F');
   
-  // Cap "button" (center piece for authenticity)
-  pdf.setFillColor(255, 255, 255);
-  pdf.circle(centerX, capBaseY + 1, 1, 'F');
+  // Main cap board - dark academic blue
+  pdf.setFillColor(25, 25, 112); // Midnight blue
+  pdf.rect(capX, capY, capWidth, capHeight, 'F');
   
-  // Tassel (simple line with end extending to the right)
-  pdf.setDrawColor(255, 255, 255);
+  // Cap border/trim - gold accent
+  pdf.setDrawColor(255, 215, 0);
+  pdf.setLineWidth(0.8);
+  pdf.rect(capX, capY, capWidth, capHeight, 'S');
+  
+  // Mortarboard top - slightly smaller rectangle on top
+  const topWidth = 16;
+  const topHeight = 2;
+  const topX = centerX - topWidth/2;
+  const topY = capY - 2.5;
+  
+  // Top shadow
+  pdf.setFillColor(150, 150, 150);
+  pdf.rect(topX + 0.5, topY + 0.5, topWidth, topHeight, 'F');
+  
+  // Main top - same academic blue but slightly lighter
+  pdf.setFillColor(30, 30, 130);
+  pdf.rect(topX, topY, topWidth, topHeight, 'F');
+  
+  // Top border - gold trim
+  pdf.setDrawColor(255, 215, 0);
+  pdf.setLineWidth(0.6);
+  pdf.rect(topX, topY, topWidth, topHeight, 'S');
+  
+  // Tassel cord - thin line from center
+  pdf.setDrawColor(255, 215, 0); // Gold cord
   pdf.setLineWidth(1);
-  pdf.line(centerX + 6, capBaseY + 1, centerX + 9, capBaseY + 4); // Tassel cord
-  pdf.circle(centerX + 9, capBaseY + 4, 0.8, 'F'); // Tassel end
+  pdf.line(centerX + 6, topY, centerX + 8, topY + 8);
   
-  // === INTEGRATION ELEMENTS ===
-  // Connecting dots that bridge the chart and cap sections
-  pdf.setFillColor(255, 255, 255);
-  pdf.circle(centerX - 3, capBaseY + 6, 0.5, 'F');
-  pdf.circle(centerX + 2, capBaseY + 7, 0.4, 'F');
+  // Tassel end - small rectangle
+  pdf.setFillColor(255, 215, 0);
+  pdf.rect(centerX + 7, topY + 8, 2, 4, 'F');
   
-  // === OPTIONAL: DOLLAR SIGN ACCENT ===
-  // Small $ symbol accent integrated into the design
+  // Tassel fringe lines
+  pdf.setLineWidth(0.3);
+  for(let i = 0; i < 3; i++) {
+    pdf.line(centerX + 7.2 + (i * 0.6), topY + 12, centerX + 7.2 + (i * 0.6), topY + 14);
+  }
+  
+  // Dollar sign - subtle integration on the cap
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(8);
-  pdf.setTextColor(255, 255, 255);
-  pdf.text('$', centerX + 7, capBaseY - 1);
   
-  // === ALTERNATIVE VERSION: More Geometric (Commented) ===
-  /*
-  // For a more geometric/modern approach with rounded bar tops:
+  // Dollar sign shadow
+  pdf.setTextColor(15, 15, 80); // Darker blue shadow
+  const dollarSign = '$';
+  const dollarWidth = pdf.getTextWidth(dollarSign);
+  pdf.text(dollarSign, centerX - dollarWidth/2 + 0.3, centerY + 0.8);
   
-  // Modern chart bars with rounded tops
+  // Main dollar sign - gold color
+  pdf.setTextColor(255, 215, 0); // Gold
+  pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 0.5);
+  
+  // Subtle shine on cap edge - simple line highlight
+  pdf.setDrawColor(255, 255, 255);
+  pdf.setLineWidth(0.5);
+  pdf.line(capX + 1, capY + 0.5, capX + capWidth - 1, capY + 0.5);
+  
+  // Small highlight dot on mortarboard
   pdf.setFillColor(255, 255, 255);
-  pdf.rect(chartStartX, chartBaseY - 3, barWidth, 3, 'F');
-  pdf.circle(chartStartX + barWidth/2, chartBaseY - 3, barWidth/2, 'F');
-  
-  pdf.rect(chartStartX + barWidth + barSpacing, chartBaseY - 5, barWidth, 5, 'F');
-  pdf.circle(chartStartX + barWidth/2 + barWidth + barSpacing, chartBaseY - 5, barWidth/2, 'F');
-  
-  pdf.rect(chartStartX + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth, 7, 'F');
-  pdf.circle(chartStartX + barWidth/2 + (barWidth + barSpacing) * 2, chartBaseY - 7, barWidth/2, 'F');
-  
-  pdf.rect(chartStartX + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth, maxBarHeight, 'F');
-  pdf.circle(chartStartX + barWidth/2 + (barWidth + barSpacing) * 3, chartBaseY - maxBarHeight, barWidth/2, 'F');
-  
-  // Simplified geometric cap
-  pdf.setFillColor(255, 255, 255);
-  // Cap as simple trapezoid/rectangle
-  pdf.rect(capX, capBaseY, capWidth, 3, 'F');
-  // Simple tassel as small rectangle
-  pdf.rect(centerX + 6, capBaseY + 2, 2, 4, 'F');
-  */
+  pdf.circle(centerX - 4, topY + 1, 0.8, 'F');
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');
