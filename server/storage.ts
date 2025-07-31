@@ -1,5 +1,6 @@
-import { type User, type InsertUser, type SavingsGoal, type InsertSavingsGoal, type UpdateSavingsGoal } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { users, savingsGoals, type User, type InsertUser, type SavingsGoal, type InsertSavingsGoal, type UpdateSavingsGoal } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -14,82 +15,73 @@ export interface IStorage {
   deleteSavingsGoal(id: string): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private savingsGoals: Map<string, SavingsGoal>;
-
-  constructor() {
-    this.users = new Map();
-    this.savingsGoals = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async getSavingsGoal(id: string): Promise<SavingsGoal | undefined> {
-    return this.savingsGoals.get(id);
+    const [goal] = await db.select().from(savingsGoals).where(eq(savingsGoals.id, id));
+    return goal || undefined;
   }
 
   async getSavingsGoalsByUser(userId?: string): Promise<SavingsGoal[]> {
     if (!userId) {
-      return Array.from(this.savingsGoals.values()).filter(goal => goal.isActive);
+      return await db.select().from(savingsGoals).where(eq(savingsGoals.isActive, true));
     }
-    return Array.from(this.savingsGoals.values()).filter(
-      goal => goal.userId === userId && goal.isActive
+    return await db.select().from(savingsGoals).where(
+      eq(savingsGoals.userId, userId)
     );
   }
 
   async createSavingsGoal(insertGoal: InsertSavingsGoal): Promise<SavingsGoal> {
-    const id = randomUUID();
-    const now = new Date();
-    const goal: SavingsGoal = {
-      ...insertGoal,
-      id,
-      createdAt: now,
-      updatedAt: now,
-      isActive: true,
-      currentSavings: insertGoal.currentSavings || 0,
-    };
-    this.savingsGoals.set(id, goal);
+    const [goal] = await db
+      .insert(savingsGoals)
+      .values({
+        ...insertGoal,
+        currentSavings: insertGoal.currentSavings || 0,
+      })
+      .returning();
     return goal;
   }
 
   async updateSavingsGoal(id: string, updateGoal: UpdateSavingsGoal): Promise<SavingsGoal | undefined> {
-    const existingGoal = this.savingsGoals.get(id);
-    if (!existingGoal) return undefined;
-
-    const updatedGoal: SavingsGoal = {
-      ...existingGoal,
-      ...updateGoal,
-      updatedAt: new Date(),
-    };
-    this.savingsGoals.set(id, updatedGoal);
-    return updatedGoal;
+    const [goal] = await db
+      .update(savingsGoals)
+      .set({
+        ...updateGoal,
+        updatedAt: new Date(),
+      })
+      .where(eq(savingsGoals.id, id))
+      .returning();
+    return goal || undefined;
   }
 
   async deleteSavingsGoal(id: string): Promise<boolean> {
-    const goal = this.savingsGoals.get(id);
-    if (!goal) return false;
-    
-    // Soft delete
-    const updatedGoal = { ...goal, isActive: false, updatedAt: new Date() };
-    this.savingsGoals.set(id, updatedGoal);
-    return true;
+    const [goal] = await db
+      .update(savingsGoals)
+      .set({
+        isActive: false,
+        updatedAt: new Date(),
+      })
+      .where(eq(savingsGoals.id, id))
+      .returning();
+    return !!goal;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
