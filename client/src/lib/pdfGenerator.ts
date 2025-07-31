@@ -28,46 +28,22 @@ export async function generateSavingsPlanPDF(
     accent: [139, 92, 246] as [number, number, number] // Violet
   };
 
-  // Enhanced helper function for modern cards with shadows (TypeScript compatible)
-  const drawModernCard = (
+  // Clean modern cards with typography focus (no icons)
+  const drawCleanCard = (
     x: number, 
     y: number, 
     width: number, 
-    height: number, 
-    hasIcon: boolean = false
+    height: number
   ) => {
-    // Multi-layer shadow effect for depth
+    // Subtle shadow effect for depth
     pdf.setFillColor(0, 0, 0);
-    pdf.setGState(new pdf.GState({opacity: 0.03}));
-    pdf.rect(x + 2, y + 3, width, height, 'F');
-
-    pdf.setFillColor(0, 0, 0);
-    pdf.setGState(new pdf.GState({opacity: 0.02}));
     pdf.rect(x + 1, y + 2, width, height, 'F');
 
-    // Reset opacity for main card
-    pdf.setGState(new pdf.GState({opacity: 1}));
-
-    // Main card background
+    // Main card background - clean white
     pdf.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
     pdf.rect(x, y, width, height, 'F');
 
-    // Subtle border
-    pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
-    pdf.setLineWidth(0.3);
-    pdf.rect(x, y, width, height, 'S');
-
-    // Icon container with subtle background
-    if (hasIcon) {
-      pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      pdf.setGState(new pdf.GState({opacity: 0.1}));
-      pdf.rect(x + 6, y + 6, 12, 12, 'F');
-      pdf.setGState(new pdf.GState({opacity: 1}));
-
-      // Icon dot
-      pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      pdf.circle(x + 12, y + 12, 3, 'F');
-    }
+    // No border for cleaner look
   };
 
   // Enhanced progress bar with rounded appearance
@@ -148,9 +124,7 @@ export async function generateSavingsPlanPDF(
 
   // Gradient overlay simulation
   pdf.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  pdf.setGState(new pdf.GState({opacity: 0.3}));
   pdf.rect(0, 0, pageWidth, headerHeight/2, 'F');
-  pdf.setGState(new pdf.GState({opacity: 1}));
 
   // Header text with better typography
   pdf.setFontSize(20);
@@ -169,9 +143,9 @@ export async function generateSavingsPlanPDF(
   pdf.text(dateText, pageWidth - 20 - dateWidth, 22);
 
   const calculations = calculateSavings(
-    goal.targetAmount,
-    goal.currentSavings,
-    new Date(goal.targetDate),
+    goal.targetAmount || 0,
+    goal.currentSavings || 0,
+    new Date(goal.targetDate || Date.now()),
     goal.monthlyCapacity || 300
   );
 
@@ -187,13 +161,13 @@ export async function generateSavingsPlanPDF(
   const metricCards = [
     {
       title: 'TOTAL GOAL',
-      value: formatCurrency(goal.targetAmount),
+      value: formatCurrency(goal.targetAmount || 0),
       subtitle: `${calculations.progressPercent.toFixed(1)}% complete`,
       color: colors.primary
     },
     {
       title: 'CURRENT SAVINGS', 
-      value: formatCurrency(goal.currentSavings),
+      value: formatCurrency(goal.currentSavings || 0),
       subtitle: 'Amount saved',
       color: colors.success
     },
@@ -205,26 +179,26 @@ export async function generateSavingsPlanPDF(
     }
   ];
 
-  // Draw metric cards
+  // Draw metric cards with clean typography-focused design
   metricCards.forEach((card, index) => {
     const cardX = cardsStartX + (index * (cardWidth + cardSpacing));
 
-    drawModernCard(cardX, startY, cardWidth, cardHeight, true);
+    drawCleanCard(cardX, startY, cardWidth, cardHeight);
 
-    // Title
-    pdf.setFontSize(7);
-    pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    pdf.text(card.title, cardX + 6, startY + 25);
-
-    // Value
-    pdf.setFontSize(13);
+    // Bold title as the main focal point (larger, more prominent)
+    pdf.setFontSize(16);
     pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-    pdf.text(card.value, cardX + 6, startY + 34);
+    pdf.text(card.value, cardX + 8, startY + 20);
 
-    // Subtitle
-    pdf.setFontSize(6);
+    // Subtitle/label below the main value
+    pdf.setFontSize(8);
+    pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+    pdf.text(card.title, cardX + 8, startY + 30);
+
+    // Status/progress indicator (smallest text)
+    pdf.setFontSize(7);
     pdf.setTextColor(card.color[0], card.color[1], card.color[2]);
-    pdf.text(card.subtitle, cardX + 6, startY + 41);
+    pdf.text(card.subtitle, cardX + 8, startY + 38);
   });
 
   // Large progress section with side-by-side layout
@@ -232,8 +206,8 @@ export async function generateSavingsPlanPDF(
   const progressCardWidth = Math.floor(totalCardsWidth * 0.62);
   const detailsCardWidth = totalCardsWidth - progressCardWidth - cardSpacing;
 
-  // Main progress card
-  drawModernCard(cardsStartX, progressSectionY, progressCardWidth, 85);
+  // Main progress card - clean design
+  drawCleanCard(cardsStartX, progressSectionY, progressCardWidth, 85);
 
   pdf.setFontSize(12);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -250,7 +224,7 @@ export async function generateSavingsPlanPDF(
 
   pdf.setFontSize(14);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  const remaining = goal.targetAmount - goal.currentSavings;
+  const remaining = (goal.targetAmount || 0) - (goal.currentSavings || 0);
   pdf.text(formatCurrency(remaining), detailsX, progressSectionY + 40);
 
   pdf.setFontSize(9);
@@ -263,11 +237,11 @@ export async function generateSavingsPlanPDF(
 
   pdf.setFontSize(7);
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text(`Target: ${formatDate(new Date(goal.targetDate))}`, detailsX, progressSectionY + 75);
+  pdf.text(`Target: ${formatDate(new Date(goal.targetDate || Date.now()))}`, detailsX, progressSectionY + 75);
 
   // Timeline/Details card
   const timelineX = cardsStartX + progressCardWidth + cardSpacing;
-  drawModernCard(timelineX, progressSectionY, detailsCardWidth, 85);
+  drawCleanCard(timelineX, progressSectionY, detailsCardWidth, 85);
 
   pdf.setFontSize(11);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -280,7 +254,7 @@ export async function generateSavingsPlanPDF(
   drawModernProgressBar(timelineX + 8, progressSectionY + 32, detailsCardWidth - 16, 3, calculations.progressPercent, colors.success);
 
   // Monthly progress simulation
-  const monthlyProgress = Math.min(100, (goal.currentSavings % calculations.monthlyRequired) / calculations.monthlyRequired * 100);
+  const monthlyProgress = Math.min(100, ((goal.currentSavings || 0) % calculations.monthlyRequired) / calculations.monthlyRequired * 100);
   pdf.text('This Month', timelineX + 8, progressSectionY + 43);
   drawModernProgressBar(timelineX + 8, progressSectionY + 47, detailsCardWidth - 16, 3, monthlyProgress, colors.primary);
 
@@ -298,7 +272,7 @@ export async function generateSavingsPlanPDF(
 
   // What-if scenarios section with enhanced styling
   const scenariosY = progressSectionY + 95;
-  drawModernCard(cardsStartX, scenariosY, totalCardsWidth, 40);
+  drawCleanCard(cardsStartX, scenariosY, totalCardsWidth, 40);
 
   pdf.setFontSize(11);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -308,10 +282,8 @@ export async function generateSavingsPlanPDF(
   const scenarioWidth = (totalCardsWidth - 32) / 2;
 
   // Scenario 1 - Enhanced styling
-  pdf.setFillColor(colors.success[0], colors.success[1], colors.success[2]);
-  pdf.setGState(new pdf.GState({opacity: 0.1}));
+  pdf.setFillColor(220, 252, 231); // Light green background
   pdf.rect(cardsStartX + 12, scenariosY + 22, scenarioWidth, 14, 'F');
-  pdf.setGState(new pdf.GState({opacity: 1}));
 
   pdf.setFontSize(7);
   pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
@@ -320,10 +292,8 @@ export async function generateSavingsPlanPDF(
   pdf.text(`${calculations.scenarios.save50More.monthsSaved} months earlier`, cardsStartX + 16, scenariosY + 33);
 
   // Scenario 2 - Enhanced styling
-  pdf.setFillColor(colors.accent[0], colors.accent[1], colors.accent[2]);
-  pdf.setGState(new pdf.GState({opacity: 0.1}));
+  pdf.setFillColor(237, 233, 254); // Light purple background
   pdf.rect(cardsStartX + 12 + scenarioWidth + 8, scenariosY + 22, scenarioWidth, 14, 'F');
-  pdf.setGState(new pdf.GState({opacity: 1}));
 
   pdf.setFontSize(7);
   pdf.setTextColor(colors.accent[0], colors.accent[1], colors.accent[2]);
@@ -333,10 +303,8 @@ export async function generateSavingsPlanPDF(
 
   // Enhanced footer
   const footerY = pageHeight - 22;
-  pdf.setFillColor(colors.border[0], colors.border[1], colors.border[2]);
-  pdf.setGState(new pdf.GState({opacity: 0.5}));
+  pdf.setFillColor(248, 250, 252); // Light gray background
   pdf.rect(0, footerY, pageWidth, 22, 'F');
-  pdf.setGState(new pdf.GState({opacity: 1}));
 
   pdf.setFontSize(7);
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
