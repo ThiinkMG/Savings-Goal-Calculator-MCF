@@ -9,7 +9,7 @@ export interface IStorage {
   
   // Savings Goals
   getSavingsGoal(id: string): Promise<SavingsGoal | undefined>;
-  getSavingsGoalsByUser(userId?: string): Promise<SavingsGoal[]>;
+  getSavingsGoalsByUser(userId: string): Promise<SavingsGoal[]>;
   createSavingsGoal(goal: InsertSavingsGoal): Promise<SavingsGoal>;
   updateSavingsGoal(id: string, goal: UpdateSavingsGoal): Promise<SavingsGoal | undefined>;
   deleteSavingsGoal(id: string): Promise<boolean>;
@@ -39,10 +39,7 @@ export class DatabaseStorage implements IStorage {
     return goal || undefined;
   }
 
-  async getSavingsGoalsByUser(userId?: string): Promise<SavingsGoal[]> {
-    if (!userId) {
-      return await db.select().from(savingsGoals).where(eq(savingsGoals.isActive, true));
-    }
+  async getSavingsGoalsByUser(userId: string): Promise<SavingsGoal[]> {
     return await db.select().from(savingsGoals).where(
       eq(savingsGoals.userId, userId)
     );

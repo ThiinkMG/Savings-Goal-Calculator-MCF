@@ -4,13 +4,18 @@ import { Button } from '@/components/ui/button';
 import { BrandHeader } from '@/components/BrandHeader';
 import { SavingsCalculator } from '@/components/SavingsCalculator';
 import { MultipleGoalsManager } from '@/components/MultipleGoalsManager';
+import { AuthModal } from '@/components/AuthModal';
 import { type SavingsGoal } from '@shared/schema';
-import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield } from 'lucide-react';
 import logoPath from '@assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png';
 
 export default function HomePage() {
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [showNewGoalForm, setShowNewGoalForm] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
 
   // Fetch existing goals
   const { data: goals = [], isLoading } = useQuery<SavingsGoal[]>({
@@ -64,6 +69,53 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <BrandHeader />
       
+      {/* Authentication Banner for Guest Users */}
+      {isGuest && (
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm font-medium">
+                You're using My College Finance as a guest. Your data won't be saved between sessions.
+              </span>
+            </div>
+            <Button
+              onClick={() => setShowAuthModal(true)}
+              size="sm"
+              variant="secondary"
+              className="bg-white/20 hover:bg-white/30 border-white/30"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Save Progress
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* User Authentication Status */}
+      {isAuthenticated && (
+        <div className="bg-green-50 dark:bg-green-950/20 border-b border-green-200 dark:border-green-800 py-3 px-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <User className="w-5 h-5 text-green-600" />
+              <span className="text-sm text-green-800 dark:text-green-200">
+                Welcome back, <strong>{user?.username}</strong>! Your progress is being saved.
+              </span>
+            </div>
+            <Button
+              onClick={logout}
+              size="sm"
+              variant="outline"
+              disabled={isLoggingOut}
+              className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-950"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              {isLoggingOut ? 'Logging out...' : 'Log Out'}
+            </Button>
+          </div>
+        </div>
+      )}
+
       <main className="max-w-6xl mx-auto px-4 py-8">
         {!showCalculator && (
           <>
@@ -187,6 +239,15 @@ export default function HomePage() {
           </div>
         )}
       </main>
+      
+      {/* Authentication Modal */}
+      <AuthModal 
+        open={showAuthModal} 
+        onOpenChange={setShowAuthModal}
+        onSuccess={() => {
+          setShowAuthModal(false);
+        }}
+      />
 
       {/* Footer */}
       <footer className="bg-gradient-to-b from-gray-900 to-black dark:from-black dark:to-gray-900 text-white py-12 mt-16">

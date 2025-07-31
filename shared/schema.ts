@@ -11,7 +11,7 @@ export const users = pgTable("users", {
 
 export const savingsGoals = pgTable("savings_goals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id"),
+  userId: varchar("user_id").notNull().references(() => users.id),
   name: text("name").notNull(),
   goalType: text("goal_type").notNull(),
   targetAmount: real("target_amount").notNull(),
@@ -48,7 +48,7 @@ export const insertSavingsGoalSchema = createInsertSchema(savingsGoals).omit({
   targetAmount: z.number().positive(),
   currentSavings: z.number().min(0).default(0),
   monthlyCapacity: z.number().positive().nullable().optional(),
-  userId: z.string().nullable().optional(),
+  userId: z.string(),
   targetDate: z.string().or(z.date()).transform((val) => new Date(val)),
 });
 
