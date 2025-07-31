@@ -104,6 +104,14 @@ export function WhatIfScenarios({
   // Reality vs Capacity check
   const capacityGap = monthlyRequired - monthlyCapacity;
   const isOverCapacity = capacityGap > 0;
+  
+  // Helper function to calculate days and percentage closer to goal
+  const calculateImpact = (savingsAmount: number) => {
+    const monthsSaved = savingsAmount / monthlyRequired;
+    const daysSaved = Math.round(monthsSaved * 30.44);
+    const percentCloser = Math.round((savingsAmount / remaining) * 100);
+    return { daysSaved, percentCloser };
+  };
 
   const feasibility = getFeasibilityScore();
   const successRate = getSuccessRate();
@@ -228,7 +236,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save up to ${Math.round(coffeePerWeek * 5.50 * 4.33)}
+                ${Math.round(coffeePerWeek * 5.50 * 4.33)} = {calculateImpact(coffeePerWeek * 5.50 * 4.33).daysSaved} days or {calculateImpact(coffeePerWeek * 5.50 * 4.33).percentCloser}% closer
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -239,7 +247,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save up to ${Math.round(lunchPerWeek * 15 * 4.33)}
+                ${Math.round(lunchPerWeek * 15 * 4.33)} = {calculateImpact(lunchPerWeek * 15 * 4.33).daysSaved} days or {calculateImpact(lunchPerWeek * 15 * 4.33).percentCloser}% closer
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -250,7 +258,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save up to ${Math.round(streamingServices * 15)}
+                ${Math.round(streamingServices * 15)} = {calculateImpact(streamingServices * 15).daysSaved} days or {calculateImpact(streamingServices * 15).percentCloser}% closer
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -261,7 +269,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save up to ${Math.round(nightsOutPerMonth * 50)}
+                ${Math.round(nightsOutPerMonth * 50)} = {calculateImpact(nightsOutPerMonth * 50).daysSaved} days or {calculateImpact(nightsOutPerMonth * 50).percentCloser}% closer
               </span>
             </div>
           </div>
