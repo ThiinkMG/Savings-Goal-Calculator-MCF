@@ -2,11 +2,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, List, Target, TrendingUp, Download, Share2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Plus, List, Target, TrendingUp, Download, Share2, Trash2 } from 'lucide-react';
 import { type SavingsGoal } from '@shared/schema';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
 interface MultipleGoalsManagerProps {
   goals: SavingsGoal[];
@@ -34,6 +37,30 @@ const shareGoal = async (goal: SavingsGoal) => {
 export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleGoalsManagerProps) {
   const { theme } = useTheme();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Delete mutation
+  const deleteGoalMutation = useMutation({
+    mutationFn: async (goalId: string) => {
+      return apiRequest(`/api/savings-goals/${goalId}`, {
+        method: 'DELETE',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
+      toast({
+        title: "Success!",
+        description: "Goal deleted successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete goal",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleDownloadPDF = async (goal: SavingsGoal, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent card click
@@ -63,6 +90,11 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
       title: "Shared!",
       description: "Goal details copied to clipboard",
     });
+  };
+
+  const handleDeleteGoal = (goalId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent card click
+    deleteGoalMutation.mutate(goalId);
   };
   const getProgressPercent = (goal: SavingsGoal) => {
     if (goal.targetAmount <= 0) return 0;
@@ -204,6 +236,36 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                       <Share2 className="w-3 h-3 mr-1" />
                       Share
                     </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 text-xs hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Trash2 className="w-3 h-3 mr-1" />
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Savings Goal</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{goal.name}"? This action cannot be undone and all progress data will be permanently lost.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>No</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={(e) => handleDeleteGoal(goal.id, e)}
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                          >
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               );
