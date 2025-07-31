@@ -185,6 +185,12 @@ export function WhatIfScenarios({
           onToggle={() => toggleSection("daily-breakdown")}
         >
           <div className="space-y-4">
+            <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>How to interpret:</strong> These amounts show what you need to save every day, week, and hour to reach your goal. 
+                Compare these to typical expenses to understand the real commitment required.
+              </p>
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 bg-background rounded-lg border">
                 <div className="text-sm text-muted-foreground">Per Day</div>
