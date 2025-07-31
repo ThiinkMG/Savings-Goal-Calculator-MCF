@@ -126,14 +126,59 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight/2, 'F');
 
-  // Header text with better typography
-  pdf.setFontSize(20);
-  pdf.setTextColor(255, 255, 255);
-  pdf.text('My College Finance', 20, 22);
+  // Add logo and header text
+  try {
+    // Fetch and add logo image
+    const logoUrl = 'https://static.wixstatic.com/media/c24a60_577eb503a3c1402b846b9ec4a2afd46e~mv2.png';
+    
+    // Create a canvas to convert the image to base64
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const logoImg = new Image();
+    logoImg.crossOrigin = 'anonymous';
+    
+    await new Promise((resolve, reject) => {
+      logoImg.onload = () => {
+        const logoWidth = 30;
+        const logoHeight = 30;
+        
+        // Set canvas size
+        canvas.width = logoWidth * 2; // Higher resolution
+        canvas.height = logoHeight * 2;
+        
+        // Draw image to canvas
+        ctx?.drawImage(logoImg, 0, 0, canvas.width, canvas.height);
+        
+        // Convert to base64 and add to PDF
+        const logoDataUrl = canvas.toDataURL('image/png');
+        pdf.addImage(logoDataUrl, 'PNG', 20, 10, logoWidth, logoHeight);
+        resolve(logoDataUrl);
+      };
+      
+      logoImg.onerror = () => reject(new Error('Failed to load logo'));
+      logoImg.src = logoUrl;
+    });
+    
+    // Header text positioned next to logo
+    pdf.setFontSize(20);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text('My College Finance', 58, 22);
 
-  pdf.setFontSize(10);
-  pdf.setTextColor(220, 220, 255);
-  pdf.text('SAVINGS GOAL DASHBOARD', 20, 32);
+    pdf.setFontSize(10);
+    pdf.setTextColor(220, 220, 255);
+    pdf.text('SAVINGS GOAL DASHBOARD', 58, 32);
+    
+  } catch (error) {
+    console.warn('Logo loading failed, using text-only header:', error);
+    // Fallback if logo fails to load
+    pdf.setFontSize(20);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text('My College Finance', 20, 22);
+
+    pdf.setFontSize(10);
+    pdf.setTextColor(220, 220, 255);
+    pdf.text('SAVINGS GOAL DASHBOARD', 20, 32);
+  }
 
   // Date in header (right aligned)
   pdf.setFontSize(8);
