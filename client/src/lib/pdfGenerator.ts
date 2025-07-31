@@ -150,10 +150,10 @@ export async function generateSavingsPlanPDF(
   );
 
   // Enhanced metrics cards with professional layout
-  const startY = headerHeight + 18;
-  const cardHeight = 45;
-  const cardWidth = 54;
-  const cardSpacing = 7;
+  const startY = headerHeight + 24;
+  const cardHeight = 55;
+  const cardWidth = 58;
+  const cardSpacing = 8;
   const totalCardsWidth = (cardWidth * 3) + (cardSpacing * 2);
   const cardsStartX = (pageWidth - totalCardsWidth) / 2;
 
@@ -179,127 +179,189 @@ export async function generateSavingsPlanPDF(
     }
   ];
 
-  // Draw metric cards with clean typography-focused design
+  // Draw metric cards with enhanced modern design
   metricCards.forEach((card, index) => {
     const cardX = cardsStartX + (index * (cardWidth + cardSpacing));
 
     drawCleanCard(cardX, startY, cardWidth, cardHeight);
 
-    // Bold title as the main focal point (larger, more prominent)
-    pdf.setFontSize(16);
+    // Add subtle colored top border for visual interest
+    pdf.setDrawColor(card.color[0], card.color[1], card.color[2]);
+    pdf.setLineWidth(2);
+    pdf.line(cardX, startY, cardX + cardWidth, startY);
+
+    // Category label at top (smaller, uppercase)
+    pdf.setFontSize(7);
+    pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+    pdf.text(card.title, cardX + 8, startY + 14);
+
+    // Main value (large, bold, centered)
+    pdf.setFontSize(18);
     pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-    pdf.text(card.value, cardX + 8, startY + 20);
+    const valueWidth = pdf.getTextWidth(card.value);
+    pdf.text(card.value, cardX + (cardWidth - valueWidth) / 2, startY + 28);
 
-    // Subtitle/label below the main value
-    pdf.setFontSize(8);
-    pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-    pdf.text(card.title, cardX + 8, startY + 30);
-
-    // Status/progress indicator (smallest text)
+    // Progress/status indicator (smaller, colored)
     pdf.setFontSize(7);
     pdf.setTextColor(card.color[0], card.color[1], card.color[2]);
-    pdf.text(card.subtitle, cardX + 8, startY + 38);
+    const subtitleWidth = pdf.getTextWidth(card.subtitle);
+    pdf.text(card.subtitle, cardX + (cardWidth - subtitleWidth) / 2, startY + 42);
   });
 
   // Large progress section with side-by-side layout
-  const progressSectionY = startY + cardHeight + 18;
-  const progressCardWidth = Math.floor(totalCardsWidth * 0.62);
+  const progressSectionY = startY + cardHeight + 24;
+  const progressCardWidth = Math.floor(totalCardsWidth * 0.58);
   const detailsCardWidth = totalCardsWidth - progressCardWidth - cardSpacing;
 
-  // Main progress card - clean design
-  drawCleanCard(cardsStartX, progressSectionY, progressCardWidth, 85);
+  // Main progress card - enhanced design
+  const progressCardHeight = 92;
+  drawCleanCard(cardsStartX, progressSectionY, progressCardWidth, progressCardHeight);
 
-  pdf.setFontSize(12);
+  // Add colored header
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.rect(cardsStartX, progressSectionY, progressCardWidth, 6, 'F');
+
+  pdf.setFontSize(13);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Progress Overview', cardsStartX + 12, progressSectionY + 16);
+  pdf.text('Progress Overview', cardsStartX + 12, progressSectionY + 20);
 
-  // Large donut chart
-  drawDonutChart(cardsStartX + 18, progressSectionY + 25, 22, calculations.progressPercent);
+  // Large donut chart with better positioning
+  drawDonutChart(cardsStartX + 20, progressSectionY + 28, 26, calculations.progressPercent);
 
-  // Progress details next to chart
-  const detailsX = cardsStartX + 65;
-  pdf.setFontSize(9);
+  // Progress details next to chart with better spacing
+  const detailsX = cardsStartX + 72;
+  
+  // Mini stat boxes within the progress card
+  pdf.setFillColor(250, 251, 252); // Very light background
+  pdf.rect(detailsX, progressSectionY + 32, progressCardWidth - 82, 18, 'F');
+  
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Remaining Amount', detailsX, progressSectionY + 30);
+  pdf.text('REMAINING AMOUNT', detailsX + 4, progressSectionY + 38);
 
   pdf.setFontSize(14);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   const remaining = (goal.targetAmount || 0) - (goal.currentSavings || 0);
-  pdf.text(formatCurrency(remaining), detailsX, progressSectionY + 40);
+  pdf.text(formatCurrency(remaining), detailsX + 4, progressSectionY + 46);
 
-  pdf.setFontSize(9);
+  // Second mini stat box
+  pdf.setFillColor(250, 251, 252);
+  pdf.rect(detailsX, progressSectionY + 54, progressCardWidth - 82, 18, 'F');
+  
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Time Remaining', detailsX, progressSectionY + 55);
+  pdf.text('TIME REMAINING', detailsX + 4, progressSectionY + 60);
 
   pdf.setFontSize(12);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(`${calculations.monthsRemaining} months`, detailsX, progressSectionY + 65);
+  pdf.text(`${calculations.monthsRemaining} months`, detailsX + 4, progressSectionY + 68);
 
   pdf.setFontSize(7);
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text(`Target: ${formatDate(new Date(goal.targetDate || Date.now()))}`, detailsX, progressSectionY + 75);
+  pdf.text(`Target: ${formatDate(new Date(goal.targetDate || Date.now()))}`, detailsX + 4, progressSectionY + 80);
 
-  // Timeline/Details card
+  // Timeline/Details card with enhanced styling
   const timelineX = cardsStartX + progressCardWidth + cardSpacing;
-  drawCleanCard(timelineX, progressSectionY, detailsCardWidth, 85);
+  drawCleanCard(timelineX, progressSectionY, detailsCardWidth, progressCardHeight);
 
-  pdf.setFontSize(11);
+  // Add colored header
+  pdf.setFillColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.rect(timelineX, progressSectionY, detailsCardWidth, 6, 'F');
+
+  pdf.setFontSize(13);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Timeline', timelineX + 8, progressSectionY + 16);
+  pdf.text('Timeline', timelineX + 8, progressSectionY + 20);
 
-  // Progress bars for different metrics
-  pdf.setFontSize(7);
+  // Enhanced progress bars with better visual hierarchy
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Overall Progress', timelineX + 8, progressSectionY + 28);
-  drawModernProgressBar(timelineX + 8, progressSectionY + 32, detailsCardWidth - 16, 3, calculations.progressPercent, colors.success);
+  pdf.text('Overall Progress', timelineX + 8, progressSectionY + 32);
+  
+  // Progress percentage on the right
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.text(`${Math.round(calculations.progressPercent)}%`, timelineX + detailsCardWidth - 20, progressSectionY + 32);
+  
+  drawModernProgressBar(timelineX + 8, progressSectionY + 36, detailsCardWidth - 16, 4, calculations.progressPercent, colors.success);
 
-  // Monthly progress simulation
+  // Monthly progress with better styling
   const monthlyProgress = Math.min(100, ((goal.currentSavings || 0) % calculations.monthlyRequired) / calculations.monthlyRequired * 100);
-  pdf.text('This Month', timelineX + 8, progressSectionY + 43);
-  drawModernProgressBar(timelineX + 8, progressSectionY + 47, detailsCardWidth - 16, 3, monthlyProgress, colors.primary);
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
+  pdf.text('This Month', timelineX + 8, progressSectionY + 50);
+  
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.text(`${Math.round(monthlyProgress)}%`, timelineX + detailsCardWidth - 20, progressSectionY + 50);
+  
+  drawModernProgressBar(timelineX + 8, progressSectionY + 54, detailsCardWidth - 16, 4, monthlyProgress, colors.primary);
 
-  // Goal details
+  // Goal details with better layout
+  pdf.setFillColor(248, 250, 252); // Light background for info section
+  pdf.rect(timelineX + 8, progressSectionY + 64, detailsCardWidth - 16, 22, 'F');
+  
   pdf.setFontSize(7);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Goal Category:', timelineX + 8, progressSectionY + 60);
+  pdf.text('Goal Category:', timelineX + 12, progressSectionY + 72);
+  pdf.setFontSize(9);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(goal.goalType.charAt(0).toUpperCase() + goal.goalType.slice(1), timelineX + 8, progressSectionY + 68);
+  pdf.text(goal.goalType.charAt(0).toUpperCase() + goal.goalType.slice(1), timelineX + 12, progressSectionY + 78);
 
+  pdf.setFontSize(7);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
-  pdf.text('Created by:', timelineX + 8, progressSectionY + 78);
+  pdf.text('Created by:', timelineX + 12, progressSectionY + 82);
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(userInfo.name, timelineX + 35, progressSectionY + 78);
+  pdf.text(userInfo.name, timelineX + 35, progressSectionY + 82);
 
   // What-if scenarios section with enhanced styling
-  const scenariosY = progressSectionY + 95;
-  drawCleanCard(cardsStartX, scenariosY, totalCardsWidth, 40);
+  const scenariosY = progressSectionY + progressCardHeight + 16;
+  const scenarioCardHeight = 50;
+  drawCleanCard(cardsStartX, scenariosY, totalCardsWidth, scenarioCardHeight);
 
-  pdf.setFontSize(11);
+  // Add colored header
+  pdf.setFillColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.rect(cardsStartX, scenariosY, totalCardsWidth, 6, 'F');
+
+  pdf.setFontSize(13);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Optimization Scenarios', cardsStartX + 12, scenariosY + 16);
+  pdf.text('Optimization Scenarios', cardsStartX + 12, scenariosY + 20);
 
-  // Scenario boxes with colored backgrounds
-  const scenarioWidth = (totalCardsWidth - 32) / 2;
+  // Enhanced scenario boxes with modern card design
+  const scenarioWidth = (totalCardsWidth - 36) / 2;
+  const scenarioHeight = 22;
 
-  // Scenario 1 - Enhanced styling
+  // Scenario 1 - Modern card design
   pdf.setFillColor(220, 252, 231); // Light green background
-  pdf.rect(cardsStartX + 12, scenariosY + 22, scenarioWidth, 14, 'F');
+  pdf.rect(cardsStartX + 12, scenariosY + 26, scenarioWidth, scenarioHeight, 'F');
+  
+  // Add green left border
+  pdf.setDrawColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.setLineWidth(2);
+  pdf.line(cardsStartX + 12, scenariosY + 26, cardsStartX + 12, scenariosY + 26 + scenarioHeight);
 
-  pdf.setFontSize(7);
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
-  pdf.text('💡 Save $50 more/month', cardsStartX + 16, scenariosY + 28);
-  pdf.setFontSize(6);
-  pdf.text(`${calculations.scenarios.save50More.monthsSaved} months earlier`, cardsStartX + 16, scenariosY + 33);
+  pdf.text('Save $50 more/month', cardsStartX + 18, scenariosY + 32);
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(`${calculations.scenarios.save50More.monthsSaved} months earlier`, cardsStartX + 18, scenariosY + 42);
 
-  // Scenario 2 - Enhanced styling
+  // Scenario 2 - Modern card design
   pdf.setFillColor(237, 233, 254); // Light purple background
-  pdf.rect(cardsStartX + 12 + scenarioWidth + 8, scenariosY + 22, scenarioWidth, 14, 'F');
+  pdf.rect(cardsStartX + 18 + scenarioWidth, scenariosY + 26, scenarioWidth, scenarioHeight, 'F');
+  
+  // Add purple left border
+  pdf.setDrawColor(colors.accent[0], colors.accent[1], colors.accent[2]);
+  pdf.setLineWidth(2);
+  pdf.line(cardsStartX + 18 + scenarioWidth, scenariosY + 26, cardsStartX + 18 + scenarioWidth, scenariosY + 26 + scenarioHeight);
 
-  pdf.setFontSize(7);
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.accent[0], colors.accent[1], colors.accent[2]);
-  pdf.text('🚀 Save $100 more/month', cardsStartX + 16 + scenarioWidth + 8, scenariosY + 28);
-  pdf.setFontSize(6);
-  pdf.text(`${calculations.scenarios.save100More.monthsSaved} months earlier`, cardsStartX + 16 + scenarioWidth + 8, scenariosY + 33);
+  pdf.text('Save $100 more/month', cardsStartX + 24 + scenarioWidth, scenariosY + 32);
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(`${calculations.scenarios.save100More.monthsSaved} months earlier`, cardsStartX + 24 + scenarioWidth, scenariosY + 42);
 
   // Enhanced footer
   const footerY = pageHeight - 22;
