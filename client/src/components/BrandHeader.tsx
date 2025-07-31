@@ -10,7 +10,7 @@ export function BrandHeader() {
     <header className="sticky top-0 z-50 backdrop-blur-sm bg-background/80 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-3">
+          <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
             <Logo size={48} className="animate-gentle-bounce" />
             <div>
               <h1 className="text-xl font-black brand-blue font-sans">
@@ -20,7 +20,7 @@ export function BrandHeader() {
                 EDUCATE • MOTIVATE • ELEVATE
               </p>
             </div>
-          </div>
+          </a>
 
           <Button
             variant="outline"

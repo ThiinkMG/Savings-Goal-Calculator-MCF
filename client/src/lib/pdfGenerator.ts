@@ -418,11 +418,18 @@ export async function generateSavingsPlanPDF(
   pdf.setLineWidth(1);
   pdf.line(20, footerY + 5, pageWidth - 20, footerY + 5);
 
-  // Footer content
+  // Footer content with clickable link
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9);
   pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.text('My College Finance', 20, footerY + 15);
+  const brandText = 'MY COLLEGE FINANCE';
+  const brandWidth = pdf.getTextWidth(brandText);
+  pdf.textWithLink(brandText, 20, footerY + 15, { url: 'https://www.mycollegefinance.com/' });
+  
+  // Add underline to indicate it's a link
+  pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.setLineWidth(0.3);
+  pdf.line(20, footerY + 16, 20 + brandWidth, footerY + 16);
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(7);  

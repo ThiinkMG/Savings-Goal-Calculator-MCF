@@ -135,23 +135,25 @@ export default function HomePage() {
       <footer className="bg-gray-900 dark:bg-black text-white py-8 mt-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="flex justify-center items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-brand-light-blue rounded-full flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-black brand-light-blue">MY COLLEGE FINANCE</span>
+            <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 bg-brand-light-blue rounded-full flex items-center justify-center">
+                <GraduationCap className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-black brand-light-blue">MY COLLEGE FINANCE</span>
+            </a>
           </div>
           <p className="text-gray-300 mb-4">
             Empowering students with financial education and smart tools for a brighter future.
           </p>
           <div className="flex justify-center space-x-6 text-sm text-gray-400">
-            <a href="#" className="hover:text-brand-light-blue transition-colors">
+            <a href="https://www.mycollegefinance.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-brand-light-blue transition-colors">
+            <a href="https://www.mycollegefinance.com/terms-policy" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
               Terms of Service
             </a>
-            <a href="#" className="hover:text-brand-light-blue transition-colors">
-              Contact Us
+            <a href="https://linktr.ee/mycollegefinance" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
+              Follow Us
             </a>
           </div>
         </div>
