@@ -346,7 +346,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
                   />
                   <div className="flex justify-between text-sm text-muted-foreground mt-2">
                     <span>$50</span>
-                    <span className="font-medium brand-blue text-lg">
+                    <span className="font-medium brand-blue text-lg text-[#3bd927]">
                       ${monthlyCapacity[0]}
                     </span>
                     <span>$2000+</span>
@@ -389,7 +389,6 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
           </Card>
         )}
       </div>
-
       {/* Sidebar - Results & Tips */}
       <div className="space-y-6">
         {/* Progress Visualization */}
