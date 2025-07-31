@@ -5,6 +5,7 @@ import { insertSavingsGoalSchema, updateSavingsGoalSchema } from "@shared/schema
 import { z } from "zod";
 import { requireAuth, register, login, logout, getCurrentUser, type AuthenticatedRequest } from "./auth";
 import { reportScheduler } from './scheduler';
+import { googleSheetsService } from './googleSheetsService';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -178,6 +179,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Test monthly report error:', error);
       res.status(500).json({ message: "Failed to send monthly report" });
+    }
+  });
+
+  // Admin route to create a new Google Sheets spreadsheet
+  app.post("/api/admin/create-google-sheet", async (req, res) => {
+    try {
+      const { title } = req.body;
+      const spreadsheetId = await googleSheetsService.createSpreadsheet(title || 'My College Finance - Live Data');
+      
+      if (spreadsheetId) {
+        const spreadsheetUrl = googleSheetsService.getSpreadsheetUrl(spreadsheetId);
+        res.json({ 
+          success: true,
+          spreadsheetId,
+          spreadsheetUrl,
+          message: "Google Sheets spreadsheet created successfully" 
+        });
+      } else {
+        res.status(500).json({ message: "Failed to create Google Sheets spreadsheet" });
+      }
+    } catch (error) {
+      console.error('Create Google Sheet error:', error);
+      res.status(500).json({ message: "Failed to create Google Sheets spreadsheet" });
+    }
+  });
+
+  // Admin route to sync all data to Google Sheets
+  app.post("/api/admin/sync-google-sheets", async (req, res) => {
+    try {
+      const { spreadsheetId } = req.body;
+      const success = await googleSheetsService.syncAllData(spreadsheetId);
+      
+      if (success) {
+        res.json({ 
+          success: true,
+          message: "Data synced to Google Sheets successfully" 
+        });
+      } else {
+        res.status(500).json({ message: "Failed to sync data to Google Sheets" });
+      }
+    } catch (error) {
+      console.error('Sync Google Sheets error:', error);
+      res.status(500).json({ message: "Failed to sync data to Google Sheets" });
     }
   });
 

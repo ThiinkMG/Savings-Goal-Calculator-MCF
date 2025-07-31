@@ -36,6 +36,13 @@ This is a full-stack web application designed to help college students and young
 - Scheduled monthly reports on the 1st of each month at 9 AM
 - Manual testing endpoint for admin reports (/api/admin/test-monthly-report)
 
+### Google Sheets Live Integration
+- Real-time database synchronization with Google Sheets
+- Automatic updates when users register or modify savings goals
+- Separate sheets for user data and savings goals with comprehensive analytics
+- Admin endpoints for creating and managing spreadsheets
+- Live progress tracking and financial metrics in spreadsheet format
+
 ## Previous Changes (v3.0.0 Beta - January 31, 2025)
 
 ### Button Text Color Updates

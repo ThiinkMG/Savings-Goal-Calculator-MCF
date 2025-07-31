@@ -1,6 +1,7 @@
 import { users, savingsGoals, type User, type InsertUser, type SavingsGoal, type InsertSavingsGoal, type UpdateSavingsGoal } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import { googleSheetsService } from "./googleSheetsService";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -31,6 +32,14 @@ export class DatabaseStorage implements IStorage {
       .insert(users)
       .values(insertUser)
       .returning();
+    
+    // Sync to Google Sheets
+    try {
+      await googleSheetsService.syncUser(user.id);
+    } catch (error) {
+      console.error('Failed to sync user to Google Sheets:', error);
+    }
+    
     return user;
   }
 
@@ -53,6 +62,14 @@ export class DatabaseStorage implements IStorage {
         currentSavings: insertGoal.currentSavings || 0,
       })
       .returning();
+    
+    // Sync to Google Sheets
+    try {
+      await googleSheetsService.syncGoal(goal.id);
+    } catch (error) {
+      console.error('Failed to sync goal to Google Sheets:', error);
+    }
+    
     return goal;
   }
 
@@ -65,6 +82,16 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(savingsGoals.id, id))
       .returning();
+    
+    // Sync to Google Sheets
+    if (goal) {
+      try {
+        await googleSheetsService.syncGoal(goal.id);
+      } catch (error) {
+        console.error('Failed to sync updated goal to Google Sheets:', error);
+      }
+    }
+    
     return goal || undefined;
   }
 
@@ -77,6 +104,16 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(savingsGoals.id, id))
       .returning();
+    
+    // Sync to Google Sheets
+    if (goal) {
+      try {
+        await googleSheetsService.syncGoal(goal.id);
+      } catch (error) {
+        console.error('Failed to sync deleted goal to Google Sheets:', error);
+      }
+    }
+    
     return !!goal;
   }
 }
