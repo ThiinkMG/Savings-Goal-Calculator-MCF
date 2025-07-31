@@ -12,9 +12,11 @@ export async function generateSavingsPlanPDF(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // My College Finance Brand Color Palette - Updated Brand Colors
+  // My College Finance Brand Color Palette - Space Dust Theme
   const colors = {
-    primary: [3, 64, 253] as [number, number, number], // Rare Blue #0340fd
+    primary: [1, 38, 153] as [number, number, number], // Space Dust #012699
+    primaryLight: [20, 60, 180] as [number, number, number], // Lighter Space Dust variant
+    primaryDark: [0, 25, 120] as [number, number, number], // Darker Space Dust variant
     success: [38, 224, 17] as [number, number, number], // Monstrous Green #26e011
     warning: [253, 192, 3] as [number, number, number], // Marigold #fdc003
     text: [0, 5, 22] as [number, number, number], // Black Knight #000516
@@ -116,65 +118,56 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Improved header design with proper hierarchy and reduced height
-  const headerHeight = 50;
+  // Clean, uncluttered header design with Space Dust background
+  const headerHeight = 45;
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Caramel accent bottom border instead of mixed text usage
+  // Clean Marigold accent bottom border
   pdf.setFillColor(colors.warning[0], colors.warning[1], colors.warning[2]);
   pdf.rect(0, headerHeight - 2, pageWidth, 2, 'F');
 
-  // HERO: Goal Name - Most prominent element
+  // HERO: Goal Name - Largest, most prominent
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(24);
+  pdf.setFontSize(22);
   pdf.setTextColor(255, 255, 255);
   const goalName = goal.name || 'My Current Goal';
-  pdf.text(`"${goalName}"`, 20, 20);
+  pdf.text(`"${goalName}"`, 20, 18);
 
-  // SECONDARY: User context - Medium size
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(16);
-  pdf.setTextColor(200, 220, 255); // Light blue for context
+  // SECONDARY: User context - Clean spacing below goal name
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(14);
+  pdf.setTextColor(220, 235, 255); // Lighter blue for better contrast
   const goalNumber = (goal.id && goal.id !== 'temp-id') ? goal.id : 1;
   const userContext = `${userInfo.name}: Goal #${goalNumber} Report`;
-  pdf.text(userContext, 20, 32);
+  pdf.text(userContext, 20, 30);
 
-  // TERTIARY: Brand name - Caramel accent, smaller
+  // TERTIARY: Brand and report info - Single line, smaller
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(12);
-  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.text('My College Finance', 20, 42);
-
-  // DESCRIPTOR: Report type - Smallest, muted
-  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
-  pdf.setTextColor(180, 200, 240);
-  pdf.text('Savings Goal Analysis Report', 100, 42);
+  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.text('My College Finance', 20, 40);
 
-  // METADATA: Right-aligned utility information
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.setTextColor(180, 200, 240);
+  pdf.setTextColor(200, 215, 245);
+  pdf.text('Savings Goal Analysis Report', 95, 40);
+
+  // RIGHT SIDE: Clean metadata section
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(200, 215, 245);
   const dateText = `Generated: ${formatDate(new Date())}`;
   const dateWidth = pdf.getTextWidth(dateText);
-  pdf.text(dateText, pageWidth - 20 - dateWidth, 18);
+  pdf.text(dateText, pageWidth - 20 - dateWidth, 16);
 
-  // Goal type badge - Green accent as suggested
+  // Goal type badge - More subtle
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(8);
+  pdf.setFontSize(7);
   pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
   const goalTypeText = `${(goal.goalType ?? 'General').toUpperCase()} GOAL`;
   const goalTypeWidth = pdf.getTextWidth(goalTypeText);
-  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 28);
-
-  // Brand tagline - Right-aligned, smallest
-  pdf.setFont('helvetica', 'italic');
-  pdf.setFontSize(8);
-  pdf.setTextColor(160, 180, 220);
-  const tagline = 'Knowledgeable • Empowering • Approachable';
-  const taglineWidth = pdf.getTextWidth(tagline);
-  pdf.text(tagline, pageWidth - 20 - taglineWidth, 38);
+  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 26);
 
 
 
