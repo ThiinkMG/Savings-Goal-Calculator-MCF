@@ -226,13 +226,16 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               </div>
               <div>
                 <Label htmlFor="start-date">Start Date</Label>
-                <Input
-                  id="start-date"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="mt-2"
-                />
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
+                  <Input
+                    id="start-date"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="pl-10 mt-2"
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
@@ -271,7 +274,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
                   <span className="text-xs text-muted-foreground">Total amount you want to save</span>
                 </div>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
                   <Input
                     id="target-amount"
                     type="number"
@@ -301,7 +304,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               <div>
                 <Label htmlFor="current-savings">Current Savings</Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
                   <Input
                     id="current-savings"
                     type="number"
@@ -318,7 +321,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               <div>
                 <Label htmlFor="target-date">Target Date</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
                   <Input
                     id="target-date"
                     type="date"
