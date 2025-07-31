@@ -332,7 +332,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         }`}
         onClick={onClose}
       />
-      
       {/* Settings Panel */}
       <div className={`absolute right-0 top-0 h-full w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -347,7 +346,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
         {/* Tab Navigation */}
         <div className="border-b">
-          <div className="flex flex-col p-2 space-y-1">
+          <div className="flex flex-col p-2 space-y-1 bg-[#1f1f1f]">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
