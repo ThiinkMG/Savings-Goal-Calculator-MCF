@@ -22,7 +22,7 @@ const shareGoal = async (goal: SavingsGoal) => {
     try {
       await navigator.share({
         title: `My Savings Goal: ${goal.name}`,
-        text: `Check out my savings goal for ${goal.name}! Target: $${goal.targetAmount.toLocaleString()}, Current: $${goal.currentSavings.toLocaleString()}`,
+        text: `Check out my savings goal for ${goal.name}! Target: $${goal.targetAmount.toLocaleString()}, Current: $${(goal.currentSavings || 0).toLocaleString()}`,
         url: window.location.href,
       });
     } catch (error) {
@@ -30,7 +30,7 @@ const shareGoal = async (goal: SavingsGoal) => {
     }
   } else {
     // Fallback for browsers that don't support Web Share API
-    navigator.clipboard.writeText(`My Savings Goal: ${goal.name} - Target: $${goal.targetAmount.toLocaleString()}, Current: $${goal.currentSavings.toLocaleString()}`);
+    navigator.clipboard.writeText(`My Savings Goal: ${goal.name} - Target: $${goal.targetAmount.toLocaleString()}, Current: $${(goal.currentSavings || 0).toLocaleString()}`);
   }
 };
 
@@ -42,9 +42,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
   // Delete mutation
   const deleteGoalMutation = useMutation({
     mutationFn: async (goalId: string) => {
-      return apiRequest(`/api/savings-goals/${goalId}`, {
-        method: 'DELETE',
-      });
+      return apiRequest(`/api/savings-goals/${goalId}`, 'DELETE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
