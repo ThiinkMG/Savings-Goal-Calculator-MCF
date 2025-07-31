@@ -142,16 +142,11 @@ export async function generateSavingsPlanPDF(
   const userContext = `${userInfo.name}: Goal #${goalNumber} Report`;
   pdf.text(userContext, 20, 30);
 
-  // TERTIARY: Brand and report info - Single line, smaller
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.text('My College Finance', 20, 40);
-
+  // TERTIARY: Report type only - Clean, single element
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
+  pdf.setFontSize(11);
   pdf.setTextColor(200, 215, 245);
-  pdf.text('Savings Goal Analysis Report', 95, 40);
+  pdf.text('Savings Goal Analysis Report', 20, 40);
 
   // RIGHT SIDE: Clean metadata section
   pdf.setFont('helvetica', 'normal');
