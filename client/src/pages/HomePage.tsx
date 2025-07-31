@@ -6,6 +6,7 @@ import { SavingsCalculator } from '@/components/SavingsCalculator';
 import { MultipleGoalsManager } from '@/components/MultipleGoalsManager';
 import { type SavingsGoal } from '@shared/schema';
 import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus } from 'lucide-react';
+import logoPath from '@assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png';
 
 export default function HomePage() {
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
@@ -154,49 +155,75 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-black text-white py-8 mt-16">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          {/* Logo */}
-          <div className="flex justify-center items-center gap-3 mb-4">
-            <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 bg-brand-light-blue rounded-full flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-white" />
+      <footer className="bg-gradient-to-b from-gray-900 to-black dark:from-black dark:to-gray-900 text-white py-12 mt-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center space-y-6">
+            {/* Logo */}
+            <div className="flex justify-center items-center mb-6">
+              <a 
+                href="https://www.mycollegefinance.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:opacity-80 transition-opacity duration-300"
+              >
+                <img 
+                  src={logoPath} 
+                  alt="My College Finance Logo" 
+                  className="h-16 w-auto"
+                />
+              </a>
+            </div>
+            
+            {/* Description */}
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
+              Empowering students with financial education and smart tools for a brighter future.
+            </p>
+            
+            {/* Copyright */}
+            <div className="border-t border-gray-700 pt-6">
+              <p className="text-gray-400 text-sm mb-4">
+                © 2025 My College Finance, LLC. All rights reserved.
+              </p>
+              
+              {/* Links */}
+              <div className="flex justify-center space-x-8 text-sm text-gray-400 mb-6">
+                <a 
+                  href="https://www.mycollegefinance.com/privacy-policy" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-brand-light-blue transition-colors duration-300 hover:underline"
+                >
+                  Privacy Policy
+                </a>
+                <a 
+                  href="https://www.mycollegefinance.com/terms-policy" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-brand-light-blue transition-colors duration-300 hover:underline"
+                >
+                  Terms of Service
+                </a>
+                <a 
+                  href="https://linktr.ee/mycollegefinance" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-brand-light-blue transition-colors duration-300 hover:underline"
+                >
+                  Follow Us
+                </a>
               </div>
-              <span className="font-black brand-light-blue text-xl">MY COLLEGE FINANCE</span>
-            </a>
+              
+              {/* Tagline */}
+              <p className="text-brand-light-blue font-bold text-lg mb-4 tracking-wide">
+                Educate • Motivate • Elevate
+              </p>
+              
+              {/* App Name and Version */}
+              <p className="text-gray-500 text-xs font-medium">
+                Savings Goal Calculator • v2.0.5 (Beta)
+              </p>
+            </div>
           </div>
-          
-          <p className="text-gray-300 mb-4">
-            Empowering students with financial education and smart tools for a brighter future.
-          </p>
-          
-          {/* Copyright */}
-          <p className="text-gray-400 text-sm mb-4">
-            © 2025 My College Finance, LLC. All rights reserved.
-          </p>
-          
-          {/* Links */}
-          <div className="flex justify-center space-x-6 text-sm text-gray-400 mb-4">
-            <a href="https://www.mycollegefinance.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
-              Privacy Policy
-            </a>
-            <a href="https://www.mycollegefinance.com/terms-policy" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
-              Terms of Service
-            </a>
-            <a href="https://linktr.ee/mycollegefinance" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
-              Follow Us
-            </a>
-          </div>
-          
-          {/* Tagline */}
-          <p className="text-brand-light-blue font-semibold text-sm mb-3">
-            Educate • Motivate • Elevate
-          </p>
-          
-          {/* App Name and Version */}
-          <p className="text-gray-500 text-xs">
-            Savings Goal Calculator • v2.0.5 (Beta)
-          </p>
         </div>
       </footer>
     </div>
