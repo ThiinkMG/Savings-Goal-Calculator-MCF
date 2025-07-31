@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { GraduationCap, Lightbulb, TrendingUp, Shield } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { GraduationCap, Lightbulb, TrendingUp, Shield, ExternalLink } from 'lucide-react';
 import { type GoalType } from '@shared/schema';
 
 interface Tip {
@@ -150,8 +151,36 @@ export function EducationalTips({ selectedGoal }: EducationalTipsProps) {
               <p className={`text-sm ${tip.textColor.replace('900', '700').replace('100', '300')}`}>
                 {tip.content}
               </p>
+              {/* Add button for 50/30/20 Rule */}
+              {tip.title === '50/30/20 Rule' && (
+                <Button
+                  onClick={() => window.open('https://www.mycollegefinance.com/50-30-20-budget-calculator', '_blank')}
+                  className="mt-3 bg-brand-blue hover:bg-brand-blue/90 text-[#030711] dark:text-white text-xs px-3 py-1 h-8"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1 text-[#030711] dark:text-white" />
+                  Try Our App
+                </Button>
+              )}
             </div>
           ))}
+          
+          {/* Knowledge Bank section */}
+          <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-lg">
+            <h4 className="font-medium text-emerald-900 dark:text-emerald-100 mb-2 flex items-center gap-2">
+              <GraduationCap className="w-4 h-4" />
+              Knowledge Bank
+            </h4>
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-3">
+              Explore our comprehensive financial learning hub with guides, calculators, and educational content.
+            </p>
+            <Button
+              onClick={() => window.open('https://www.mycollegefinance.com/knowledge-bank', '_blank')}
+              className="bg-brand-green hover:bg-brand-green/90 text-[#030711] dark:text-white text-xs px-3 py-1 h-8"
+            >
+              <ExternalLink className="w-3 h-3 mr-1 text-[#030711] dark:text-white" />
+              Visit Knowledge Bank
+            </Button>
+          </div>
           
           {/* Universal tip */}
           <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-lg">
