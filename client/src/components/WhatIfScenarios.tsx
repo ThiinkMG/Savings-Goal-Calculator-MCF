@@ -236,7 +236,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                ${Math.round(coffeePerWeek * 5.50 * 4.33)} = {calculateImpact(coffeePerWeek * 5.50 * 4.33).daysSaved} days or {calculateImpact(coffeePerWeek * 5.50 * 4.33).percentCloser}% closer
+                Skip this = ${Math.round(coffeePerWeek * 5.50 * 4.33)} = {calculateImpact(coffeePerWeek * 5.50 * 4.33).daysSaved} days or {calculateImpact(coffeePerWeek * 5.50 * 4.33).percentCloser}% to goal
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -247,7 +247,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                ${Math.round(lunchPerWeek * 15 * 4.33)} = {calculateImpact(lunchPerWeek * 15 * 4.33).daysSaved} days or {calculateImpact(lunchPerWeek * 15 * 4.33).percentCloser}% closer
+                Skip this = ${Math.round(lunchPerWeek * 15 * 4.33)} = {calculateImpact(lunchPerWeek * 15 * 4.33).daysSaved} days or {calculateImpact(lunchPerWeek * 15 * 4.33).percentCloser}% to goal
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -258,7 +258,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                ${Math.round(streamingServices * 15)} = {calculateImpact(streamingServices * 15).daysSaved} days or {calculateImpact(streamingServices * 15).percentCloser}% closer
+                Skip this = ${Math.round(streamingServices * 15)} = {calculateImpact(streamingServices * 15).daysSaved} days or {calculateImpact(streamingServices * 15).percentCloser}% to goal
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -269,7 +269,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                ${Math.round(nightsOutPerMonth * 50)} = {calculateImpact(nightsOutPerMonth * 50).daysSaved} days or {calculateImpact(nightsOutPerMonth * 50).percentCloser}% closer
+                Skip this = ${Math.round(nightsOutPerMonth * 50)} = {calculateImpact(nightsOutPerMonth * 50).daysSaved} days or {calculateImpact(nightsOutPerMonth * 50).percentCloser}% to goal
               </span>
             </div>
           </div>
