@@ -116,8 +116,8 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Clean header design
-  const headerHeight = 70;
+  // Clean header design - increased height to accommodate goal name
+  const headerHeight = 78;
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
@@ -135,17 +135,24 @@ export async function generateSavingsPlanPDF(
   const personalizedTitle = `${userInfo.name}: Goal #${goalNumber} Report`;
   pdf.text(personalizedTitle, 20, 28);
 
+  // Goal name display - use goal name or default
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(13);
+  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]); // Marigold color
+  const goalName = goal.name || 'My Current Goal';
+  pdf.text(`"${goalName}"`, 20, 40);
+
   // Brand name with WHITE and BOLD styling as requested
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(15); // Simulating Lato Semi-Bold scaled for PDF
   pdf.setTextColor(255, 255, 255); // WHITE as requested
-  pdf.text('My College Finance', 20, 45);
+  pdf.text('My College Finance', 20, 52);
 
   // Subtitle
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(11); // Simulating Open Sans Regular scaled for PDF
   pdf.setTextColor(220, 230, 255);
-  pdf.text('SAVINGS GOAL ANALYSIS REPORT', 20, 55);
+  pdf.text('SAVINGS GOAL ANALYSIS REPORT', 20, 62);
 
   // Right side header info
   pdf.setFont('helvetica', 'normal');
@@ -153,7 +160,7 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(200, 220, 255);
   const dateText = `Generated: ${formatDate(new Date())}`;
   const dateWidth = pdf.getTextWidth(dateText);
-  pdf.text(dateText, pageWidth - 20 - dateWidth, 25);
+  pdf.text(dateText, pageWidth - 20 - dateWidth, 30);
 
   // Goal type indicator
   pdf.setFont('helvetica', 'bold');
@@ -161,7 +168,7 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
   const goalTypeText = `${(goal.goalType ?? 'General').toUpperCase()} GOAL`;
   const goalTypeWidth = pdf.getTextWidth(goalTypeText);
-  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 40);
+  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 47);
 
   // Brand personality tagline
   pdf.setFont('helvetica', 'italic');
@@ -444,7 +451,7 @@ export async function generateSavingsPlanPDF(
 
   // Enhanced filename with user name and goal number
   const userName = userInfo.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'user';
-  const goalName = goal.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'savings_goal';
-  const fileName = `${userName}_goal_${goalNumber}_${goalName}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const goalNameFile = goal.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'savings_goal';
+  const fileName = `${userName}_goal_${goalNumber}_${goalNameFile}_${new Date().toISOString().split('T')[0]}.pdf`;
   pdf.save(fileName);
 }
