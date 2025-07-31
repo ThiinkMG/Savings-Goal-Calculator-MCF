@@ -15,6 +15,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { GoalSelectionCard } from './GoalSelectionCard';
 import { ProgressVisualization } from './ProgressVisualization';
 import { EducationalTips } from './EducationalTips';
+import { WhatIfScenarios } from './WhatIfScenarios';
 
 interface SavingsCalculatorProps {
   existingGoal?: SavingsGoal;
@@ -484,34 +485,13 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
 
         {/* What-If Scenarios */}
         {calculations && (
-          <Card className="animate-slide-in">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
-                <div className="p-2 bg-brand-amber/10 rounded-lg">
-                  <Target className="w-5 h-5 brand-amber" />
-                </div>
-                What-If Scenarios
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                    Save $50 More
-                  </h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Reach goal <span className="font-semibold">{calculations.scenarios.save50More.monthsSaved} months</span> earlier
-                  </p>
-                </div>
-                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                  <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
-                    Save $100 More
-                  </h4>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    Reach goal <span className="font-semibold">{calculations.scenarios.save100More.monthsSaved} months</span> earlier
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <WhatIfScenarios
+            calculations={calculations}
+            targetAmount={targetAmount}
+            currentSavings={currentSavings}
+            targetDate={targetDate}
+            monthlyCapacity={monthlyCapacity[0]}
+          />
         )}
       </div>
       {/* Sidebar - Results & Tips */}

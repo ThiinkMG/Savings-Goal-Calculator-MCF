@@ -355,56 +355,156 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(userInfo.name ?? 'User', timelineX + 45, progressSectionY + 86);
 
-  // Scenarios section - improved design
-  const scenariosY = progressSectionY + sectionHeight + 20;
-  const scenarioHeight = 50;
-  drawCard(cardsStartX, scenariosY, totalCardsWidth, scenarioHeight, 3);
+  // Reality Check Analysis section - enhanced design
+  const realityCheckY = progressSectionY + sectionHeight + 20;
+  const realityCheckHeight = 130;
+  drawCard(cardsStartX, realityCheckY, totalCardsWidth, realityCheckHeight, 3);
+
+  // Calculate Reality Check data
+  const goalRemaining = (goal.targetAmount ?? 0) - (goal.currentSavings ?? 0);
+  const monthlyRequired = calculations.monthlyRequired;
+  const monthsRemaining = calculations.monthsRemaining;
+  
+  const getFeasibilityScore = () => {
+    if (monthlyRequired > 500) return { score: "Challenging", color: [220, 38, 38] };
+    if (monthlyRequired > 300) return { score: "Moderate", color: [217, 119, 6] };
+    return { score: "Achievable", color: [5, 150, 105] };
+  };
+  
+  const getSuccessRate = () => {
+    if (monthlyRequired > 400) return 45;
+    if (monthlyRequired > 300) return 65;
+    if (monthlyRequired > 200) return 80;
+    return 85;
+  };
+  
+  const dailyAmount = monthlyRequired / 30.44;
+  const weeklyAmount = monthlyRequired / 4.33;
+  const coffeeEquivalent = Math.round(monthlyRequired / 5.50);
+  
+  const calculateAdjustment = (adjustment: number) => {
+    const newMonthly = monthlyRequired + adjustment;
+    const newMonths = goalRemaining / newMonthly;
+    const monthsDifference = monthsRemaining - newMonths;
+    return monthsDifference;
+  };
+  
+  const feasibility = getFeasibilityScore();
+  const successRate = getSuccessRate();
 
   // Header
-  pdf.setFillColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.rect(cardsStartX, scenariosY, totalCardsWidth, 20, 'F');
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.rect(cardsStartX, realityCheckY, totalCardsWidth, 20, 'F');
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(12);
   pdf.setTextColor(255, 255, 255);
-  pdf.text('Optimization Scenarios', cardsStartX + 15, scenariosY + 13);
+  pdf.text('Reality Check Analysis', cardsStartX + 15, realityCheckY + 13);
 
-  // Scenario boxes - cleaner design
-  const scenarioWidth = (totalCardsWidth - 40) / 2;
+  // Reality Check cards
+  const realityCardWidth = (totalCardsWidth - 45) / 2;
 
-  // Scenario 1
-  pdf.setFillColor(245, 255, 245);
-  pdf.rect(cardsStartX + 15, scenariosY + 25, scenarioWidth, 20, 'F');
-  pdf.setDrawColor(colors.success[0], colors.success[1], colors.success[2]);
+  // Plan Feasibility Card
+  pdf.setFillColor(248, 250, 252);
+  pdf.rect(cardsStartX + 15, realityCheckY + 25, realityCardWidth, 25, 'F');
+  pdf.setDrawColor(16, 185, 129);
   pdf.setLineWidth(2);
-  pdf.line(cardsStartX + 15, scenariosY + 25, cardsStartX + 15, scenariosY + 45);
+  pdf.line(cardsStartX + 15, realityCheckY + 25, cardsStartX + 15, realityCheckY + 50);
 
-  pdf.setFont('helvetica', 'bold');
+  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
-  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
-  pdf.text('Save $50 more/month', cardsStartX + 20, scenariosY + 33);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Plan Feasibility', cardsStartX + 20, realityCheckY + 33);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(`${calculations.scenarios?.save50More?.monthsSaved ?? 0} months earlier`, cardsStartX + 20, scenariosY + 41);
+  pdf.setTextColor(feasibility.color[0], feasibility.color[1], feasibility.color[2]);
+  pdf.text(feasibility.score, cardsStartX + 20, realityCheckY + 43);
 
-  // Scenario 2
-  pdf.setFillColor(255, 248, 235);
-  pdf.rect(cardsStartX + 25 + scenarioWidth, scenariosY + 25, scenarioWidth, 20, 'F');
-  pdf.setDrawColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  // Success Probability Card
+  pdf.setFillColor(248, 250, 252);
+  pdf.rect(cardsStartX + 30 + realityCardWidth, realityCheckY + 25, realityCardWidth, 25, 'F');
+  pdf.setDrawColor(59, 130, 246);
   pdf.setLineWidth(2);
-  pdf.line(cardsStartX + 25 + scenarioWidth, scenariosY + 25, cardsStartX + 25 + scenarioWidth, scenariosY + 45);
+  pdf.line(cardsStartX + 30 + realityCardWidth, realityCheckY + 25, cardsStartX + 30 + realityCardWidth, realityCheckY + 50);
 
-  pdf.setFont('helvetica', 'bold');
+  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
-  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.text('Save $100 more/month', cardsStartX + 30 + scenarioWidth, scenariosY + 33);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Success Probability', cardsStartX + 35 + realityCardWidth, realityCheckY + 33);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
+  pdf.setTextColor(59, 130, 246);
+  pdf.text(`${successRate}% likely to succeed`, cardsStartX + 35 + realityCardWidth, realityCheckY + 43);
+
+  // Daily Reality Breakdown
+  const dailyBreakdownY = realityCheckY + 60;
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(`${calculations.scenarios?.save100More?.monthsSaved ?? 0} months earlier`, cardsStartX + 30 + scenarioWidth, scenariosY + 41);
+  pdf.text('Daily Reality Breakdown', cardsStartX + 15, dailyBreakdownY);
+
+  const breakdownCardWidth = (totalCardsWidth - 60) / 3;
+  
+  // Per Day
+  pdf.setFillColor(241, 245, 249);
+  pdf.rect(cardsStartX + 15, dailyBreakdownY + 10, breakdownCardWidth, 20, 'F');
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(7);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Per Day', cardsStartX + 18, dailyBreakdownY + 18);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatCurrency(dailyAmount), cardsStartX + 18, dailyBreakdownY + 25);
+
+  // Per Week
+  pdf.setFillColor(241, 245, 249);
+  pdf.rect(cardsStartX + 25 + breakdownCardWidth, dailyBreakdownY + 10, breakdownCardWidth, 20, 'F');
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(7);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Per Week', cardsStartX + 28 + breakdownCardWidth, dailyBreakdownY + 18);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatCurrency(weeklyAmount), cardsStartX + 28 + breakdownCardWidth, dailyBreakdownY + 25);
+
+  // Coffee Equivalent
+  pdf.setFillColor(241, 245, 249);
+  pdf.rect(cardsStartX + 35 + (breakdownCardWidth * 2), dailyBreakdownY + 10, breakdownCardWidth, 20, 'F');
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(7);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Coffee Equivalent', cardsStartX + 38 + (breakdownCardWidth * 2), dailyBreakdownY + 18);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(`${coffeeEquivalent} cups/month`, cardsStartX + 38 + (breakdownCardWidth * 2), dailyBreakdownY + 25);
+
+  // Precision Adjustments
+  const adjustmentsY = dailyBreakdownY + 40;
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('Precision Adjustments', cardsStartX + 15, adjustmentsY);
+
+  pdf.setFillColor(248, 250, 252);
+  pdf.rect(cardsStartX + 15, adjustmentsY + 10, totalCardsWidth - 30, 25, 'F');
+  
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  
+  pdf.text('Save $25 more per month:', cardsStartX + 20, adjustmentsY + 20);
+  pdf.setTextColor(5, 150, 105);
+  pdf.text(`${calculateAdjustment(25).toFixed(1)} months earlier`, cardsStartX + 110, adjustmentsY + 20);
+  
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('Save $50 more per month:', cardsStartX + 20, adjustmentsY + 30);
+  pdf.setTextColor(5, 150, 105);
+  pdf.text(`${calculateAdjustment(50).toFixed(1)} months earlier`, cardsStartX + 110, adjustmentsY + 30);
 
   // Clean footer
   const footerY = pageHeight - 30;
