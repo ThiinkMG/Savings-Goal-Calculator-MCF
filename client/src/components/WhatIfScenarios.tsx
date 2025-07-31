@@ -273,7 +273,7 @@ export function WhatIfScenarios({
               </span>
             </div>
             <div className="mt-3 text-xs text-muted-foreground italic">
-              <sup>1</sup> Projected amounts are estimates and may vary based on actual spending habits
+              <sup>1</sup> Savings estimates based on average costs and assume consistent behavioral changes. Actual results vary by location, current spending habits, and personal preferences.
             </div>
           </div>
         </DropdownSection>
