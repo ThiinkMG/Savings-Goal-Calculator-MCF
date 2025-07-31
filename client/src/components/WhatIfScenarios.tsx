@@ -82,10 +82,10 @@ export function WhatIfScenarios({
   const hourlyEquivalent = monthlyRequired / (40 * 4.33);
 
   // Realistic opportunity cost calculations (weekly/monthly)
-  const coffeePerWeek = Math.round((monthlyRequired / 4.33) / 5.50); // Weekly coffee skips
-  const lunchPerWeek = Math.round((monthlyRequired / 4.33) / 15); // Weekly lunch skips
-  const streamingServices = Math.round(monthlyRequired / 15); // Number of streaming services
-  const nightsOutPerMonth = Math.round(monthlyRequired / 50); // Nights out per month
+  const coffeePerWeek = Math.min(Math.round((weeklyAmount) / 5.50), 7); // Weekly coffee skips (max 7 per week)
+  const lunchPerWeek = Math.min(Math.round((weeklyAmount) / 15), 5); // Weekly lunch skips (max 5 per week)
+  const streamingServices = Math.min(Math.round(monthlyRequired / 15), 3); // Number of streaming services to cancel (max 3)
+  const nightsOutPerMonth = Math.min(Math.round(monthlyRequired / 50), 3); // Nights out reduction per month (max 3)
 
   // Calculate actual dates for timeline impact
   const calculateNewDate = (adjustment: number) => {
@@ -236,7 +236,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(coffeePerWeek * 5.50 * 4.33)} = {calculateImpact(coffeePerWeek * 5.50 * 4.33).daysSaved} days sooner | {calculateImpact(coffeePerWeek * 5.50 * 4.33).percentCloser}% faster<sup>1</sup>
+                Save ${Math.round(coffeePerWeek * 5.50 * 4.33)} = {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner | {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).percentCloser}% faster<sup>1</sup>
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -247,7 +247,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(lunchPerWeek * 15 * 4.33)} = {calculateImpact(lunchPerWeek * 15 * 4.33).daysSaved} days sooner | {calculateImpact(lunchPerWeek * 15 * 4.33).percentCloser}% faster<sup>1</sup>
+                Save ${Math.round(lunchPerWeek * 15 * 4.33)} = {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner | {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).percentCloser}% faster<sup>1</sup>
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -258,7 +258,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(streamingServices * 15)} = {calculateImpact(streamingServices * 15).daysSaved} days sooner | {calculateImpact(streamingServices * 15).percentCloser}% faster<sup>1</sup>
+                Save ${Math.round(streamingServices * 15)} = {calculateImpact(Math.round(streamingServices * 15)).daysSaved} days sooner | {calculateImpact(Math.round(streamingServices * 15)).percentCloser}% faster<sup>1</sup>
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -269,7 +269,7 @@ export function WhatIfScenarios({
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(nightsOutPerMonth * 50)} = {calculateImpact(nightsOutPerMonth * 50).daysSaved} days sooner | {calculateImpact(nightsOutPerMonth * 50).percentCloser}% faster<sup>1</sup>
+                Save ${Math.round(nightsOutPerMonth * 50)} = {calculateImpact(Math.round(nightsOutPerMonth * 50)).daysSaved} days sooner | {calculateImpact(Math.round(nightsOutPerMonth * 50)).percentCloser}% faster<sup>1</sup>
               </span>
             </div>
             <div className="mt-3 text-xs text-muted-foreground italic">
