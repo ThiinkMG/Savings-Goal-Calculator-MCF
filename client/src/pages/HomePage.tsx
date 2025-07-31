@@ -156,18 +156,27 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-gray-900 dark:bg-black text-white py-8 mt-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
+          {/* Logo */}
           <div className="flex justify-center items-center gap-3 mb-4">
             <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-brand-light-blue rounded-full flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-brand-light-blue rounded-full flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-white" />
               </div>
-              <span className="font-black brand-light-blue">MY COLLEGE FINANCE</span>
+              <span className="font-black brand-light-blue text-xl">MY COLLEGE FINANCE</span>
             </a>
           </div>
+          
           <p className="text-gray-300 mb-4">
             Empowering students with financial education and smart tools for a brighter future.
           </p>
-          <div className="flex justify-center space-x-6 text-sm text-gray-400">
+          
+          {/* Copyright */}
+          <p className="text-gray-400 text-sm mb-4">
+            © 2025 My College Finance, LLC. All rights reserved.
+          </p>
+          
+          {/* Links */}
+          <div className="flex justify-center space-x-6 text-sm text-gray-400 mb-4">
             <a href="https://www.mycollegefinance.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-brand-light-blue transition-colors">
               Privacy Policy
             </a>
@@ -178,6 +187,16 @@ export default function HomePage() {
               Follow Us
             </a>
           </div>
+          
+          {/* Tagline */}
+          <p className="text-brand-light-blue font-semibold text-sm mb-3">
+            Educate • Motivate • Elevate
+          </p>
+          
+          {/* App Name and Version */}
+          <p className="text-gray-500 text-xs">
+            Savings Goal Calculator • v2.0.5 (Beta)
+          </p>
         </div>
       </footer>
     </div>
