@@ -7,7 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { Calculator, User, DollarSign, Calendar, Target, Download, Share2, Save } from 'lucide-react';
+import { Calculator, User, DollarSign, Calendar, Target, Download, Share2, Save, X, Edit3 } from 'lucide-react';
 import { type SavingsGoal, type GoalType, type InsertSavingsGoal } from '@shared/schema';
 import { calculateSavings, formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
@@ -41,9 +41,30 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
     new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   );
   const [monthlyCapacity, setMonthlyCapacity] = useState([existingGoal?.monthlyCapacity || 300]);
+  const [isManualEntry, setIsManualEntry] = useState(false);
+  const [manualAmount, setManualAmount] = useState('');
 
   // Calculation state
   const [calculations, setCalculations] = useState<CalculationResult | null>(null);
+
+  // Manual entry functions
+  const handleManualEntry = () => {
+    setIsManualEntry(true);
+    setManualAmount(monthlyCapacity[0].toString());
+  };
+
+  const handleManualAmountChange = (value: string) => {
+    setManualAmount(value);
+    const numValue = parseInt(value) || 0;
+    if (numValue >= 0) {
+      setMonthlyCapacity([numValue]);
+    }
+  };
+
+  const handleCloseManualEntry = () => {
+    setIsManualEntry(false);
+    setManualAmount('');
+  };
 
   // Calculate scenarios
   const { data: scenarioData } = useQuery({
@@ -333,25 +354,74 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               </div>
 
               <div>
-                <Label htmlFor="monthly-capacity">Monthly Savings Capacity</Label>
-                <div className="mt-4">
-                  <Slider
-                    id="monthly-capacity"
-                    min={50}
-                    max={2000}
-                    step={50}
-                    value={monthlyCapacity}
-                    onValueChange={setMonthlyCapacity}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                    <span>$50</span>
-                    <span className="font-medium brand-blue text-lg text-[#3bd927]">
-                      ${monthlyCapacity[0]}
-                    </span>
-                    <span>$2000+</span>
-                  </div>
+                <div className="flex items-center justify-between mb-4">
+                  <Label htmlFor="monthly-capacity">Monthly Savings Capacity</Label>
+                  {!isManualEntry && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleManualEntry}
+                      className="text-xs"
+                    >
+                      <Edit3 className="w-3 h-3 mr-1" />
+                      Manual Entry
+                    </Button>
+                  )}
                 </div>
+                
+                {isManualEntry ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300" />
+                        <Input
+                          type="number"
+                          value={manualAmount}
+                          onChange={(e) => handleManualAmountChange(e.target.value)}
+                          placeholder="Enter amount"
+                          min="0"
+                          step="50"
+                          className="pl-10"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCloseManualEntry}
+                        className="px-2"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="text-center">
+                      <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                        ${monthlyCapacity[0]}
+                      </span>
+                      <span className="text-sm text-muted-foreground ml-2">per month</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <Slider
+                      id="monthly-capacity"
+                      min={50}
+                      max={2000}
+                      step={50}
+                      value={monthlyCapacity}
+                      onValueChange={setMonthlyCapacity}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                      <span>$50</span>
+                      <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                        ${monthlyCapacity[0]}
+                      </span>
+                      <span>$2000+</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
