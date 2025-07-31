@@ -24,11 +24,11 @@
   --ring: hsl(224, 71%, 4%);
   --radius: 0.5rem;
   
-  /* Custom brand colors */
-  --brand-blue: hsl(224, 89%, 33%);
-  --brand-light-blue: hsl(234, 79%, 56%);
-  --brand-green: hsl(158, 64%, 52%);
-  --brand-amber: hsl(43, 96%, 56%);
+  /* My College Finance Brand Colors */
+  --brand-blue: hsl(235, 98%, 50%); /* Rare Blue #0340fd */
+  --brand-green: hsl(115, 93%, 47%); /* Monstrous Green #26e011 */
+  --brand-amber: hsl(45, 98%, 50%); /* Marigold #fdc003 */
+  --brand-black: hsl(235, 95%, 4%); /* Black Knight #000516 */
   
   /* Transition */
   --transition: all 0.3s ease;
@@ -55,11 +55,11 @@
   --destructive-foreground: hsl(210, 40%, 98%);
   --ring: hsl(216, 12%, 84%);
   
-  /* Custom brand colors for dark mode */
-  --brand-blue: hsl(234, 79%, 56%);
-  --brand-light-blue: hsl(234, 79%, 66%);
-  --brand-green: hsl(158, 64%, 52%);
-  --brand-amber: hsl(43, 96%, 56%);
+  /* My College Finance Brand Colors for dark mode */
+  --brand-blue: hsl(235, 98%, 60%); /* Rare Blue lighter for dark mode */
+  --brand-green: hsl(115, 93%, 57%); /* Monstrous Green lighter for dark mode */
+  --brand-amber: hsl(45, 98%, 60%); /* Marigold lighter for dark mode */
+  --brand-black: hsl(235, 95%, 94%); /* Inverted for dark mode */
 }
 
 @layer base {
