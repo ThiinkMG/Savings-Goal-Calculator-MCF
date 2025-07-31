@@ -153,6 +153,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
     }
 
     const goalData: InsertSavingsGoal = {
+      userId: null, // For now, no user authentication
       name: goalName,
       goalType,
       targetAmount,
