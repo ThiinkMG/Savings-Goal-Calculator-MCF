@@ -192,8 +192,8 @@ export function WhatIfScenarios({
                 {dailyAmount > 15 
                   ? `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
                   : dailyAmount > 10
-                  ? "This is like saving the cost of coffee + pastry every day without exception."
-                  : "This breaks down to very manageable daily savings - about the cost of a coffee."
+                  ? `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
+                  : `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
                 }
               </p>
             </div>
