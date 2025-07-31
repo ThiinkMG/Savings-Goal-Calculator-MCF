@@ -118,14 +118,14 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Clean, uncluttered header design with Space Dust background
-  const headerHeight = 45;
+  // Clean, uncluttered header design with Space Dust background and extra breathing room
+  const headerHeight = 50;
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Clean Marigold accent bottom border
+  // Thinner Marigold accent bottom border
   pdf.setFillColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.rect(0, headerHeight - 2, pageWidth, 2, 'F');
+  pdf.rect(0, headerHeight - 1, pageWidth, 1, 'F');
 
   // HERO: Goal Name - Largest, most prominent
   pdf.setFont('helvetica', 'bold');
@@ -142,11 +142,11 @@ export async function generateSavingsPlanPDF(
   const userContext = `${userInfo.name}: Goal #${goalNumber} Report`;
   pdf.text(userContext, 20, 30);
 
-  // TERTIARY: Report type only - Clean, single element
+  // TERTIARY: Report type only - Clean, single element with more breathing room
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(11);
   pdf.setTextColor(200, 215, 245);
-  pdf.text('Savings Goal Analysis Report', 20, 40);
+  pdf.text('Savings Goal Analysis Report', 20, 43);
 
   // RIGHT SIDE: Clean metadata section
   pdf.setFont('helvetica', 'normal');
@@ -177,9 +177,9 @@ export async function generateSavingsPlanPDF(
   // Section positioning
   const startY = headerHeight + 25;
 
-  // Accent lines below header
-  pdf.setDrawColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.setLineWidth(2);
+  // Thinner blue accent line below header
+  pdf.setDrawColor(colors.primaryLight[0], colors.primaryLight[1], colors.primaryLight[2]);
+  pdf.setLineWidth(1);
   pdf.line(20, headerHeight + 12, pageWidth - 20, headerHeight + 12);
 
   // Metric cards layout - improved spacing
