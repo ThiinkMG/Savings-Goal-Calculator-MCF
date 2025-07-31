@@ -232,7 +232,8 @@ export function WhatIfScenarios({
               <div className="flex items-center gap-3">
                 <span className="text-xl">☕</span>
                 <span className="text-sm">
-                  Skip coffee shop <strong>{coffeePerWeek}</strong> times per week
+                  Skip coffee shop <strong>{coffeePerWeek}</strong> times per week<br/>
+                  <span className="text-xs text-muted-foreground">Avg. cost: $5.50 per coffee</span>
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
@@ -243,7 +244,8 @@ export function WhatIfScenarios({
               <div className="flex items-center gap-3">
                 <span className="text-xl">🍽️</span>
                 <span className="text-sm">
-                  Skip lunch out <strong>{lunchPerWeek}</strong> times per week
+                  Skip lunch out <strong>{lunchPerWeek}</strong> times per week<br/>
+                  <span className="text-xs text-muted-foreground">Avg. cost: $15.00 per lunch</span>
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
@@ -254,7 +256,8 @@ export function WhatIfScenarios({
               <div className="flex items-center gap-3">
                 <span className="text-xl">📱</span>
                 <span className="text-sm">
-                  Choose <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5
+                  Choose <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5<br/>
+                  <span className="text-xs text-muted-foreground">Avg. cost: $15.00 per service</span>
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
@@ -265,7 +268,8 @@ export function WhatIfScenarios({
               <div className="flex items-center gap-3">
                 <span className="text-xl">🎉</span>
                 <span className="text-sm">
-                  Limit nights out to <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> per month
+                  Limit nights out to <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> per month<br/>
+                  <span className="text-xs text-muted-foreground">Avg. cost: $50.00 per night</span>
                 </span>
               </div>
               <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
