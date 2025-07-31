@@ -32,7 +32,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
     existingGoal ? new Date(existingGoal.createdAt!).toISOString().split('T')[0] : 
     new Date().toISOString().split('T')[0]
   );
-  const [goalType, setGoalType] = useState<GoalType | null>(existingGoal?.goalType || null);
+  const [goalType, setGoalType] = useState<GoalType | null>(existingGoal?.goalType as GoalType || null);
   const [goalName, setGoalName] = useState(existingGoal?.name || '');
   const [targetAmount, setTargetAmount] = useState(existingGoal?.targetAmount || 0);
   const [currentSavings, setCurrentSavings] = useState(existingGoal?.currentSavings || 0);
@@ -177,7 +177,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
     try {
       const goalData: SavingsGoal = {
         id: existingGoal?.id || 'temp-id',
-        userId: existingGoal?.userId,
+        userId: existingGoal?.userId || null,
         name: goalName,
         goalType,
         targetAmount,
