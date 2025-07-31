@@ -12,41 +12,44 @@ export async function generateSavingsPlanPDF(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Enhanced modern color palette matching the reference
+  // My College Finance Brand Color Palette - Simplified for compatibility
   const colors = {
-    primary: [67, 97, 238] as [number, number, number], // Rich blue
-    secondary: [99, 102, 241] as [number, number, number], // Indigo
-    success: [16, 185, 129] as [number, number, number], // Emerald
-    warning: [245, 158, 11] as [number, number, number], // Amber
-    danger: [239, 68, 68] as [number, number, number],
-    text: [30, 41, 59] as [number, number, number], // Slate-800
-    textLight: [100, 116, 139] as [number, number, number], // Slate-500
-    textMuted: [148, 163, 184] as [number, number, number], // Slate-400
-    background: [248, 250, 252] as [number, number, number], // Slate-50
-    cardBg: [255, 255, 255] as [number, number, number],
-    border: [241, 245, 249] as [number, number, number], // Slate-100
-    accent: [139, 92, 246] as [number, number, number] // Violet
+    primary: [3, 64, 253] as [number, number, number], // Rare Blue #0340fd
+    secondary: [3, 64, 253] as [number, number, number], // Rare Blue variant
+    success: [38, 224, 17] as [number, number, number], // Monstrous Green #26e011
+    warning: [222, 143, 12] as [number, number, number], // Fleur de Sel Caramel #de8f0c
+    danger: [239, 68, 68] as [number, number, number], // Keep red for errors
+    text: [0, 0, 0] as [number, number, number], // Black #000000
+    textLight: [100, 100, 100] as [number, number, number], // Gray variant
+    textMuted: [150, 150, 150] as [number, number, number], // Light gray
+    background: [248, 250, 252] as [number, number, number], // Light background
+    cardBg: [255, 255, 255] as [number, number, number], // White #ffffff
+    border: [230, 230, 230] as [number, number, number], // Light border
+    accent: [222, 143, 12] as [number, number, number] // Fleur de Sel Caramel as accent
   };
 
-  // Clean modern cards with typography focus (no icons)
+  // Clean modern cards with simple shadow effect
   const drawCleanCard = (
     x: number, 
     y: number, 
     width: number, 
     height: number
   ) => {
-    // Subtle shadow effect for depth
-    pdf.setFillColor(0, 0, 0);
-    pdf.rect(x + 1, y + 2, width, height, 'F');
+    // Simple shadow effect
+    pdf.setFillColor(220, 220, 220);
+    pdf.rect(x + 1, y + 1, width, height, 'F');
 
     // Main card background - clean white
     pdf.setFillColor(colors.cardBg[0], colors.cardBg[1], colors.cardBg[2]);
     pdf.rect(x, y, width, height, 'F');
 
-    // No border for cleaner look
+    // Light border
+    pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+    pdf.setLineWidth(0.5);
+    pdf.rect(x, y, width, height, 'S');
   };
 
-  // Enhanced progress bar with rounded appearance
+  // Enhanced progress bar
   const drawModernProgressBar = (
     x: number, 
     y: number, 
@@ -59,37 +62,32 @@ export async function generateSavingsPlanPDF(
     pdf.setFillColor(colors.border[0], colors.border[1], colors.border[2]);
     pdf.rect(x, y, width, height, 'F');
 
-    // Rounded ends simulation
-    pdf.circle(x + height/2, y + height/2, height/2, 'F');
-    pdf.circle(x + width - height/2, y + height/2, height/2, 'F');
-
     // Progress fill
     const progressWidth = Math.max(0, Math.min(width, (progress / 100) * width));
-    if (progressWidth > height) {
+    if (progressWidth > 0) {
       pdf.setFillColor(color[0], color[1], color[2]);
       pdf.rect(x, y, progressWidth, height, 'F');
-      pdf.circle(x + height/2, y + height/2, height/2, 'F');
-      pdf.circle(x + progressWidth - height/2, y + height/2, height/2, 'F');
     }
   };
 
-  // Advanced donut chart with better arc simulation
-  const drawDonutChart = (x: number, y: number, radius: number, progress: number) => {
-    const centerX = x + radius;
-    const centerY = y + radius;
-
-    // Background circle (thick stroke)
+  // Donut chart with simple arc simulation
+  const drawDonutChart = (
+    centerX: number, 
+    centerY: number, 
+    radius: number, 
+    progress: number
+  ) => {
+    // Background circle
     pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
     pdf.setLineWidth(6);
     pdf.circle(centerX, centerY, radius - 3, 'S');
 
-    // Progress arc simulation with multiple small arcs
+    // Progress arc simulation using multiple small circles
     if (progress > 0) {
-      pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      pdf.setLineWidth(6);
+      pdf.setFillColor(colors.success[0], colors.success[1], colors.success[2]);
 
-      const steps = Math.max(1, Math.floor((progress / 100) * 24)); // More steps for smoother arc
-      const angleStep = (2 * Math.PI) / 24;
+      const steps = Math.max(1, Math.floor((progress / 100) * 20));
+      const angleStep = (2 * Math.PI) / 20;
 
       for (let i = 0; i < steps; i++) {
         const angle = i * angleStep - Math.PI / 2; // Start from top
@@ -99,7 +97,7 @@ export async function generateSavingsPlanPDF(
       }
     }
 
-    // Center content with better typography
+    // Center text
     pdf.setFontSize(18);
     pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
     const progressText = `${Math.round(progress)}%`;
@@ -117,68 +115,19 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Modern header with gradient simulation
+  // Modern header
   const headerHeight = 50;
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Gradient overlay simulation
-  pdf.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  pdf.rect(0, 0, pageWidth, headerHeight/2, 'F');
+  // Header text
+  pdf.setFontSize(20);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('My College Finance', 20, 22);
 
-  // Add logo and header text
-  try {
-    // Fetch and add logo image
-    const logoUrl = 'https://static.wixstatic.com/media/c24a60_577eb503a3c1402b846b9ec4a2afd46e~mv2.png';
-    
-    // Create a canvas to convert the image to base64
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const logoImg = new Image();
-    logoImg.crossOrigin = 'anonymous';
-    
-    await new Promise((resolve, reject) => {
-      logoImg.onload = () => {
-        const logoWidth = 30;
-        const logoHeight = 30;
-        
-        // Set canvas size
-        canvas.width = logoWidth * 2; // Higher resolution
-        canvas.height = logoHeight * 2;
-        
-        // Draw image to canvas
-        ctx?.drawImage(logoImg, 0, 0, canvas.width, canvas.height);
-        
-        // Convert to base64 and add to PDF
-        const logoDataUrl = canvas.toDataURL('image/png');
-        pdf.addImage(logoDataUrl, 'PNG', 20, 10, logoWidth, logoHeight);
-        resolve(logoDataUrl);
-      };
-      
-      logoImg.onerror = () => reject(new Error('Failed to load logo'));
-      logoImg.src = logoUrl;
-    });
-    
-    // Header text positioned next to logo
-    pdf.setFontSize(20);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text('My College Finance', 58, 22);
-
-    pdf.setFontSize(10);
-    pdf.setTextColor(220, 220, 255);
-    pdf.text('SAVINGS GOAL DASHBOARD', 58, 32);
-    
-  } catch (error) {
-    console.warn('Logo loading failed, using text-only header:', error);
-    // Fallback if logo fails to load
-    pdf.setFontSize(20);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text('My College Finance', 20, 22);
-
-    pdf.setFontSize(10);
-    pdf.setTextColor(220, 220, 255);
-    pdf.text('SAVINGS GOAL DASHBOARD', 20, 32);
-  }
+  pdf.setFontSize(10);
+  pdf.setTextColor(220, 220, 255);
+  pdf.text('SAVINGS GOAL DASHBOARD', 20, 32);
 
   // Date in header (right aligned)
   pdf.setFontSize(8);
@@ -202,7 +151,7 @@ export async function generateSavingsPlanPDF(
   const totalCardsWidth = (cardWidth * 3) + (cardSpacing * 2);
   const cardsStartX = (pageWidth - totalCardsWidth) / 2;
 
-  // Metric cards data with enhanced styling
+  // Metric cards data
   const metricCards = [
     {
       title: 'TOTAL GOAL',
@@ -230,36 +179,36 @@ export async function generateSavingsPlanPDF(
 
     drawCleanCard(cardX, startY, cardWidth, cardHeight);
 
-    // Add subtle colored top border for visual interest
+    // Add colored top border
     pdf.setDrawColor(card.color[0], card.color[1], card.color[2]);
     pdf.setLineWidth(2);
     pdf.line(cardX, startY, cardX + cardWidth, startY);
 
-    // Category label at top (smaller, uppercase)
+    // Category label at top
     pdf.setFontSize(7);
     pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
     pdf.text(card.title, cardX + 8, startY + 14);
 
-    // Main value (large, bold, centered)
+    // Main value (large, centered)
     pdf.setFontSize(18);
     pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
     const valueWidth = pdf.getTextWidth(card.value);
     pdf.text(card.value, cardX + (cardWidth - valueWidth) / 2, startY + 28);
 
-    // Progress/status indicator (smaller, colored)
+    // Progress indicator (smaller, colored)
     pdf.setFontSize(7);
     pdf.setTextColor(card.color[0], card.color[1], card.color[2]);
     const subtitleWidth = pdf.getTextWidth(card.subtitle);
     pdf.text(card.subtitle, cardX + (cardWidth - subtitleWidth) / 2, startY + 42);
   });
 
-  // Large progress section with side-by-side layout
+  // Large progress section
   const progressSectionY = startY + cardHeight + 24;
   const progressCardWidth = Math.floor(totalCardsWidth * 0.58);
   const detailsCardWidth = totalCardsWidth - progressCardWidth - cardSpacing;
-
-  // Main progress card - enhanced design
   const progressCardHeight = 92;
+
+  // Main progress card
   drawCleanCard(cardsStartX, progressSectionY, progressCardWidth, progressCardHeight);
 
   // Add colored header
@@ -270,14 +219,14 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text('Progress Overview', cardsStartX + 12, progressSectionY + 20);
 
-  // Large donut chart with better positioning
+  // Large donut chart
   drawDonutChart(cardsStartX + 20, progressSectionY + 28, 26, calculations.progressPercent);
 
-  // Progress details next to chart with better spacing
+  // Progress details next to chart
   const detailsX = cardsStartX + 72;
   
-  // Mini stat boxes within the progress card
-  pdf.setFillColor(250, 251, 252); // Very light background
+  // Remaining amount stat box
+  pdf.setFillColor(250, 251, 252);
   pdf.rect(detailsX, progressSectionY + 32, progressCardWidth - 82, 18, 'F');
   
   pdf.setFontSize(8);
@@ -289,7 +238,7 @@ export async function generateSavingsPlanPDF(
   const remaining = (goal.targetAmount || 0) - (goal.currentSavings || 0);
   pdf.text(formatCurrency(remaining), detailsX + 4, progressSectionY + 46);
 
-  // Second mini stat box
+  // Time remaining stat box
   pdf.setFillColor(250, 251, 252);
   pdf.rect(detailsX, progressSectionY + 54, progressCardWidth - 82, 18, 'F');
   
@@ -305,7 +254,7 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
   pdf.text(`Target: ${formatDate(new Date(goal.targetDate || Date.now()))}`, detailsX + 4, progressSectionY + 80);
 
-  // Timeline/Details card with enhanced styling
+  // Timeline card
   const timelineX = cardsStartX + progressCardWidth + cardSpacing;
   drawCleanCard(timelineX, progressSectionY, detailsCardWidth, progressCardHeight);
 
@@ -317,19 +266,18 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text('Timeline', timelineX + 8, progressSectionY + 20);
 
-  // Enhanced progress bars with better visual hierarchy
+  // Progress bars
   pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
   pdf.text('Overall Progress', timelineX + 8, progressSectionY + 32);
   
-  // Progress percentage on the right
   pdf.setFontSize(10);
   pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
   pdf.text(`${Math.round(calculations.progressPercent)}%`, timelineX + detailsCardWidth - 20, progressSectionY + 32);
   
   drawModernProgressBar(timelineX + 8, progressSectionY + 36, detailsCardWidth - 16, 4, calculations.progressPercent, colors.success);
 
-  // Monthly progress with better styling
+  // Monthly progress
   const monthlyProgress = Math.min(100, ((goal.currentSavings || 0) % calculations.monthlyRequired) / calculations.monthlyRequired * 100);
   pdf.setFontSize(8);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
@@ -341,8 +289,8 @@ export async function generateSavingsPlanPDF(
   
   drawModernProgressBar(timelineX + 8, progressSectionY + 54, detailsCardWidth - 16, 4, monthlyProgress, colors.primary);
 
-  // Goal details with better layout
-  pdf.setFillColor(248, 250, 252); // Light background for info section
+  // Goal details
+  pdf.setFillColor(248, 250, 252);
   pdf.rect(timelineX + 8, progressSectionY + 64, detailsCardWidth - 16, 22, 'F');
   
   pdf.setFontSize(7);
@@ -350,7 +298,7 @@ export async function generateSavingsPlanPDF(
   pdf.text('Goal Category:', timelineX + 12, progressSectionY + 72);
   pdf.setFontSize(9);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(goal.goalType.charAt(0).toUpperCase() + goal.goalType.slice(1), timelineX + 12, progressSectionY + 78);
+  pdf.text((goal.goalType || 'general').charAt(0).toUpperCase() + (goal.goalType || 'general').slice(1), timelineX + 12, progressSectionY + 78);
 
   pdf.setFontSize(7);
   pdf.setTextColor(colors.textLight[0], colors.textLight[1], colors.textLight[2]);
@@ -359,7 +307,7 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(userInfo.name, timelineX + 35, progressSectionY + 82);
 
-  // What-if scenarios section with enhanced styling
+  // Scenarios section
   const scenariosY = progressSectionY + progressCardHeight + 16;
   const scenarioCardHeight = 50;
   drawCleanCard(cardsStartX, scenariosY, totalCardsWidth, scenarioCardHeight);
@@ -372,15 +320,14 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text('Optimization Scenarios', cardsStartX + 12, scenariosY + 20);
 
-  // Enhanced scenario boxes with modern card design
+  // Scenario boxes
   const scenarioWidth = (totalCardsWidth - 36) / 2;
   const scenarioHeight = 22;
 
-  // Scenario 1 - Modern card design
-  pdf.setFillColor(220, 252, 231); // Light green background
+  // Scenario 1
+  pdf.setFillColor(220, 252, 231);
   pdf.rect(cardsStartX + 12, scenariosY + 26, scenarioWidth, scenarioHeight, 'F');
   
-  // Add green left border
   pdf.setDrawColor(colors.success[0], colors.success[1], colors.success[2]);
   pdf.setLineWidth(2);
   pdf.line(cardsStartX + 12, scenariosY + 26, cardsStartX + 12, scenariosY + 26 + scenarioHeight);
@@ -392,11 +339,10 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(`${calculations.scenarios.save50More.monthsSaved} months earlier`, cardsStartX + 18, scenariosY + 42);
 
-  // Scenario 2 - Modern card design
-  pdf.setFillColor(237, 233, 254); // Light purple background
+  // Scenario 2
+  pdf.setFillColor(237, 233, 254);
   pdf.rect(cardsStartX + 18 + scenarioWidth, scenariosY + 26, scenarioWidth, scenarioHeight, 'F');
   
-  // Add purple left border
   pdf.setDrawColor(colors.accent[0], colors.accent[1], colors.accent[2]);
   pdf.setLineWidth(2);
   pdf.line(cardsStartX + 18 + scenarioWidth, scenariosY + 26, cardsStartX + 18 + scenarioWidth, scenariosY + 26 + scenarioHeight);
@@ -408,20 +354,18 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(`${calculations.scenarios.save100More.monthsSaved} months earlier`, cardsStartX + 24 + scenarioWidth, scenariosY + 42);
 
-  // Enhanced footer
+  // Footer
   const footerY = pageHeight - 22;
-  pdf.setFillColor(248, 250, 252); // Light gray background
-  pdf.rect(0, footerY, pageWidth, 22, 'F');
+  pdf.setFillColor(colors.border[0], colors.border[1], colors.border[2]);
+  pdf.rect(0, footerY, pageWidth, 1, 'F');
+
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('My College Finance - Educate • Motivate • Elevate', 20, footerY + 12);
 
   pdf.setFontSize(7);
-  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Generated by My College Finance • Your Financial Education Partner', 20, footerY + 10);
+  pdf.text(`Generated on ${formatDate(new Date())}`, pageWidth - 60, footerY + 12);
 
-  const footerRight = `Generated ${formatDate(new Date())} • ${isDarkMode ? 'Dark' : 'Light'} Theme`;
-  const footerRightWidth = pdf.getTextWidth(footerRight);
-  pdf.text(footerRight, pageWidth - 20 - footerRightWidth, footerY + 14);
-
-  // Download with professional filename
-  const fileName = `${goal.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_savings_dashboard_${new Date().toISOString().split('T')[0]}.pdf`;
-  pdf.save(fileName);
+  // Save the PDF
+  pdf.save(`savings-plan-${goal.goalType || 'goal'}-${formatDate(new Date())}.pdf`);
 }
