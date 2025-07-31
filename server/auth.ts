@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { storage } from './storage';
 import { insertUserSchema, type User } from '@shared/schema';
+import { sendNewSignupAlert } from './emailService';
 import type { Request, Response, NextFunction } from 'express';
 
 // Extend Express Request type to include user session
@@ -67,6 +68,15 @@ export async function register(req: Request, res: Response) {
     // Set session
     req.session.userId = user.id;
     req.session.isGuest = false;
+
+    // Send email notification to admins
+    try {
+      await sendNewSignupAlert(username);
+      console.log(`New signup email sent for user: ${username}`);
+    } catch (emailError) {
+      console.error('Failed to send signup email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     // Return user without password
     const { password: _, ...userWithoutPassword } = user;

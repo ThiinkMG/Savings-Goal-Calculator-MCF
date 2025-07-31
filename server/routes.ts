@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertSavingsGoalSchema, updateSavingsGoalSchema } from "@shared/schema";
 import { z } from "zod";
 import { requireAuth, register, login, logout, getCurrentUser, type AuthenticatedRequest } from "./auth";
+import { reportScheduler } from './scheduler';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -162,6 +163,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to calculate scenarios" });
+    }
+  });
+
+  // Admin route for testing monthly report (development only)
+  app.post("/api/admin/test-monthly-report", async (req, res) => {
+    try {
+      const success = await reportScheduler.triggerMonthlyReport();
+      if (success) {
+        res.json({ message: "Monthly report sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send monthly report" });
+      }
+    } catch (error) {
+      console.error('Test monthly report error:', error);
+      res.status(500).json({ message: "Failed to send monthly report" });
     }
   });
 

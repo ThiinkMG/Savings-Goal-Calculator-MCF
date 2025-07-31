@@ -29,6 +29,13 @@ This is a full-stack web application designed to help college students and young
 - User status display showing current login state
 - Easy logout functionality with confirmation
 
+### Email Notification System
+- Automated signup alerts sent to Team@thiinkmediagraphics.com and Contact@mycollegefinance.com
+- Monthly CSV reports with user data and progress tracking
+- Professional HTML email templates with branding
+- Scheduled monthly reports on the 1st of each month at 9 AM
+- Manual testing endpoint for admin reports (/api/admin/test-monthly-report)
+
 ## Previous Changes (v3.0.0 Beta - January 31, 2025)
 
 ### Button Text Color Updates
