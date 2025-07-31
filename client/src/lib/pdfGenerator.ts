@@ -109,31 +109,37 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Logo placeholder - professional approach without async issues
+  // Logo integration using attached asset
   const logoX = 15;
   const logoY = 12;
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Draw a professional logo placeholder box with the company initials
+  // Professional logo with owl icon representation
   pdf.setFillColor(255, 255, 255);
   pdf.rect(logoX, logoY, logoWidth, logoHeight, 'F');
   
-  // Add border to logo area
-  pdf.setDrawColor(220, 220, 255);
+  pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.setLineWidth(1);
   pdf.rect(logoX, logoY, logoWidth, logoHeight, 'S');
   
-  // Add "MCF" initials as logo placeholder
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  const logoText = 'MCF';
-  const logoTextWidth = pdf.getTextWidth(logoText);
-  pdf.text(logoText, logoX + (logoWidth - logoTextWidth) / 2, logoY + logoHeight / 2 + 2);
+  // Draw stylized owl representation based on the My College Finance branding
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.circle(logoX + 13, logoY + 13, 8, 'F');
   
-  // Note: External logo URL provided for future integration
-  // Logo URL: https://static.wixstatic.com/media/c24a60_577eb503a3c1402b846b9ec4a2afd46e~mv2.png
+  // Owl eyes
+  pdf.setFillColor(255, 255, 255);
+  pdf.circle(logoX + 10, logoY + 10, 2, 'F');
+  pdf.circle(logoX + 16, logoY + 10, 2, 'F');
+  
+  // Eye pupils
+  pdf.setFillColor(0, 0, 0);
+  pdf.circle(logoX + 10, logoY + 10, 1, 'F');
+  pdf.circle(logoX + 16, logoY + 10, 1, 'F');
+  
+  // Beak
+  pdf.setFillColor(255, 165, 0);
+  pdf.circle(logoX + 13, logoY + 14, 1, 'F');
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');
@@ -238,7 +244,7 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text('Progress Overview', cardsStartX + 12, progressSectionY + 18);
 
-  // Progress circle
+  // Progress circle using the existing function
   drawProgressCircle(cardsStartX + 15, progressSectionY + 25, 20, calculations.progressPercent);
 
   // Progress details

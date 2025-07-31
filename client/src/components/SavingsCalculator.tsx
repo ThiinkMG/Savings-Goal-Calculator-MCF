@@ -201,9 +201,10 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
         description: "Your savings plan has been downloaded",
       });
     } catch (error) {
+      console.error('PDF generation error:', error);
       toast({
         title: "Export Failed",
-        description: "Unable to generate PDF. Please try again.",
+        description: `Unable to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     }
