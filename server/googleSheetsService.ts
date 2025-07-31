@@ -4,7 +4,6 @@ import { users, savingsGoals } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 // Google Sheets configuration
-const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID || '';
 const USERS_SHEET_NAME = 'Users';
 const GOALS_SHEET_NAME = 'Savings Goals';
 
@@ -135,11 +134,10 @@ class GoogleSheetsService {
     }
   }
 
-  async syncAllData(spreadsheetId?: string): Promise<boolean> {
+  async syncAllData(spreadsheetId: string): Promise<boolean> {
     try {
-      const targetSpreadsheetId = spreadsheetId || SPREADSHEET_ID;
-      if (!targetSpreadsheetId || !this.sheets) {
-        console.log('Google Sheets: No spreadsheet ID or service not initialized');
+      if (!spreadsheetId || !this.sheets) {
+        console.log('Google Sheets: No spreadsheet ID provided or service not initialized');
         return false;
       }
 
@@ -212,19 +210,19 @@ class GoogleSheetsService {
 
       // Clear existing data (except headers)
       await this.sheets.spreadsheets.values.clear({
-        spreadsheetId: targetSpreadsheetId,
+        spreadsheetId,
         range: `${USERS_SHEET_NAME}!A2:H`,
       });
 
       await this.sheets.spreadsheets.values.clear({
-        spreadsheetId: targetSpreadsheetId,
+        spreadsheetId,
         range: `${GOALS_SHEET_NAME}!A2:M`,
       });
 
       // Update with new data
       if (usersData.length > 0) {
         await this.sheets.spreadsheets.values.update({
-          spreadsheetId: targetSpreadsheetId,
+          spreadsheetId,
           range: `${USERS_SHEET_NAME}!A2:H${usersData.length + 1}`,
           valueInputOption: 'RAW',
           requestBody: {
@@ -235,7 +233,7 @@ class GoogleSheetsService {
 
       if (goalsData.length > 0) {
         await this.sheets.spreadsheets.values.update({
-          spreadsheetId: targetSpreadsheetId,
+          spreadsheetId,
           range: `${GOALS_SHEET_NAME}!A2:M${goalsData.length + 1}`,
           valueInputOption: 'RAW',
           requestBody: {
@@ -252,34 +250,46 @@ class GoogleSheetsService {
     }
   }
 
-  async syncUser(userId: string): Promise<boolean> {
+  async syncUser(userId: string, spreadsheetId?: string): Promise<boolean> {
     try {
-      if (!this.sheets) {
+      if (!this.sheets || !spreadsheetId) {
+        console.log('Google Sheets: Service not initialized or no spreadsheet ID provided');
         return false;
       }
 
       // For now, sync all data since partial updates are complex
       // In production, you might want to implement more granular updates
-      return await this.syncAllData();
+      return await this.syncAllData(spreadsheetId);
     } catch (error) {
       console.error('Google Sheets: Failed to sync user:', error);
       return false;
     }
   }
 
-  async syncGoal(goalId: string): Promise<boolean> {
+  async syncGoal(goalId: string, spreadsheetId?: string): Promise<boolean> {
     try {
-      if (!this.sheets) {
+      if (!this.sheets || !spreadsheetId) {
+        console.log('Google Sheets: Service not initialized or no spreadsheet ID provided');
         return false;
       }
 
       // For now, sync all data since partial updates are complex
       // In production, you might want to implement more granular updates
-      return await this.syncAllData();
+      return await this.syncAllData(spreadsheetId);
     } catch (error) {
       console.error('Google Sheets: Failed to sync goal:', error);
       return false;
     }
+  }
+
+  // Set the target spreadsheet for automatic syncing
+  setTargetSpreadsheet(spreadsheetId: string) {
+    process.env.TARGET_SPREADSHEET_ID = spreadsheetId;
+    console.log(`Google Sheets: Target spreadsheet set to ${spreadsheetId}`);
+  }
+
+  getTargetSpreadsheet(): string | undefined {
+    return process.env.TARGET_SPREADSHEET_ID;
   }
 
   getSpreadsheetUrl(spreadsheetId: string): string {

@@ -33,9 +33,12 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     
-    // Sync to Google Sheets
+    // Sync to Google Sheets if target spreadsheet is set
     try {
-      await googleSheetsService.syncUser(user.id);
+      const targetSpreadsheetId = googleSheetsService.getTargetSpreadsheet();
+      if (targetSpreadsheetId) {
+        await googleSheetsService.syncUser(user.id, targetSpreadsheetId);
+      }
     } catch (error) {
       console.error('Failed to sync user to Google Sheets:', error);
     }
@@ -63,9 +66,12 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     
-    // Sync to Google Sheets
+    // Sync to Google Sheets if target spreadsheet is set
     try {
-      await googleSheetsService.syncGoal(goal.id);
+      const targetSpreadsheetId = googleSheetsService.getTargetSpreadsheet();
+      if (targetSpreadsheetId) {
+        await googleSheetsService.syncGoal(goal.id, targetSpreadsheetId);
+      }
     } catch (error) {
       console.error('Failed to sync goal to Google Sheets:', error);
     }
@@ -83,10 +89,13 @@ export class DatabaseStorage implements IStorage {
       .where(eq(savingsGoals.id, id))
       .returning();
     
-    // Sync to Google Sheets
+    // Sync to Google Sheets if target spreadsheet is set
     if (goal) {
       try {
-        await googleSheetsService.syncGoal(goal.id);
+        const targetSpreadsheetId = googleSheetsService.getTargetSpreadsheet();
+        if (targetSpreadsheetId) {
+          await googleSheetsService.syncGoal(goal.id, targetSpreadsheetId);
+        }
       } catch (error) {
         console.error('Failed to sync updated goal to Google Sheets:', error);
       }
@@ -105,10 +114,13 @@ export class DatabaseStorage implements IStorage {
       .where(eq(savingsGoals.id, id))
       .returning();
     
-    // Sync to Google Sheets
+    // Sync to Google Sheets if target spreadsheet is set
     if (goal) {
       try {
-        await googleSheetsService.syncGoal(goal.id);
+        const targetSpreadsheetId = googleSheetsService.getTargetSpreadsheet();
+        if (targetSpreadsheetId) {
+          await googleSheetsService.syncGoal(goal.id, targetSpreadsheetId);
+        }
       } catch (error) {
         console.error('Failed to sync deleted goal to Google Sheets:', error);
       }

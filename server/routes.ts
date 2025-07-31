@@ -209,12 +209,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/sync-google-sheets", async (req, res) => {
     try {
       const { spreadsheetId } = req.body;
+      
+      if (!spreadsheetId) {
+        return res.status(400).json({ message: "Spreadsheet ID is required" });
+      }
+      
       const success = await googleSheetsService.syncAllData(spreadsheetId);
       
       if (success) {
         res.json({ 
           success: true,
-          message: "Data synced to Google Sheets successfully" 
+          message: "Data synced to Google Sheets successfully",
+          spreadsheetUrl: googleSheetsService.getSpreadsheetUrl(spreadsheetId)
         });
       } else {
         res.status(500).json({ message: "Failed to sync data to Google Sheets" });
@@ -222,6 +228,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Sync Google Sheets error:', error);
       res.status(500).json({ message: "Failed to sync data to Google Sheets" });
+    }
+  });
+
+  // Admin route to set target spreadsheet for automatic syncing
+  app.post("/api/admin/set-target-spreadsheet", async (req, res) => {
+    try {
+      const { spreadsheetId } = req.body;
+      
+      if (!spreadsheetId) {
+        return res.status(400).json({ message: "Spreadsheet ID is required" });
+      }
+      
+      googleSheetsService.setTargetSpreadsheet(spreadsheetId);
+      
+      // Initialize the spreadsheet with headers and current data
+      const success = await googleSheetsService.syncAllData(spreadsheetId);
+      
+      if (success) {
+        res.json({ 
+          success: true,
+          message: "Target spreadsheet set and initialized successfully",
+          spreadsheetId,
+          spreadsheetUrl: googleSheetsService.getSpreadsheetUrl(spreadsheetId)
+        });
+      } else {
+        res.status(500).json({ message: "Failed to initialize target spreadsheet" });
+      }
+    } catch (error) {
+      console.error('Set target spreadsheet error:', error);
+      res.status(500).json({ message: "Failed to set target spreadsheet" });
+    }
+  });
+
+  // Admin route to get current target spreadsheet
+  app.get("/api/admin/target-spreadsheet", async (req, res) => {
+    try {
+      const targetSpreadsheetId = googleSheetsService.getTargetSpreadsheet();
+      
+      if (targetSpreadsheetId) {
+        res.json({ 
+          spreadsheetId: targetSpreadsheetId,
+          spreadsheetUrl: googleSheetsService.getSpreadsheetUrl(targetSpreadsheetId)
+        });
+      } else {
+        res.json({ 
+          spreadsheetId: null,
+          message: "No target spreadsheet set"
+        });
+      }
+    } catch (error) {
+      console.error('Get target spreadsheet error:', error);
+      res.status(500).json({ message: "Failed to get target spreadsheet info" });
     }
   });
 
