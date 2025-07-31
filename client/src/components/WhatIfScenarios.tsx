@@ -190,7 +190,7 @@ export function WhatIfScenarios({
             <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 {dailyAmount > 15 
-                  ? `This means finding an extra ${formatCurrency(dailyAmount)} every single day - like skipping lunch out daily.`
+                  ? `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
                   : dailyAmount > 10
                   ? "This is like saving the cost of coffee + pastry every day without exception."
                   : "This breaks down to very manageable daily savings - about the cost of a coffee."
