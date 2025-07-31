@@ -180,12 +180,8 @@ export default function HomePage() {
               Empowering students with financial education and smart tools for a brighter future.
             </p>
             
-            {/* Copyright */}
+            {/* Links and Footer Info */}
             <div className="border-t border-gray-700 pt-6">
-              <p className="text-gray-400 text-sm mb-4">
-                © 2025 My College Finance, LLC. All rights reserved.
-              </p>
-              
               {/* Links */}
               <div className="flex justify-center space-x-8 text-sm text-gray-400 mb-6">
                 <a 
@@ -219,9 +215,9 @@ export default function HomePage() {
                 Educate • Motivate • Elevate
               </p>
               
-              {/* App Name and Version */}
+              {/* Copyright and App Version */}
               <p className="text-gray-500 text-xs font-medium">
-                Savings Goal Calculator • v2.0.5 (Beta)
+                © 2025 My College Finance, LLC. All rights reserved. Savings Goal Calculator • v3.0.0 (Beta)
               </p>
             </div>
           </div>
