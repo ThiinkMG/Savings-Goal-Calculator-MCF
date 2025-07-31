@@ -42,6 +42,7 @@ This is a full-stack web application designed to help college students and young
 - Separate sheets for user data and savings goals with comprehensive analytics
 - Admin endpoints for creating and managing spreadsheets
 - Live progress tracking and financial metrics in spreadsheet format
+- Target spreadsheet configured: 14rnoxqsneEJaLliGvfAjEeYwpo5KOPJA89WUjNArr2c
 
 ## Previous Changes (v3.0.0 Beta - January 31, 2025)
 
