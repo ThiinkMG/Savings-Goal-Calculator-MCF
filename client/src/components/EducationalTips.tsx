@@ -7,6 +7,10 @@ interface Tip {
   content: string;
   gradient: string;
   textColor: string;
+  link?: {
+    text: string;
+    url: string;
+  };
 }
 
 const tipsByGoalType: Record<GoalType, Tip[]> = {
@@ -113,13 +117,27 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       title: '50/30/20 Rule',
       content: 'Allocate 50% for needs, 30% for wants, and 20% for savings and debt repayment.',
       gradient: 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20',
-      textColor: 'text-blue-900 dark:text-blue-100'
+      textColor: 'text-blue-900 dark:text-blue-100',
+      link: {
+        text: 'Try App →',
+        url: 'https://www.mycollegefinance.com/50-30-20-budget-calculator'
+      }
     },
     {
       title: 'Automate Savings',
       content: 'Set up automatic transfers to make saving effortless and consistent.',
       gradient: 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20',
       textColor: 'text-green-900 dark:text-green-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ]
 };
@@ -150,6 +168,16 @@ export function EducationalTips({ selectedGoal }: EducationalTipsProps) {
               <p className={`text-sm ${tip.textColor.replace('900', '700').replace('100', '300')}`}>
                 {tip.content}
               </p>
+              {tip.link && (
+                <a
+                  href={tip.link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-block mt-2 text-sm font-medium ${tip.textColor} hover:underline cursor-pointer`}
+                >
+                  {tip.link.text}
+                </a>
+              )}
             </div>
           ))}
           
