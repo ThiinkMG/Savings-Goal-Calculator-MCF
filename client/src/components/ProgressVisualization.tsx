@@ -9,6 +9,7 @@ interface ProgressVisualizationProps {
   monthlyRequired: number;
   monthsRemaining: number;
   progressPercent: number;
+  monthlyCapacity: number;
 }
 
 export function ProgressVisualization({
@@ -16,7 +17,8 @@ export function ProgressVisualization({
   currentSavings,
   monthlyRequired,
   monthsRemaining,
-  progressPercent
+  progressPercent,
+  monthlyCapacity
 }: ProgressVisualizationProps) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
@@ -30,6 +32,10 @@ export function ProgressVisualization({
   const circumference = 2 * Math.PI * 56;
   const strokeDasharray = (animatedProgress / 100) * circumference;
   const amountRemaining = Math.max(0, targetAmount - currentSavings);
+  
+  // Calculate projected savings with current capacity
+  const projectedTotal = currentSavings + (monthlyCapacity * monthsRemaining);
+  const isCapacityInsufficient = monthlyCapacity < monthlyRequired;
 
   const milestones = [
     { label: 'Goal Set', achieved: true, icon: <Star className="w-3 h-3" /> },
@@ -91,6 +97,28 @@ export function ProgressVisualization({
             <span className="text-sm text-muted-foreground">Monthly Required</span>
             <span className="font-semibold brand-blue text-lg">
               ${monthlyRequired.toLocaleString()}
+            </span>
+          </div>
+          
+          <div className={`flex justify-between items-center p-4 rounded-lg ${
+            isCapacityInsufficient 
+              ? 'bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800' 
+              : 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
+          }`}>
+            <span className="text-sm text-muted-foreground">Your Monthly Capacity</span>
+            <span className={`font-semibold text-lg ${
+              isCapacityInsufficient ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
+            }`}>
+              ${monthlyCapacity.toLocaleString()}
+            </span>
+          </div>
+          
+          <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
+            <span className="text-sm text-muted-foreground">Projected Total</span>
+            <span className={`font-semibold text-lg ${
+              projectedTotal >= targetAmount ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'
+            }`}>
+              ${projectedTotal.toLocaleString()}
             </span>
           </div>
           

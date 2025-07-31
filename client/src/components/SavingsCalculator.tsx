@@ -522,6 +522,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
             monthlyRequired={calculations.monthlyRequired}
             monthsRemaining={calculations.monthsRemaining}
             progressPercent={calculations.progressPercent}
+            monthlyCapacity={monthlyCapacity[0]}
           />
         )}
 
