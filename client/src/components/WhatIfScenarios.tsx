@@ -388,6 +388,15 @@ export function WhatIfScenarios({
                 </p>
               </div>
             )}
+
+            {!isOverCapacity && monthlyRequired <= 300 && (
+              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                <h4 className="font-medium mb-2 text-green-700 dark:text-green-300">Congratulations, you're good to go!</h4>
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  Your savings plan looks realistic and achievable. Alerts are only displayed when there's an issue or problem with your savings goal.
+                </p>
+              </div>
+            )}
           </div>
         </DropdownSection>
       </CardContent>
