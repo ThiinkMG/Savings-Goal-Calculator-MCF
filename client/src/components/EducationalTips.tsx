@@ -26,6 +26,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Look into tax-advantaged education savings accounts like 529 plans.',
       gradient: 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20',
       textColor: 'text-purple-900 dark:text-purple-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   emergency: [
@@ -40,6 +50,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Keep emergency funds in easily accessible, high-yield savings accounts.',
       gradient: 'bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20',
       textColor: 'text-teal-900 dark:text-teal-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   home: [
@@ -54,6 +74,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Remember to budget for closing costs, inspections, and moving expenses.',
       gradient: 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20',
       textColor: 'text-yellow-900 dark:text-yellow-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   vacation: [
@@ -68,6 +98,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Consider using travel reward credit cards to maximize your vacation budget.',
       gradient: 'bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20',
       textColor: 'text-rose-900 dark:text-rose-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   car: [
@@ -82,6 +122,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Used cars can offer better value, but factor in potential repair costs.',
       gradient: 'bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20',
       textColor: 'text-orange-900 dark:text-orange-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   retirement: [
@@ -96,6 +146,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Always contribute enough to get your full employer 401(k) match - it\'s free money!',
       gradient: 'bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20',
       textColor: 'text-violet-900 dark:text-violet-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   investment: [
@@ -110,6 +170,16 @@ const tipsByGoalType: Record<GoalType, Tip[]> = {
       content: 'Invest the same amount regularly to reduce the impact of market volatility.',
       gradient: 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20',
       textColor: 'text-green-900 dark:text-green-100'
+    },
+    {
+      title: 'Knowledge Bank',
+      content: 'Explore our comprehensive financial learning hub with interactive tools, guides, and resources to master your personal finances.',
+      gradient: 'bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20',
+      textColor: 'text-orange-900 dark:text-orange-100',
+      link: {
+        text: 'Learn more →',
+        url: 'https://www.mycollegefinance.com/knowledge-bank'
+      }
     }
   ],
   other: [
