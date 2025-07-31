@@ -128,50 +128,37 @@ export default function HomePage() {
             />
 
             {/* 50/30/20 Calculator Button */}
-            <div className="text-center mt-12 mb-8">
-              <div className="inline-block">
-                <a 
-                  href="https://www.mycollegefinance.com/50-30-20-budget-calculator"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative inline-flex items-center justify-center"
-                >
-                  {/* Main button container */}
-                  <div className="relative bg-gradient-to-r from-brand-blue via-brand-light-blue to-brand-blue bg-size-200 bg-pos-0 hover:bg-pos-100 text-white px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-500 ease-out transform hover:-translate-y-2 hover:scale-105 border-2 border-white/20 hover:border-white/40">
-                    
-                    {/* Shimmer effect background */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-                    
-                    {/* Button content */}
-                    <div className="relative flex items-center gap-3">
-                      <span className="tracking-wide">Try 50/30/20 Calculator</span>
-                      <div className="transform group-hover:translate-x-1 transition-transform duration-300 ease-out">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </div>
+            <div className="text-center mt-12 mb-8 relative z-10">
+              <a 
+                href="https://www.mycollegefinance.com/50-30-20-budget-calculator"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-block"
+              >
+                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 text-white px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
+                  
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                  
+                  {/* Button content */}
+                  <div className="relative flex items-center gap-3">
+                    <span className="tracking-wide">Try 50/30/20 Calculator</span>
+                    <div className="transform group-hover:translate-x-1 transition-transform duration-300 ease-out">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
                     </div>
-                    
-                    {/* Animated underline */}
-                    <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
-                    
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-brand-blue/50 to-brand-light-blue/50 opacity-0 group-hover:opacity-100 blur-xl transform scale-110 transition-all duration-500 ease-out -z-10"></div>
                   </div>
                   
-                  {/* Floating particles effect */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-2 left-4 w-1 h-1 bg-white/60 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-300"></div>
-                    <div className="absolute top-4 right-6 w-1 h-1 bg-white/60 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-300 delay-100"></div>
-                    <div className="absolute bottom-3 left-8 w-1 h-1 bg-white/60 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-300 delay-200"></div>
-                  </div>
-                </a>
-                
-                {/* Supporting text */}
-                <p className="text-sm text-muted-foreground mt-4 max-w-md mx-auto">
-                  Master your budget with our comprehensive 50/30/20 rule calculator
-                </p>
-              </div>
+                  {/* Animated underline */}
+                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
+                </div>
+              </a>
+              
+              {/* Supporting text */}
+              <p className="text-sm text-muted-foreground mt-4 max-w-md mx-auto">
+                Master your budget with our comprehensive 50/30/20 rule calculator
+              </p>
             </div>
           </>
         )}
