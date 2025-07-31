@@ -115,7 +115,7 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Create a clean, professional logo design that matches the brand
+  // Create a professional money bag savings icon
   // White background circle for logo
   pdf.setFillColor(255, 255, 255);
   pdf.circle(logoX + logoWidth/2, logoY + logoHeight/2, logoWidth/2, 'F');
@@ -125,31 +125,44 @@ export async function generateSavingsPlanPDF(
   pdf.setLineWidth(2);
   pdf.circle(logoX + logoWidth/2, logoY + logoHeight/2, logoWidth/2, 'S');
   
-  // Owl design inside the circle - simplified but professional
+  // Money bag savings icon design
   const centerX = logoX + logoWidth/2;
   const centerY = logoY + logoHeight/2;
   
-  // Owl head (blue circle)
-  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.circle(centerX, centerY - 2, 8, 'F');
+  // Money bag body (rounded rectangle with green color for financial theme)
+  pdf.setFillColor(34, 197, 94); // Green color for money
+  pdf.rect(centerX - 6, centerY - 2, 12, 10, 'F');
   
-  // Owl eyes (white circles)
-  pdf.setFillColor(255, 255, 255);
-  pdf.circle(centerX - 3, centerY - 4, 2, 'F');
-  pdf.circle(centerX + 3, centerY - 4, 2, 'F');
+  // Money bag top (drawstring area)
+  pdf.setFillColor(22, 163, 74); // Darker green
+  pdf.rect(centerX - 6, centerY - 4, 12, 3, 'F');
   
-  // Eye pupils (black dots)
-  pdf.setFillColor(0, 0, 0);
-  pdf.circle(centerX - 3, centerY - 4, 1, 'F');
-  pdf.circle(centerX + 3, centerY - 4, 1, 'F');
+  // Drawstring ties
+  pdf.setLineWidth(1);
+  pdf.setDrawColor(22, 163, 74);
+  pdf.line(centerX - 2, centerY - 4, centerX - 2, centerY - 6);
+  pdf.line(centerX + 2, centerY - 4, centerX + 2, centerY - 6);
   
-  // Beak (orange triangle effect)
-  pdf.setFillColor(255, 165, 0);
-  pdf.circle(centerX, centerY - 1, 1, 'F');
+  // Dollar sign on the bag
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(255, 255, 255);
+  const dollarSign = '$';
+  const dollarWidth = pdf.getTextWidth(dollarSign);
+  pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 2);
   
-  // Body suggestion (small blue rectangle)
-  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.rect(centerX - 2, centerY + 2, 4, 4, 'F');
+  // Coins around the bag (small circles in gold color)
+  pdf.setFillColor(234, 179, 8); // Gold color
+  pdf.circle(centerX - 8, centerY + 4, 1.5, 'F');
+  pdf.circle(centerX + 8, centerY + 3, 1.5, 'F');
+  pdf.circle(centerX + 6, centerY + 7, 1, 'F');
+  
+  // Small dollar signs on coins
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(4);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('$', centerX - 8.5, centerY + 4.5);
+  pdf.text('$', centerX + 7.5, centerY + 3.5);
   
   // "MCF" text at bottom of logo
   pdf.setFont('helvetica', 'bold');
