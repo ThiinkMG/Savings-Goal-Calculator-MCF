@@ -115,31 +115,60 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Professional logo with owl icon representation
-  pdf.setFillColor(255, 255, 255);
-  pdf.rect(logoX, logoY, logoWidth, logoHeight, 'F');
-  
-  pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.setLineWidth(1);
-  pdf.rect(logoX, logoY, logoWidth, logoHeight, 'S');
-  
-  // Draw stylized owl representation based on the My College Finance branding
-  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.circle(logoX + 13, logoY + 13, 8, 'F');
-  
-  // Owl eyes
-  pdf.setFillColor(255, 255, 255);
-  pdf.circle(logoX + 10, logoY + 10, 2, 'F');
-  pdf.circle(logoX + 16, logoY + 10, 2, 'F');
-  
-  // Eye pupils
-  pdf.setFillColor(0, 0, 0);
-  pdf.circle(logoX + 10, logoY + 10, 1, 'F');
-  pdf.circle(logoX + 16, logoY + 10, 1, 'F');
-  
-  // Beak
-  pdf.setFillColor(255, 165, 0);
-  pdf.circle(logoX + 13, logoY + 14, 1, 'F');
+  try {
+    // Try to fetch the logo from the attached assets
+    const response = await fetch('/attached_assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png');
+    if (response.ok) {
+      const blob = await response.blob();
+      const logoDataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      pdf.addImage(logoDataUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
+    } else {
+      throw new Error('Could not fetch logo from assets');
+    }
+    
+  } catch (error) {
+    console.warn('Logo loading failed, using professional fallback:', error);
+    
+    // Professional fallback with enhanced owl design
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(logoX, logoY, logoWidth, logoHeight, 'F');
+    
+    pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+    pdf.setLineWidth(1);
+    pdf.rect(logoX, logoY, logoWidth, logoHeight, 'S');
+    
+    // Draw enhanced owl representation inspired by the My College Finance branding
+    // Owl head circle
+    pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+    pdf.circle(logoX + 13, logoY + 13, 8, 'F');
+    
+    // Owl eyes (larger and more prominent)
+    pdf.setFillColor(255, 255, 255);
+    pdf.circle(logoX + 10, logoY + 11, 2.5, 'F');
+    pdf.circle(logoX + 16, logoY + 11, 2.5, 'F');
+    
+    // Eye pupils
+    pdf.setFillColor(0, 0, 0);
+    pdf.circle(logoX + 10, logoY + 11, 1.2, 'F');
+    pdf.circle(logoX + 16, logoY + 11, 1.2, 'F');
+    
+    // Beak (more prominent)
+    pdf.setFillColor(255, 165, 0);
+    pdf.circle(logoX + 13, logoY + 15, 1.5, 'F');
+    
+    // Add "MCF" text below as brand identifier
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(6);
+    pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+    const mcfText = 'MCF';
+    const mcfWidth = pdf.getTextWidth(mcfText);
+    pdf.text(mcfText, logoX + (logoWidth - mcfWidth) / 2, logoY + logoHeight - 2);
+  }
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');
