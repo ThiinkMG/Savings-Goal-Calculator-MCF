@@ -115,31 +115,58 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  // Create a simple professional coin logo
+  // Create a professional styled coin logo with depth and shine
   const centerX = logoX + logoWidth/2;
   const centerY = logoY + logoHeight/2;
+  const coinRadius = logoWidth/2 - 2;
   
-  // Gold coin background
-  pdf.setFillColor(234, 179, 8); // Gold color
-  pdf.circle(centerX, centerY, logoWidth/2 - 2, 'F');
+  // Shadow/depth effect - offset darker circle
+  pdf.setFillColor(160, 120, 5);
+  pdf.circle(centerX + 1, centerY + 1, coinRadius, 'F');
   
-  // Darker gold border for depth
-  pdf.setDrawColor(180, 140, 6);
+  // Main gold coin background
+  pdf.setFillColor(255, 215, 0); // Bright gold
+  pdf.circle(centerX, centerY, coinRadius, 'F');
+  
+  // Outer rim with darker gold for 3D effect
+  pdf.setDrawColor(184, 134, 11);
   pdf.setLineWidth(2);
-  pdf.circle(centerX, centerY, logoWidth/2 - 2, 'S');
+  pdf.circle(centerX, centerY, coinRadius, 'S');
   
-  // Inner circle for coin detail
-  pdf.setDrawColor(255, 215, 0);
+  // Inner decorative ring
+  pdf.setDrawColor(255, 235, 59);
   pdf.setLineWidth(1);
-  pdf.circle(centerX, centerY, logoWidth/2 - 4, 'S');
+  pdf.circle(centerX, centerY, coinRadius - 3, 'S');
   
-  // Dollar sign on the coin
+  // Highlight shine effect (top-left arc simulation)
+  pdf.setFillColor(255, 255, 255);
+  pdf.circle(centerX - 4, centerY - 4, 2, 'F');
+  
+  // Additional small shine dots for sparkle effect
+  pdf.setFillColor(255, 250, 205);
+  pdf.circle(centerX + 3, centerY - 5, 0.8, 'F');
+  pdf.circle(centerX - 6, centerY + 2, 0.6, 'F');
+  
+  // Dollar sign with shadow effect
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(16);
+  
+  // Shadow for dollar sign
+  pdf.setTextColor(139, 69, 19);
   const dollarSign = '$';
   const dollarWidth = pdf.getTextWidth(dollarSign);
+  pdf.text(dollarSign, centerX - dollarWidth/2 + 0.5, centerY + 3.5);
+  
+  // Main dollar sign
+  pdf.setTextColor(255, 255, 255);
   pdf.text(dollarSign, centerX - dollarWidth/2, centerY + 3);
+  
+  // Additional decorative elements - small stars around the coin
+  pdf.setFillColor(255, 223, 0);
+  pdf.setFontSize(6);
+  pdf.text('★', centerX - coinRadius - 4, centerY - 2);
+  pdf.text('★', centerX + coinRadius + 2, centerY + 2);
+  pdf.text('★', centerX + 2, centerY - coinRadius - 3);
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');
