@@ -227,7 +227,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               <div>
                 <Label htmlFor="start-date">Start Date</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300" />
                   <Input
                     id="start-date"
                     type="date"
@@ -274,7 +274,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
                   <span className="text-xs text-muted-foreground">Total amount you want to save</span>
                 </div>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300" />
                   <Input
                     id="target-amount"
                     type="number"
@@ -304,7 +304,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               <div>
                 <Label htmlFor="current-savings">Current Savings</Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300" />
                   <Input
                     id="current-savings"
                     type="number"
@@ -321,7 +321,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               <div>
                 <Label htmlFor="target-date">Target Date</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground dark:text-gray-400" />
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300" />
                   <Input
                     id="target-date"
                     type="date"
