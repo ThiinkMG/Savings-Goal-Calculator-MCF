@@ -115,60 +115,49 @@ export async function generateSavingsPlanPDF(
   const logoWidth = 26;
   const logoHeight = 26;
   
-  try {
-    // Try to fetch the logo from the attached assets
-    const response = await fetch('/attached_assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png');
-    if (response.ok) {
-      const blob = await response.blob();
-      const logoDataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-      pdf.addImage(logoDataUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
-    } else {
-      throw new Error('Could not fetch logo from assets');
-    }
-    
-  } catch (error) {
-    console.warn('Logo loading failed, using professional fallback:', error);
-    
-    // Professional fallback with enhanced owl design
-    pdf.setFillColor(255, 255, 255);
-    pdf.rect(logoX, logoY, logoWidth, logoHeight, 'F');
-    
-    pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    pdf.setLineWidth(1);
-    pdf.rect(logoX, logoY, logoWidth, logoHeight, 'S');
-    
-    // Draw enhanced owl representation inspired by the My College Finance branding
-    // Owl head circle
-    pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    pdf.circle(logoX + 13, logoY + 13, 8, 'F');
-    
-    // Owl eyes (larger and more prominent)
-    pdf.setFillColor(255, 255, 255);
-    pdf.circle(logoX + 10, logoY + 11, 2.5, 'F');
-    pdf.circle(logoX + 16, logoY + 11, 2.5, 'F');
-    
-    // Eye pupils
-    pdf.setFillColor(0, 0, 0);
-    pdf.circle(logoX + 10, logoY + 11, 1.2, 'F');
-    pdf.circle(logoX + 16, logoY + 11, 1.2, 'F');
-    
-    // Beak (more prominent)
-    pdf.setFillColor(255, 165, 0);
-    pdf.circle(logoX + 13, logoY + 15, 1.5, 'F');
-    
-    // Add "MCF" text below as brand identifier
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(6);
-    pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    const mcfText = 'MCF';
-    const mcfWidth = pdf.getTextWidth(mcfText);
-    pdf.text(mcfText, logoX + (logoWidth - mcfWidth) / 2, logoY + logoHeight - 2);
-  }
+  // Create a clean, professional logo design that matches the brand
+  // White background circle for logo
+  pdf.setFillColor(255, 255, 255);
+  pdf.circle(logoX + logoWidth/2, logoY + logoHeight/2, logoWidth/2, 'F');
+  
+  // Blue border for the logo circle
+  pdf.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.setLineWidth(2);
+  pdf.circle(logoX + logoWidth/2, logoY + logoHeight/2, logoWidth/2, 'S');
+  
+  // Owl design inside the circle - simplified but professional
+  const centerX = logoX + logoWidth/2;
+  const centerY = logoY + logoHeight/2;
+  
+  // Owl head (blue circle)
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.circle(centerX, centerY - 2, 8, 'F');
+  
+  // Owl eyes (white circles)
+  pdf.setFillColor(255, 255, 255);
+  pdf.circle(centerX - 3, centerY - 4, 2, 'F');
+  pdf.circle(centerX + 3, centerY - 4, 2, 'F');
+  
+  // Eye pupils (black dots)
+  pdf.setFillColor(0, 0, 0);
+  pdf.circle(centerX - 3, centerY - 4, 1, 'F');
+  pdf.circle(centerX + 3, centerY - 4, 1, 'F');
+  
+  // Beak (orange triangle effect)
+  pdf.setFillColor(255, 165, 0);
+  pdf.circle(centerX, centerY - 1, 1, 'F');
+  
+  // Body suggestion (small blue rectangle)
+  pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.rect(centerX - 2, centerY + 2, 4, 4, 'F');
+  
+  // "MCF" text at bottom of logo
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(5);
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  const mcfText = 'MCF';
+  const mcfWidth = pdf.getTextWidth(mcfText);
+  pdf.text(mcfText, centerX - mcfWidth/2, logoY + logoHeight - 3);
 
   // Typography with bold title - positioned next to logo area (x=48)
   pdf.setFont('helvetica', 'bold');

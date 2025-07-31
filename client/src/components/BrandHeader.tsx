@@ -1,7 +1,7 @@
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
-import { OwlLogo } from '@/assets/owl-logo';
+import { Logo } from './Logo';
 
 export function BrandHeader() {
   const { theme, toggleTheme } = useTheme();
@@ -11,7 +11,7 @@ export function BrandHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <OwlLogo className="w-12 h-12 text-brand-blue" />
+            <Logo size={48} className="animate-gentle-bounce" />
             <div>
               <h1 className="text-xl font-black brand-blue font-sans">
                 MY COLLEGE FINANCE
