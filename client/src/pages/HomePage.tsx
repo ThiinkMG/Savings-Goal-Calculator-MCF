@@ -5,7 +5,7 @@ import { BrandHeader } from '@/components/BrandHeader';
 import { SavingsCalculator } from '@/components/SavingsCalculator';
 import { MultipleGoalsManager } from '@/components/MultipleGoalsManager';
 import { type SavingsGoal } from '@shared/schema';
-import { GraduationCap, TrendingUp, Smartphone, ArrowLeft } from 'lucide-react';
+import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus } from 'lucide-react';
 
 export default function HomePage() {
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
@@ -114,7 +114,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-brand-blue hover:bg-brand-blue/90 text-[#030711] px-8 py-3 text-lg font-semibold"
               >
-                <GraduationCap className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-2" />
                 Create New Savings Goal
               </Button>
             </div>
