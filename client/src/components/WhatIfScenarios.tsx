@@ -220,28 +220,48 @@ export function WhatIfScenarios({
           onToggle={() => toggleSection("realistic-tradeoffs")}
         >
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <span className="text-xl">☕</span>
-              <span className="text-sm">
-                Skip coffee shop <strong>{coffeePerWeek}</strong> times per week
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">☕</span>
+                <span className="text-sm">
+                  Skip coffee shop <strong>{coffeePerWeek}</strong> times per week
+                </span>
+              </div>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                Save up to ${Math.round(coffeePerWeek * 5.50 * 4.33)}
               </span>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <span className="text-xl">🍽️</span>
-              <span className="text-sm">
-                Skip lunch out <strong>{lunchPerWeek}</strong> times per week
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🍽️</span>
+                <span className="text-sm">
+                  Skip lunch out <strong>{lunchPerWeek}</strong> times per week
+                </span>
+              </div>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                Save up to ${Math.round(lunchPerWeek * 15 * 4.33)}
               </span>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <span className="text-xl">📱</span>
-              <span className="text-sm">
-                Choose <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">📱</span>
+                <span className="text-sm">
+                  Choose <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5
+                </span>
+              </div>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                Save up to ${Math.round(streamingServices * 15)}
               </span>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <span className="text-xl">🎉</span>
-              <span className="text-sm">
-                Limit nights out to <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> per month
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🎉</span>
+                <span className="text-sm">
+                  Limit nights out to <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> per month
+                </span>
+              </div>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                Save up to ${Math.round(nightsOutPerMonth * 50)}
               </span>
             </div>
           </div>
