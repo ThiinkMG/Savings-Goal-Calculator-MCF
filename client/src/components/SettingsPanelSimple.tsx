@@ -337,7 +337,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 border-b bg-[#1f1f1f]">
           <h2 className="text-lg font-semibold">Settings</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
@@ -365,7 +365,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 bg-[#1f1f1f]">
           {renderTabContent()}
         </div>
       </div>
