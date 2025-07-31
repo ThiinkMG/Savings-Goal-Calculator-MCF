@@ -116,67 +116,67 @@ export async function generateSavingsPlanPDF(
   pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Clean header design - increased height to accommodate goal name
-  const headerHeight = 78;
+  // Improved header design with proper hierarchy and reduced height
+  const headerHeight = 50;
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
   pdf.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Header accent stripe
+  // Caramel accent bottom border instead of mixed text usage
   pdf.setFillColor(colors.warning[0], colors.warning[1], colors.warning[2]);
-  pdf.rect(0, headerHeight - 4, pageWidth, 4, 'F');
+  pdf.rect(0, headerHeight - 2, pageWidth, 2, 'F');
 
-  // Enhanced personalized header following brand guidelines
-  pdf.setFont('helvetica', 'bold'); // Simulating Poppins Bold
-  pdf.setFontSize(20);
+  // HERO: Goal Name - Most prominent element
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(24);
   pdf.setTextColor(255, 255, 255);
-  
-  // Goal number logic: use goal.id if it exists and isn't 'temp-id', otherwise default to 1
-  const goalNumber = (goal.id && goal.id !== 'temp-id') ? goal.id : 1;
-  const personalizedTitle = `${userInfo.name}: Goal #${goalNumber} Report`;
-  pdf.text(personalizedTitle, 20, 28);
-
-  // Goal name display - use goal name or default
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(13);
-  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]); // Marigold color
   const goalName = goal.name || 'My Current Goal';
-  pdf.text(`"${goalName}"`, 20, 40);
+  pdf.text(`"${goalName}"`, 20, 20);
 
-  // Brand name with WHITE and BOLD styling as requested
+  // SECONDARY: User context - Medium size
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(15); // Simulating Lato Semi-Bold scaled for PDF
-  pdf.setTextColor(255, 255, 255); // WHITE as requested
-  pdf.text('My College Finance', 20, 52);
+  pdf.setFontSize(16);
+  pdf.setTextColor(200, 220, 255); // Light blue for context
+  const goalNumber = (goal.id && goal.id !== 'temp-id') ? goal.id : 1;
+  const userContext = `${userInfo.name}: Goal #${goalNumber} Report`;
+  pdf.text(userContext, 20, 32);
 
-  // Subtitle
+  // TERTIARY: Brand name - Caramel accent, smaller
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(12);
+  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.text('My College Finance', 20, 42);
+
+  // DESCRIPTOR: Report type - Smallest, muted
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(11); // Simulating Open Sans Regular scaled for PDF
-  pdf.setTextColor(220, 230, 255);
-  pdf.text('SAVINGS GOAL ANALYSIS REPORT', 20, 62);
+  pdf.setFontSize(10);
+  pdf.setTextColor(180, 200, 240);
+  pdf.text('Savings Goal Analysis Report', 100, 42);
 
-  // Right side header info
+  // METADATA: Right-aligned utility information
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.setTextColor(200, 220, 255);
+  pdf.setTextColor(180, 200, 240);
   const dateText = `Generated: ${formatDate(new Date())}`;
   const dateWidth = pdf.getTextWidth(dateText);
-  pdf.text(dateText, pageWidth - 20 - dateWidth, 30);
+  pdf.text(dateText, pageWidth - 20 - dateWidth, 18);
 
-  // Goal type indicator
+  // Goal type badge - Green accent as suggested
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
   const goalTypeText = `${(goal.goalType ?? 'General').toUpperCase()} GOAL`;
   const goalTypeWidth = pdf.getTextWidth(goalTypeText);
-  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 47);
+  pdf.text(goalTypeText, pageWidth - 20 - goalTypeWidth, 28);
 
-  // Brand personality tagline
+  // Brand tagline - Right-aligned, smallest
   pdf.setFont('helvetica', 'italic');
   pdf.setFontSize(8);
-  pdf.setTextColor(180, 200, 255);
+  pdf.setTextColor(160, 180, 220);
   const tagline = 'Knowledgeable • Empowering • Approachable';
   const taglineWidth = pdf.getTextWidth(tagline);
-  pdf.text(tagline, pageWidth - 20 - taglineWidth, 55);
+  pdf.text(tagline, pageWidth - 20 - taglineWidth, 38);
+
+
 
   // Safe calculations with null checks
   const calculations = calculateSavings(
