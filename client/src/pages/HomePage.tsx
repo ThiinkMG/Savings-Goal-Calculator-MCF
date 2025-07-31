@@ -126,6 +126,26 @@ export default function HomePage() {
               onAddGoal={handleAddGoal}
               onEditGoal={handleEditGoal}
             />
+
+            {/* 50/30/20 Calculator Button */}
+            <div className="text-center mt-8">
+              <a 
+                href="https://www.mycollegefinance.com/50-30-20-budget-calculator"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block group relative overflow-hidden"
+              >
+                <div className="bg-gradient-to-r from-brand-blue to-brand-light-blue hover:from-brand-light-blue hover:to-brand-blue text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg group-hover:scale-105">
+                  <span className="relative z-10">Try 50/30/20 Calculator →</span>
+                  
+                  {/* Animated underline */}
+                  <div className="absolute bottom-2 left-8 right-8 h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></div>
+                  
+                  {/* Fill effect overlay */}
+                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300 ease-in-out"></div>
+                </div>
+              </a>
+            </div>
           </>
         )}
 
