@@ -7,7 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { Calculator, User, DollarSign, Calendar, Target, Download, Share2, Save, X, Edit3 } from 'lucide-react';
+import { Calculator, User, DollarSign, Calendar, Target, Download, Share2, Save, X, Edit3, Check } from 'lucide-react';
 import { type SavingsGoal, type GoalType, type InsertSavingsGoal } from '@shared/schema';
 import { calculateSavings, formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
@@ -55,9 +55,13 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
 
   const handleManualAmountChange = (value: string) => {
     setManualAmount(value);
-    const numValue = parseInt(value) || 0;
+  };
+
+  const handleSubmitManualEntry = () => {
+    const numValue = parseInt(manualAmount) || 0;
     if (numValue >= 0) {
       setMonthlyCapacity([numValue]);
+      setIsManualEntry(false);
     }
   };
 
@@ -379,12 +383,26 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
                           type="number"
                           value={manualAmount}
                           onChange={(e) => handleManualAmountChange(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSubmitManualEntry();
+                            }
+                          }}
                           placeholder="Enter amount"
                           min="0"
                           step="50"
                           className="pl-10"
+                          autoFocus
                         />
                       </div>
+                      <Button
+                        type="button"
+                        onClick={handleSubmitManualEntry}
+                        size="sm"
+                        className="bg-brand-green hover:bg-brand-green/90 text-white px-3"
+                      >
+                        <Check className="w-4 h-4" />
+                      </Button>
                       <Button
                         type="button"
                         variant="outline"
@@ -396,10 +414,11 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
                       </Button>
                     </div>
                     <div className="text-center">
-                      <span className="font-medium brand-blue text-lg text-[#3bd927]">
-                        ${monthlyCapacity[0]}
+                      <span className="text-sm text-muted-foreground">
+                        Current: <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                          ${monthlyCapacity[0]}
+                        </span> per month
                       </span>
-                      <span className="text-sm text-muted-foreground ml-2">per month</span>
                     </div>
                   </div>
                 ) : (
