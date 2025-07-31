@@ -522,7 +522,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
             <div className="space-y-3">
               <Button
                 onClick={handleExportPDF}
-                className="w-full bg-brand-blue hover:bg-brand-blue/90 text-[#f8fafc]"
+                className="w-full bg-brand-blue hover:bg-brand-blue/90 text-[#030711]"
                 disabled={!calculations}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -531,7 +531,7 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
               
               <Button
                 onClick={handleShare}
-                className="w-full bg-brand-green hover:bg-brand-green/90 text-[#f8fafc]"
+                className="w-full bg-brand-green hover:bg-brand-green/90 text-[#030711]"
                 disabled={!calculations}
               >
                 <Share2 className="w-4 h-4 mr-2" />
