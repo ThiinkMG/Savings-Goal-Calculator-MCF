@@ -81,18 +81,29 @@ export function WhatIfScenarios({
   const weeklyAmount = monthlyRequired / 4.33;
   const hourlyEquivalent = monthlyRequired / (40 * 4.33);
 
-  // Opportunity cost calculations
-  const coffeeEquivalent = Math.round(monthlyRequired / 5.50);
-  const pizzaEquivalent = Math.round(monthlyRequired / 25);
-  const movieEquivalent = Math.round(monthlyRequired / 15);
+  // Realistic opportunity cost calculations (weekly/monthly)
+  const coffeePerWeek = Math.round((monthlyRequired / 4.33) / 5.50); // Weekly coffee skips
+  const lunchPerWeek = Math.round((monthlyRequired / 4.33) / 15); // Weekly lunch skips
+  const streamingServices = Math.round(monthlyRequired / 15); // Number of streaming services
+  const nightsOutPerMonth = Math.round(monthlyRequired / 50); // Nights out per month
 
-  // Precision adjustments
-  const calculateAdjustment = (adjustment: number) => {
+  // Calculate actual dates for timeline impact
+  const calculateNewDate = (adjustment: number) => {
     const newMonthly = monthlyRequired + adjustment;
     const newMonths = remaining / newMonthly;
-    const monthsDifference = monthsRemaining - newMonths;
-    return monthsDifference;
+    const newDate = new Date();
+    newDate.setMonth(newDate.getMonth() + Math.floor(newMonths));
+    return newDate;
   };
+  
+  const originalDate = new Date(targetDate);
+  const date25More = calculateNewDate(25);
+  const date50More = calculateNewDate(50);
+  const date25Less = calculateNewDate(-25);
+  
+  // Reality vs Capacity check
+  const capacityGap = monthlyRequired - monthlyCapacity;
+  const isOverCapacity = capacityGap > 0;
 
   const feasibility = getFeasibilityScore();
   const successRate = getSuccessRate();
@@ -200,94 +211,124 @@ export function WhatIfScenarios({
           </div>
         </DropdownSection>
 
-        {/* Opportunity Cost */}
+        {/* Realistic Trade-offs */}
         <DropdownSection
-          id="opportunity-cost"
+          id="realistic-tradeoffs"
           icon="💰"
-          title="What You're Actually Giving Up"
-          isOpen={openSection === "opportunity-cost"}
-          onToggle={() => toggleSection("opportunity-cost")}
+          title="Realistic Trade-offs"
+          isOpen={openSection === "realistic-tradeoffs"}
+          onToggle={() => toggleSection("realistic-tradeoffs")}
         >
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
               <span className="text-xl">☕</span>
               <span className="text-sm">
-                <strong>{coffeeEquivalent}</strong> coffee shop visits per month
+                Skip coffee shop <strong>{coffeePerWeek}</strong> times per week
               </span>
             </div>
             <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <span className="text-xl">🍕</span>
+              <span className="text-xl">🍽️</span>
               <span className="text-sm">
-                <strong>{pizzaEquivalent}</strong> pizza deliveries per month
-              </span>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
-              <span className="text-xl">🎬</span>
-              <span className="text-sm">
-                <strong>{movieEquivalent}</strong> movie tickets per month
+                Skip lunch out <strong>{lunchPerWeek}</strong> times per week
               </span>
             </div>
             <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
               <span className="text-xl">📱</span>
               <span className="text-sm">
-                About <strong>{Math.round(monthlyRequired / 80)}</strong> monthly subscription services
+                Choose <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5
+              </span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-background rounded-lg border">
+              <span className="text-xl">🎉</span>
+              <span className="text-sm">
+                Limit nights out to <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> per month
               </span>
             </div>
           </div>
         </DropdownSection>
 
-        {/* Precision Adjustments */}
+        {/* Real Timeline Impact */}
         <DropdownSection
-          id="precision-adjustments"
-          icon="🎯"
-          title="Precision Adjustments"
-          isOpen={openSection === "precision-adjustments"}
-          onToggle={() => toggleSection("precision-adjustments")}
+          id="timeline-impact"
+          icon="📅"
+          title="Real Timeline Impact"
+          isOpen={openSection === "timeline-impact"}
+          onToggle={() => toggleSection("timeline-impact")}
         >
           <div className="space-y-4">
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
                 <span className="text-sm font-medium">Save $25 more per month:</span>
                 <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  {calculateAdjustment(25) > 0 
-                    ? `${calculateAdjustment(25).toFixed(1)} months earlier`
-                    : 'Goal achieved faster'
-                  }
+                  Reach goal by {date25More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                <span className="text-sm font-medium">Save $50 more per month:</span>
+                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  Reach goal by {date50More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               
               <div className="flex justify-between items-center p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border">
                 <span className="text-sm font-medium">Save $25 less per month:</span>
                 <span className="text-sm font-semibold text-red-600 dark:text-red-400">
-                  {Math.abs(calculateAdjustment(-25)).toFixed(1)} months later
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
-                <span className="text-sm font-medium">Save $50 more per month:</span>
-                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  {calculateAdjustment(50).toFixed(1)} months earlier
+                  Reach goal by {date25Less.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
             </div>
 
-            <div className="border-t pt-4">
-              <h4 className="font-medium mb-3 text-foreground">Catch-Up Scenarios:</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center p-2 text-sm">
-                  <span>If you start 1 month late:</span>
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">
-                    {formatCurrency(remaining / (monthsRemaining - 1))}/month needed
-                  </span>
-                </div>
-                <div className="flex justify-between items-center p-2 text-sm">
-                  <span>If you miss 1 month of saving:</span>
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">
-                    Add {formatCurrency((remaining / (monthsRemaining - 1)) - monthlyRequired)} to remaining months
-                  </span>
-                </div>
+            <div className="p-3 bg-background rounded-lg border">
+              <div className="text-sm text-muted-foreground text-center">
+                Original target: <strong>{originalDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
               </div>
             </div>
+          </div>
+        </DropdownSection>
+
+        {/* Decision Helper */}
+        <DropdownSection
+          id="decision-helper"
+          icon="💡"
+          title="Decision Helper"
+          isOpen={openSection === "decision-helper"}
+          onToggle={() => toggleSection("decision-helper")}
+        >
+          <div className="space-y-4">
+            {monthlyRequired > 300 && (
+              <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 className="font-medium mb-2">To save ${monthlyRequired}/month, choose 2-3 of these:</h4>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Make coffee at home 5 days/week (saves ~$110/month)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Pack lunch 3 times/week (saves ~$180/month)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Cancel 2 streaming services (saves ~$30/month)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    Limit dining out to 2x/month (saves ~$100/month)
+                  </li>
+                </ul>
+              </div>
+            )}
+            
+            {isOverCapacity && (
+              <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
+                <h4 className="font-medium mb-2 text-red-700 dark:text-red-300">Reality Check Alert!</h4>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  You need ${monthlyRequired}/month but set capacity at ${monthlyCapacity}/month.
+                  Either increase your savings capacity or extend your timeline.
+                </p>
+              </div>
+            )}
           </div>
         </DropdownSection>
       </CardContent>
