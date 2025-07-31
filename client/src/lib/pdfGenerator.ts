@@ -177,8 +177,8 @@ export async function generateSavingsPlanPDF(
   // Section positioning
   const startY = headerHeight + 25;
 
-  // Thinner blue accent line below header
-  pdf.setDrawColor(colors.primaryLight[0], colors.primaryLight[1], colors.primaryLight[2]);
+  // Medium gray accent line below header
+  pdf.setDrawColor(128, 128, 128); // Medium gray
   pdf.setLineWidth(1);
   pdf.line(20, headerHeight + 12, pageWidth - 20, headerHeight + 12);
 
