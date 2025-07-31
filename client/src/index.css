@@ -44,7 +44,7 @@
   --card: hsl(224, 71%, 4%);
   --card-foreground: hsl(210, 40%, 98%);
   --border: hsl(215, 27%, 32%);
-  --input: hsl(215, 27%, 32%);
+  --input: hsl(215, 27%, 20%);
   --primary: hsl(234, 79%, 56%);
   --primary-foreground: hsl(210, 40%, 98%);
   --secondary: hsl(215, 27%, 32%);
@@ -78,6 +78,23 @@
 }
 
 @layer components {
+  /* Input field improvements for dark mode */
+  .dark input[type="text"],
+  .dark input[type="number"],
+  .dark input[type="date"] {
+    background-color: hsl(215, 27%, 15%) !important;
+    color: hsl(210, 40%, 95%) !important;
+    border-color: hsl(215, 27%, 35%) !important;
+  }
+  
+  .dark input[type="text"]:focus,
+  .dark input[type="number"]:focus,
+  .dark input[type="date"]:focus {
+    background-color: hsl(215, 27%, 18%) !important;
+    border-color: hsl(234, 79%, 56%) !important;
+    box-shadow: 0 0 0 2px hsl(234, 79%, 56%, 0.2) !important;
+  }
+  
   .brand-blue {
     color: hsl(var(--brand-blue));
   }
