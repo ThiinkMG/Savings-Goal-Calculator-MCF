@@ -11,7 +11,7 @@ export function BrandHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <Logo size={48} className="animate-gentle-bounce" />
+            <Logo size={52} className="animate-gentle-bounce" />
             <div>
               <h1 className="text-xl font-black brand-blue font-sans">
                 MY COLLEGE FINANCE
