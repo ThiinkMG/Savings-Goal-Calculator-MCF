@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Target, TrendingUp } from 'lucide-react';
+import { Star, Target, TrendingUp, Lightbulb, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ProgressVisualizationProps {
@@ -37,13 +37,92 @@ export function ProgressVisualization({
   const projectedTotal = currentSavings + (monthlyCapacity * monthsRemaining);
   const isCapacityInsufficient = monthlyCapacity < monthlyRequired;
 
-  const milestones = [
-    { label: 'Goal Set', achieved: true, icon: <Star className="w-3 h-3" /> },
-    { label: '25% Complete', achieved: progressPercent >= 25, icon: <Target className="w-3 h-3" /> },
-    { label: '50% Complete', achieved: progressPercent >= 50, icon: <Target className="w-3 h-3" /> },
-    { label: '75% Complete', achieved: progressPercent >= 75, icon: <Target className="w-3 h-3" /> },
-    { label: '100% Complete', achieved: progressPercent >= 100, icon: <TrendingUp className="w-3 h-3" /> },
-  ];
+  // Generate progress insights based on current state
+  const getProgressInsights = () => {
+    const insights = [];
+    
+    if (progressPercent >= 100) {
+      insights.push({
+        type: 'success',
+        icon: <CheckCircle className="w-4 h-4" />,
+        title: 'Goal Achieved!',
+        message: 'Congratulations! You\'ve reached your savings target.',
+        bgColor: 'bg-green-50 dark:bg-green-950/20',
+        textColor: 'text-green-800 dark:text-green-200',
+        borderColor: 'border-green-200 dark:border-green-800'
+      });
+    } else if (progressPercent >= 75) {
+      insights.push({
+        type: 'success',
+        icon: <TrendingUp className="w-4 h-4" />,
+        title: 'Almost There!',
+        message: `You're ${Math.round(progressPercent)}% complete. Stay consistent to reach your goal.`,
+        bgColor: 'bg-blue-50 dark:bg-blue-950/20',
+        textColor: 'text-blue-800 dark:text-blue-200',
+        borderColor: 'border-blue-200 dark:border-blue-800'
+      });
+    } else if (progressPercent >= 50) {
+      insights.push({
+        type: 'progress',
+        icon: <Target className="w-4 h-4" />,
+        title: 'Halfway Mark!',
+        message: 'Great progress! You\'ve built a solid foundation for your goal.',
+        bgColor: 'bg-purple-50 dark:bg-purple-950/20',
+        textColor: 'text-purple-800 dark:text-purple-200',
+        borderColor: 'border-purple-200 dark:border-purple-800'
+      });
+    } else if (progressPercent >= 25) {
+      insights.push({
+        type: 'progress',
+        icon: <Lightbulb className="w-4 h-4" />,
+        title: 'Building Momentum',
+        message: 'You\'re off to a good start! Keep up the consistent saving habit.',
+        bgColor: 'bg-amber-50 dark:bg-amber-950/20',
+        textColor: 'text-amber-800 dark:text-amber-200',
+        borderColor: 'border-amber-200 dark:border-amber-800'
+      });
+    } else {
+      insights.push({
+        type: 'start',
+        icon: <Star className="w-4 h-4" />,
+        title: 'Getting Started',
+        message: 'Every journey begins with a single step. You\'ve got this!',
+        bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
+        textColor: 'text-indigo-800 dark:text-indigo-200',
+        borderColor: 'border-indigo-200 dark:border-indigo-800'
+      });
+    }
+
+    // Add capacity warning if needed
+    if (isCapacityInsufficient && progressPercent < 100) {
+      insights.push({
+        type: 'warning',
+        icon: <AlertTriangle className="w-4 h-4" />,
+        title: 'Capacity Alert',
+        message: `Your monthly capacity ($${monthlyCapacity.toLocaleString()}) is below what's needed ($${monthlyRequired.toLocaleString()}).`,
+        bgColor: 'bg-orange-50 dark:bg-orange-950/20',
+        textColor: 'text-orange-800 dark:text-orange-200',
+        borderColor: 'border-orange-200 dark:border-orange-800'
+      });
+    }
+
+    // Add time-based insight
+    if (monthsRemaining <= 3 && progressPercent < 90) {
+      insights.push({
+        type: 'urgent',
+        icon: <Clock className="w-4 h-4" />,
+        title: 'Time Running Short',
+        message: `Only ${monthsRemaining} months left. Consider increasing your monthly savings.`,
+        bgColor: 'bg-red-50 dark:bg-red-950/20',
+        textColor: 'text-red-800 dark:text-red-200',
+        borderColor: 'border-red-200 dark:border-red-800'
+      });
+    }
+
+    return insights;
+  };
+
+  const progressInsights = getProgressInsights();
 
   return (
     <Card className="animate-slide-in">
@@ -137,25 +216,31 @@ export function ProgressVisualization({
           </div>
         </div>
 
-        {/* Milestone Badges */}
+        {/* Progress Insights */}
         <div className="mt-8">
           <h4 className="text-sm font-medium text-muted-foreground mb-3">
-            Milestones
+            Progress Insights
           </h4>
-          <div className="flex flex-wrap gap-2">
-            {milestones.map((milestone, index) => (
-              <Badge
+          <div className="space-y-3">
+            {progressInsights.map((insight, index) => (
+              <div
                 key={index}
-                variant={milestone.achieved ? "default" : "secondary"}
-                className={`flex items-center gap-1 ${
-                  milestone.achieved 
-                    ? 'bg-brand-green text-white milestone-badge' 
-                    : 'bg-muted text-muted-foreground'
-                }`}
+                className={`p-3 rounded-lg border ${insight.bgColor} ${insight.borderColor}`}
               >
-                {milestone.icon}
-                {milestone.label}
-              </Badge>
+                <div className="flex items-start gap-3">
+                  <div className={`${insight.textColor} mt-0.5`}>
+                    {insight.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h5 className={`font-medium text-sm ${insight.textColor} mb-1`}>
+                      {insight.title}
+                    </h5>
+                    <p className={`text-xs ${insight.textColor.replace('800', '700').replace('200', '300')}`}>
+                      {insight.message}
+                    </p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
