@@ -50,16 +50,62 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     numberFormat: 'US'
   });
 
-  const handleSecurityAction = (mode: 'password' | 'username' | 'phone' | 'email') => {
+  const handleSecurityAction = (mode: 'password' | 'username' | 'phone' | 'email' | 'removePhone') => {
     if (!user) {
       // Guest user - show auth modal
       setShowAuthModal(true);
       return;
     }
     
+    if (mode === 'removePhone') {
+      // Handle phone removal directly with confirmation
+      if (window.confirm('Are you sure you want to remove your phone number? This will disable phone-based login.')) {
+        removePhoneNumber();
+      }
+      return;
+    }
+    
     // Authenticated user - show security modal
-    setSecurityMode(mode);
+    setSecurityMode(mode as 'password' | 'username' | 'phone' | 'email');
     setShowSecurityModal(true);
+  };
+
+  const removePhoneNumber = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/user/remove-phone', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Phone Number Removed",
+          description: "Your phone number has been removed from your account. Phone-based login is now disabled.",
+        });
+        // The user data will be refreshed automatically by the auth hook
+      } else {
+        const data = await response.json();
+        toast({
+          title: "Failed to Remove Phone",
+          description: data.message || "Unable to remove phone number. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Remove phone error:', error);
+      toast({
+        title: "Connection Error",
+        description: "Unable to connect to server. Please check your internet connection.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDataExport = async () => {
@@ -256,103 +302,132 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   ];
 
   const renderAccountSettings = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Account Information</CardTitle>
-        <CardDescription>Your current account details</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Username</span>
-            <span className="text-sm text-muted-foreground">{user?.username || 'Not set'}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Email</span>
-            <span className="text-sm text-muted-foreground">{user?.email || 'Not set'}</span>
-          </div>
-        </div>
-        <Separator />
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Login Methods</h4>
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-sm">
-              <span>Username Login</span>
-              <span className="text-green-600">✓ Active</span>
+    <div className="h-full overflow-y-auto settings-content-scroll pr-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Information</CardTitle>
+          <CardDescription>Your current account details</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Username</span>
+              <span className="text-sm text-muted-foreground">{user?.username || 'Not set'}</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Email Login</span>
-              <span className="text-green-600">✓ Active</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Email</span>
+              <span className="text-sm text-muted-foreground">{user?.email || 'Not set'}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Phone</span>
+              <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
             </div>
           </div>
-        </div>
-        {user && (
-          <div className="space-y-4 pt-4 border-t">
-            <div>
-              <h4 className="font-medium text-sm mb-3">Security & Access</h4>
-              <div className="space-y-2">
-                <Button 
-                  onClick={() => handleSecurityAction('password')}
-                  variant="outline" 
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  Change Password
-                </Button>
-                <Button 
-                  onClick={() => handleSecurityAction('username')}
-                  variant="outline" 
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  Update Username
-                </Button>
-                <Button 
-                  onClick={() => handleSecurityAction('phone')}
-                  variant="outline" 
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  Update Phone Number
-                </Button>
-                <Button 
-                  onClick={() => handleSecurityAction('email')}
-                  variant="outline" 
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  Update Email Address
-                </Button>
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium">Login Methods</h4>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span>Username Login</span>
+                <span className="text-green-600">✓ Active</span>
               </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium text-sm mb-3">Login Methods</h4>
-              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                {user.email && <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Email</span>}
-                <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Username</span>
-                {user.phoneNumber && <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Phone</span>}
+              <div className="flex items-center justify-between text-sm">
+                <span>Email Login</span>
+                <span className={user?.email ? "text-green-600" : "text-gray-400"}>
+                  {user?.email ? "✓ Active" : "○ Inactive"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>Phone Login</span>
+                <span className={user?.phoneNumber ? "text-green-600" : "text-gray-400"}>
+                  {user?.phoneNumber ? "✓ Active" : "○ Inactive"}
+                </span>
               </div>
             </div>
           </div>
-        )}
+          {user && (
+            <div className="space-y-4 pt-4 border-t">
+              <div>
+                <h4 className="font-medium text-sm mb-3">Security & Access</h4>
+                <div className="space-y-2">
+                  <Button 
+                    onClick={() => handleSecurityAction('password')}
+                    variant="outline" 
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    Change Password
+                  </Button>
+                  <Button 
+                    onClick={() => handleSecurityAction('username')}
+                    variant="outline" 
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    Update Username
+                  </Button>
+                  <div className="space-y-1">
+                    <Button 
+                      onClick={() => handleSecurityAction('phone')}
+                      variant="outline" 
+                      size="sm"
+                      className="w-full justify-start"
+                    >
+                      Update Phone Number
+                    </Button>
+                    {user.phoneNumber && (
+                      <Button 
+                        onClick={() => handleSecurityAction('removePhone')}
+                        variant="outline" 
+                        size="sm"
+                        className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                      >
+                        Remove Phone Number
+                      </Button>
+                    )}
+                  </div>
+                  <Button 
+                    onClick={() => handleSecurityAction('email')}
+                    variant="outline" 
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    Update Email Address
+                  </Button>
+                </div>
+              </div>
 
-        <Button 
-          onClick={() => { 
-            if (user) {
-              logout(); 
-              onClose(); 
-            } else {
-              setShowAuthModal(true);
-            }
-          }} 
-          variant="outline" 
-          className="w-full mt-4"
-        >
-          {user ? 'Log Out' : 'Log In'}
-        </Button>
-      </CardContent>
-    </Card>
+              <div>
+                <h4 className="font-medium text-sm mb-3">Active Login Methods</h4>
+                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Username</span>
+                  {user.email && <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Email</span>}
+                  {user.phoneNumber && <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Phone</span>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button 
+            onClick={() => { 
+              if (user) {
+                logout(); 
+                onClose(); 
+              } else {
+                setShowAuthModal(true);
+              }
+            }} 
+            variant="outline" 
+            className="w-full mt-4"
+          >
+            {user ? 'Log Out' : 'Log In'}
+          </Button>
+
+          {/* Additional spacing for better scrolling */}
+          <div className="h-8"></div>
+        </CardContent>
+      </Card>
+    </div>
   );
 
   const renderAppearanceSettings = () => (

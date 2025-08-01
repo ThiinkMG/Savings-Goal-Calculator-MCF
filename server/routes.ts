@@ -522,7 +522,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Hash new password
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      
+
       // Update password
       const success = await storage.updateUserPassword(userId, hashedPassword);
       if (!success) {
@@ -533,6 +533,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Password update error:', error);
       res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+
+  // Remove phone number endpoint
+  app.delete("/api/user/remove-phone", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as AuthenticatedRequest).session.userId!;
+      
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!user.phoneNumber) {
+        return res.status(400).json({ message: "No phone number to remove" });
+      }
+
+      // Remove phone number by setting it to null
+      const success = await storage.updatePhoneNumber(userId, null);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to remove phone number" });
+      }
+
+      res.json({ message: "Phone number removed successfully" });
+    } catch (error) {
+      console.error('Remove phone error:', error);
+      res.status(500).json({ message: "Failed to remove phone number" });
     }
   });
 

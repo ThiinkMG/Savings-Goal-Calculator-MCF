@@ -13,6 +13,15 @@ https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api
 
 **✅ CONFIRMED WORKING**: The database adaptor is successfully running and tested with your current user data.
 
+## ❌ Fix Required for Your Connection Error:
+
+The "WDE0116: Invalid connector response" error in your screenshot indicates you're using the wrong endpoint URL. 
+
+**❌ INCORRECT URL**: `https://mcf-savings-goal-calculator.replit.app`  
+**✅ CORRECT URL**: `https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor`
+
+Update your Wix connection with the correct URL above to resolve the connection error.
+
 ## Step 2: Configure Wix Database Adaptor Secret Key
 
 1. In your Replit Secrets, add a new secret:
