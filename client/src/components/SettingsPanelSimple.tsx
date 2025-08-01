@@ -114,7 +114,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
           </div>
         </div>
-        <Button onClick={logout} variant="outline" className="w-full">
+        <Button onClick={() => { logout(); onClose(); }} variant="outline" className="w-full">
           Log Out
         </Button>
       </CardContent>
