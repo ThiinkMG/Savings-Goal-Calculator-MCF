@@ -589,11 +589,11 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         onClick={onClose}
       />
       {/* Settings Panel */}
-      <div className={`absolute right-0 top-0 h-full w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
+      <div className={`absolute right-0 top-0 h-screen w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f] flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f]">
           <h2 className="text-lg font-semibold">Settings</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
@@ -601,8 +601,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b flex-shrink-0">
-          <div className="flex flex-col p-2 space-y-1 bg-background dark:bg-[#1f1f1f]">
+        <div className="border-b bg-background dark:bg-[#1f1f1f]">
+          <div className="flex flex-col p-2 space-y-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -622,7 +622,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
         {/* Content */}
         <div 
-          className="flex-1 min-h-0 overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f] settings-content-scroll"
+          className="h-[calc(100vh-180px)] overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f] settings-content-scroll"
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
