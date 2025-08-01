@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 interface SecuritySettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode: 'password' | 'username' | 'phone';
+  initialMode: 'password' | 'username' | 'phone' | 'email';
 }
 
 type SecurityStep = 
@@ -18,13 +18,14 @@ type SecurityStep =
   | 'change-password' 
   | 'change-username'
   | 'change-phone'
+  | 'change-email'
   | 'password-reset' 
   | 'username-recovery' 
   | 'success';
 
 export function SecuritySettingsModal({ isOpen, onClose, initialMode }: SecuritySettingsModalProps) {
   const [step, setStep] = useState<SecurityStep>('verify-password');
-  const [mode, setMode] = useState<'password' | 'username' | 'phone'>(initialMode);
+  const [mode, setMode] = useState<'password' | 'username' | 'phone' | 'email'>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -33,11 +34,13 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     newPassword: '',
     confirmPassword: '',
     newUsername: '',
-    newPhoneNumber: ''
+    newPhoneNumber: '',
+    newEmail: ''
   });
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [usernameStatus, setUsernameStatus] = useState<'checking' | 'available' | 'taken' | null>(null);
   const [phoneStatus, setPhoneStatus] = useState<'checking' | 'available' | 'taken' | 'invalid' | null>(null);
+  const [emailStatus, setEmailStatus] = useState<'checking' | 'available' | 'taken' | 'invalid' | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [verificationToken, setVerificationToken] = useState('');
@@ -51,11 +54,13 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
       newPassword: '',
       confirmPassword: '',
       newUsername: '',
-      newPhoneNumber: ''
+      newPhoneNumber: '',
+      newEmail: ''
     });
     setPasswordStrength(0);
     setUsernameStatus(null);
     setPhoneStatus(null);
+    setEmailStatus(null);
     setAttempts(0);
     setVerificationToken('');
     setStep('verify-password');
@@ -114,6 +119,29 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     }
   };
 
+  const checkEmailAvailability = async (email: string) => {
+    if (!email || email.length < 5) {
+      setEmailStatus(null);
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailStatus('invalid');
+      return;
+    }
+
+    setEmailStatus('checking');
+    try {
+      const response = await fetch(`/api/auth/check-email/${encodeURIComponent(email)}`);
+      const data = await response.json();
+      setEmailStatus(data.available ? 'available' : 'taken');
+    } catch (error) {
+      setEmailStatus(null);
+    }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -127,6 +155,10 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
 
     if (field === 'newPhoneNumber' && step === 'change-phone') {
       checkPhoneAvailability(value);
+    }
+
+    if (field === 'newEmail' && step === 'change-email') {
+      checkEmailAvailability(value);
     }
   };
 
@@ -168,6 +200,8 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
         setStep('change-username');
       } else if (mode === 'phone') {
         setStep('change-phone');
+      } else if (mode === 'email') {
+        setStep('change-email');
       }
       toast({
         title: "Identity Verified",
@@ -337,6 +371,54 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     }
   };
 
+  const handleChangeEmail = async () => {
+    if (emailStatus !== 'available') {
+      toast({
+        title: "Email Unavailable",
+        description: "Please choose a different email address",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/user/email', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: verificationToken,
+          newEmail: formData.newEmail
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Update Failed",
+          description: data.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setStep('success');
+      toast({
+        title: "Email Updated",
+        description: `Your email has been updated successfully`
+      });
+    } catch (error) {
+      toast({
+        title: "Update Error",
+        description: "Failed to update email. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handlePasswordReset = async () => {
     setIsLoading(true);
     try {
@@ -419,16 +501,19 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
         if (mode === 'password') return 'Change Password';
         if (mode === 'username') return 'Update Username';
         if (mode === 'phone') return 'Update Phone Number';
+        if (mode === 'email') return 'Update Email Address';
         return 'Security Settings';
       case 'change-password': return 'Create New Password';
       case 'change-username': return 'Choose New Username';
       case 'change-phone': return 'Update Phone Number';
+      case 'change-email': return 'Update Email Address';
       case 'password-reset': return 'Reset Password';
       case 'username-recovery': return 'Recover Username';
       case 'success': 
         if (mode === 'password') return 'Password Updated';
         if (mode === 'username') return 'Username Updated';
         if (mode === 'phone') return 'Phone Number Updated';
+        if (mode === 'email') return 'Email Address Updated';
         return 'Update Complete';
       default: return 'Security Settings';
     }
@@ -443,7 +528,8 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
           Enter your current password to {
             mode === 'password' ? 'make changes to your account' : 
             mode === 'username' ? 'change your username' :
-            mode === 'phone' ? 'update your phone number' : 'make changes'
+            mode === 'phone' ? 'update your phone number' :
+            mode === 'email' ? 'update your email address' : 'make changes'
           }
         </p>
       </div>
@@ -460,6 +546,14 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
         <div className="bg-muted p-3 rounded-md">
           <p className="text-sm">
             <span className="font-medium">Current Phone:</span> {user?.phoneNumber || 'Not set'}
+          </p>
+        </div>
+      )}
+
+      {mode === 'email' && (
+        <div className="bg-muted p-3 rounded-md">
+          <p className="text-sm">
+            <span className="font-medium">Current Email:</span> {user?.email || 'Not set'}
           </p>
         </div>
       )}
@@ -739,6 +833,69 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     </div>
   );
 
+  const renderChangeEmailStep = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-4">
+        <div className="text-2xl mb-2">✅</div>
+        <h3 className="text-lg font-semibold">Identity Verified</h3>
+      </div>
+
+      <div className="bg-muted p-3 rounded-md">
+        <p className="text-sm">
+          <span className="font-medium">Current Email:</span> {user?.email || 'Not set'}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="newEmail">New Email Address</Label>
+        <div className="relative">
+          <Input
+            id="newEmail"
+            type="email"
+            placeholder="your.email@example.com"
+            value={formData.newEmail}
+            onChange={(e) => handleInputChange('newEmail', e.target.value)}
+          />
+          {emailStatus && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {emailStatus === 'checking' && <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />}
+              {emailStatus === 'available' && <Check className="w-4 h-4 text-green-600" />}
+              {emailStatus === 'taken' && <X className="w-4 h-4 text-red-600" />}
+              {emailStatus === 'invalid' && <X className="w-4 h-4 text-red-600" />}
+            </div>
+          )}
+        </div>
+        {emailStatus === 'taken' && (
+          <p className="text-xs text-red-600">Email address is already in use</p>
+        )}
+        {emailStatus === 'invalid' && (
+          <p className="text-xs text-red-600">Invalid email address format</p>
+        )}
+        {emailStatus === 'available' && (
+          <p className="text-xs text-green-600">Email address is available</p>
+        )}
+      </div>
+
+      <div className="bg-muted p-3 rounded-md text-sm">
+        <div className="font-medium mb-1">Email Requirements:</div>
+        <div className="space-y-1 text-xs text-muted-foreground">
+          <div>• Must be a valid email format</div>
+          <div>• Cannot be already registered</div>
+          <div>• Will be used for login and notifications</div>
+          <div>• Verification email will be sent</div>
+        </div>
+      </div>
+
+      <Button 
+        onClick={handleChangeEmail} 
+        className="w-full" 
+        disabled={isLoading || emailStatus !== 'available'}
+      >
+        {isLoading ? "Updating Email..." : "Update Email Address"}
+      </Button>
+    </div>
+  );
+
   const renderPasswordResetStep = () => (
     <div className="space-y-4">
       <Button
@@ -825,7 +982,8 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
       <h3 className="text-lg font-semibold">
         {mode === 'password' ? 'Password Updated Successfully' : 
          mode === 'username' ? 'Username Updated Successfully' : 
-         'Phone Number Updated Successfully'}
+         mode === 'phone' ? 'Phone Number Updated Successfully' :
+         'Email Address Updated Successfully'}
       </h3>
       <div className="text-sm text-muted-foreground space-y-2">
         {mode === 'password' ? (
@@ -838,10 +996,15 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             <p>Your username is now: <span className="font-medium">{formData.newUsername}</span></p>
             <p>Note: You can't change your username again for 30 days.</p>
           </>
-        ) : (
+        ) : mode === 'phone' ? (
           <>
             <p>Your phone number has been updated successfully.</p>
             <p>You can now use this number to log in and receive notifications.</p>
+          </>
+        ) : (
+          <>
+            <p>Your email address has been updated successfully.</p>
+            <p>You can now use this email to log in and receive notifications.</p>
           </>
         )}
       </div>
@@ -857,6 +1020,7 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
       case 'change-password': return renderChangePasswordStep();
       case 'change-username': return renderChangeUsernameStep();
       case 'change-phone': return renderChangePhoneStep();
+      case 'change-email': return renderChangeEmailStep();
       case 'password-reset': return renderPasswordResetStep();
       case 'username-recovery': return renderUsernameRecoveryStep();
       case 'success': return renderSuccessStep();

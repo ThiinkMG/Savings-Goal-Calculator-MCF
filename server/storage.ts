@@ -9,11 +9,13 @@ export interface IStorage {
   getUserById(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByPhone(phoneNumber: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   getUserByIdentifier(identifier: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: string, newPassword: string): Promise<boolean>;
   updateUsername(userId: string, newUsername: string): Promise<boolean>;
   updatePhoneNumber(userId: string, newPhoneNumber: string): Promise<boolean>;
+  updateEmail(userId: string, newEmail: string): Promise<boolean>;
   incrementFailedAttempts(userId: string): Promise<void>;
   lockUser(userId: string, lockDuration: number): Promise<void>;
   unlockUser(userId: string): Promise<void>;
@@ -50,6 +52,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByPhone(phoneNumber: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || undefined;
   }
 
@@ -107,6 +114,19 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ 
         phoneNumber: newPhoneNumber,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return result.length > 0;
+  }
+
+  async updateEmail(userId: string, newEmail: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ 
+        email: newEmail,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))

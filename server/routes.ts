@@ -634,6 +634,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/user/email", requireAuth, async (req, res) => {
+    try {
+      const { token, newEmail } = req.body;
+      const userId = (req as AuthenticatedRequest).session.userId!;
+
+      // Verify token
+      try {
+        const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (Date.now() > payload.expires || payload.userId !== userId) {
+          return res.status(401).json({ message: "Invalid or expired token" });
+        }
+      } catch {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      // Check if email is available
+      const existingUser = await storage.getUserByEmail(newEmail);
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+
+      // Update email
+      const success = await storage.updateEmail(userId, newEmail);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update email" });
+      }
+
+      res.json({ message: "Email updated successfully" });
+    } catch (error) {
+      console.error('Email update error:', error);
+      res.status(500).json({ message: "Failed to update email" });
+    }
+  });
+
+  app.get("/api/auth/check-email/:email", async (req, res) => {
+    try {
+      const email = decodeURIComponent(req.params.email);
+      
+      if (!email || email.length < 5) {
+        return res.status(400).json({ 
+          available: false, 
+          message: "Email too short" 
+        });
+      }
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ 
+          available: false, 
+          message: "Invalid email format" 
+        });
+      }
+
+      const existingUser = await storage.getUserByEmail(email);
+      const available = !existingUser;
+      
+      res.json({
+        available,
+        message: available ? "Email is available" : "Email already in use"
+      });
+    } catch (error) {
+      console.error('Email check error:', error);
+      res.status(500).json({ message: "Failed to check email availability" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
