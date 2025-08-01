@@ -188,7 +188,7 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
                       <li>• All your saved goals with complete details</li>
                       <li>• Progress history and updates</li>
                       <li>• Account settings and preferences</li>
-                      <li>• Data in JSON format for easy import to other tools</li>
+                      <li>• Data in CSV format for easy import to Excel and other tools</li>
                     </ul>
                   </AccordionContent>
                 </AccordionItem>

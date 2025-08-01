@@ -27,7 +27,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [showFAQModal, setShowFAQModal] = useState(false);
-  const [downloadFormat, setDownloadFormat] = useState<'json' | 'pdf-zip'>('json');
+  const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -71,27 +71,54 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (downloadFormat === 'json') {
-        // JSON Export with all data
-        const exportData = {
-          user: user,
-          goalsCount: goalsData.length,
-          goals: goalsData,
-          exportDate: new Date().toISOString(),
-          settings: { notificationSettings, languageSettings },
-          version: "v4.1.0 (Beta)",
-          exportFormat: "JSON",
-          notes: "This file contains all your savings goals, progress data, and settings. You can import this data into other financial planning tools or keep it as a backup."
-        };
+      if (downloadFormat === 'csv') {
+        // CSV Export with all data
+        const csvHeader = [
+          'Goal Name',
+          'Goal Type', 
+          'Target Amount',
+          'Current Savings',
+          'Target Date',
+          'Monthly Capacity',
+          'Progress (%)',
+          'Status',
+          'Created Date',
+          'Last Updated',
+          'User'
+        ].join(',');
         
-        const jsonBlob = new Blob([JSON.stringify(exportData, null, 2)], { 
-          type: 'application/json' 
+        const csvRows = goalsData.map((goal: any) => {
+          const progress = Math.round((goal.currentSavings / goal.targetAmount) * 100);
+          const today = new Date();
+          const targetDate = new Date(goal.targetDate);
+          const isOverdue = targetDate < today && progress < 100;
+          const status = progress >= 100 ? 'Complete' : isOverdue ? 'Overdue' : 'Active';
+          
+          return [
+            `"${goal.name}"`,
+            goal.goalType,
+            goal.targetAmount,
+            goal.currentSavings || 0,
+            new Date(goal.targetDate).toLocaleDateString(),
+            goal.monthlyCapacity || 0,
+            progress,
+            status,
+            new Date(goal.createdAt).toLocaleDateString(),
+            goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : '',
+            user?.username || 'Guest'
+          ].join(',');
         });
         
-        const url = URL.createObjectURL(jsonBlob);
+        const csvContent = [csvHeader, ...csvRows].join('\n');
+        
+        const csvBlob = new Blob([csvContent], { 
+          type: 'text/csv' 
+        });
+        
+        const url = URL.createObjectURL(csvBlob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `my-college-finance-complete-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `my-college-finance-export-${new Date().toISOString().split('T')[0]}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -99,7 +126,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         
         toast({
           title: "All Goals Exported Successfully",
-          description: `Downloaded ${goalsData.length} goals with complete data and settings as JSON.`
+          description: `Downloaded ${goalsData.length} goals with complete data as CSV.`
         });
       } else {
         // PDF + ZIP Export
@@ -378,12 +405,12 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Download Format</Label>
-            <Select value={downloadFormat} onValueChange={(value) => setDownloadFormat(value as 'json' | 'pdf-zip')}>
+            <Select value={downloadFormat} onValueChange={(value) => setDownloadFormat(value as 'csv' | 'pdf-zip')}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="json">JSON Data Export</SelectItem>
+                <SelectItem value="csv">CSV Data Export</SelectItem>
                 <SelectItem value="pdf-zip">PDF Reports (ZIP)</SelectItem>
               </SelectContent>
             </Select>
@@ -395,8 +422,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           </Button>
           
           <p className="text-xs text-muted-foreground text-center">
-            {downloadFormat === 'json' 
-              ? "Downloads all your goals, progress data, and settings as a JSON file" 
+            {downloadFormat === 'csv' 
+              ? "Downloads all your goals, progress data, and settings as a CSV file" 
               : "Downloads individual PDF reports for each goal in a ZIP file"}
           </p>
         </CardContent>

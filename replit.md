@@ -4,7 +4,24 @@
 
 This is a full-stack web application designed to help college students and young adults create, track, and manage their savings goals. The application provides an intuitive interface for calculating savings requirements, visualizing progress, and offering educational financial guidance. Built with modern web technologies, it features a responsive design with both light and dark themes.
 
-## Recent Changes (v4.1.0 Beta - January 31, 2025)
+## Recent Changes (v4.2.0 Beta - February 1, 2025)
+
+### CSV Data Export Implementation
+- Replaced JSON export with CSV format for better compatibility with Excel and other tools
+- Enhanced data export includes comprehensive goal details, progress calculations, and status tracking
+- CSV format includes: Goal Name, Goal Type, Target Amount, Current Savings, Target Date, Monthly Capacity, Progress %, Status, Created Date, Last Updated, and User information
+- Updated FAQ documentation to reflect CSV export capabilities
+- Maintained PDF ZIP export option for comprehensive reporting
+
+### Guest Authentication Flow Improvements  
+- Fixed guest user goal saving with proper authentication error handling
+- Added "Create an Account" text link in guest banner for easier access to authentication
+- Enhanced error parsing to handle HTTP status prefixes and multiple detection methods
+- Improved toast notifications with clear messaging for guest users
+- Fixed accessibility warnings in authentication modal with proper aria-describedby attributes
+- Resolved TypeScript errors in form handling and user interface components
+
+## Previous Changes (v4.1.0 Beta - January 31, 2025)
 
 ### Enhanced Multi-Method Authentication System
 - Implemented comprehensive multi-method login (email, phone, username)
