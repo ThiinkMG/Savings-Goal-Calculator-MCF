@@ -16,7 +16,7 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
-type SettingsTab = 'account' | 'language' | 'notifications' | 'data' | 'help';
+type SettingsTab = 'account' | 'language' | 'data' | 'help';
 
 export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
@@ -176,7 +176,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const tabs = [
     { id: 'account', label: 'Account', icon: User },
     { id: 'language', label: 'Language', icon: Globe },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
+    // { id: 'notifications', label: 'Notifications', icon: Bell }, // Hidden until notification system is ready
     { id: 'data', label: 'Data', icon: BarChart3 },
     { id: 'help', label: 'Help', icon: HelpCircle }
   ];
@@ -558,7 +558,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     switch (activeTab) {
       case 'account': return renderAccountSettings();
       case 'language': return renderLanguageSettings();
-      case 'notifications': return renderNotificationSettings();
+      // case 'notifications': return renderNotificationSettings(); // Hidden until notification system is ready
       case 'data': return renderDataSettings();
       case 'help': return renderHelpSettings();
       default: return renderAccountSettings();
