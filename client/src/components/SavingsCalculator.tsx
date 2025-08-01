@@ -124,11 +124,24 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     },
     onError: (error: Error) => {
       console.log('Save goal error:', error.message);
+      
+      // Check if the error message contains guest authentication indicators
+      if (error.message.includes("create an account") || error.message.includes("isGuest")) {
+        toast({
+          title: "Create Account to Save",
+          description: "Sign up to save your goals permanently",
+          variant: "default",
+        });
+        onAuthRequired?.();
+        return;
+      }
+      
+      // Try to parse JSON error response (remove HTTP status prefix if present)
       try {
-        const errorData = JSON.parse(error.message);
+        const cleanMessage = error.message.replace(/^\d+:\s*/, ''); // Remove "401: " prefix
+        const errorData = JSON.parse(cleanMessage);
         console.log('Parsed error data:', errorData);
         
-        // Check if this is a guest authentication error
         if (errorData.isGuest || (errorData.message && errorData.message.includes("create an account"))) {
           toast({
             title: "Create Account to Save",
@@ -139,17 +152,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
           return;
         }
       } catch (e) {
-        // Error parsing failed, check if the error message contains guest indicators
-        console.log('Error parsing failed, checking raw message:', error.message);
-        if (error.message.includes("create an account") || error.message.includes("isGuest")) {
-          toast({
-            title: "Create Account to Save", 
-            description: "Sign up to save your goals permanently",
-            variant: "default",
-          });
-          onAuthRequired?.();
-          return;
-        }
+        // JSON parsing failed, continue to generic error
       }
       
       toast({
@@ -190,7 +193,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
 
     const goalData: InsertSavingsGoal = {
-      userId: null, // For now, no user authentication
+      userId: '', // Empty string for guest users
       name: goalName,
       goalType,
       targetAmount,
@@ -215,7 +218,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     try {
       const goalData: SavingsGoal = {
         id: existingGoal?.id || 'temp-id',
-        userId: existingGoal?.userId || null,
+        userId: existingGoal?.userId || '',
         name: goalName,
         goalType,
         targetAmount,

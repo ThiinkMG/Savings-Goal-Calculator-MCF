@@ -78,7 +78,14 @@ export default function HomePage() {
             <div className="flex items-center gap-3">
               <Shield className="w-5 h-5 text-white" />
               <span className="text-sm font-medium text-white">
-                You're using My College Finance as a guest. Your data won't be saved between sessions.
+                You're using My College Finance as a guest. Your data won't be saved between sessions.{' '}
+                <button 
+                  onClick={() => setShowEnhancedAuthModal(true)}
+                  className="underline hover:no-underline text-white font-semibold"
+                >
+                  Create an account
+                </button>{' '}
+                to save your progress.
               </span>
             </div>
             <Button

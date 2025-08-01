@@ -794,9 +794,12 @@ export function EnhancedAuthModal({ isOpen, onClose }: EnhancedAuthModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="auth-modal-description">
         <DialogHeader>
           <DialogTitle>{getStepTitle()}</DialogTitle>
+          <div id="auth-modal-description" className="sr-only">
+            Authentication modal for creating an account or logging in
+          </div>
         </DialogHeader>
         {renderStepContent()}
       </DialogContent>
