@@ -44,17 +44,19 @@ export class DatabaseStorage implements IStorage {
     const isEmail = identifier.includes('@');
     const isPhone = /^[\+]?[1-9][\d]{0,15}$/.test(identifier.replace(/[\s\-\(\)]/g, ''));
     
-    let whereClause;
     if (isEmail) {
-      whereClause = eq(users.email, identifier);
+      // Search by email
+      const [user] = await db.select().from(users).where(eq(users.email, identifier));
+      return user || undefined;
     } else if (isPhone) {
-      whereClause = eq(users.phoneNumber, identifier);
+      // Search by phone number
+      const [user] = await db.select().from(users).where(eq(users.phoneNumber, identifier));
+      return user || undefined;
     } else {
-      whereClause = eq(users.username, identifier);
+      // Search by username
+      const [user] = await db.select().from(users).where(eq(users.username, identifier));
+      return user || undefined;
     }
-    
-    const [user] = await db.select().from(users).where(whereClause);
-    return user || undefined;
   }
 
   async updateUserPassword(userId: string, newPassword: string): Promise<boolean> {

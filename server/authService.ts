@@ -23,7 +23,13 @@ export async function authenticateUser(identifier: string, password: string): Pr
   lockoutUntil?: Date;
 }> {
   try {
-    const user = await storage.getUserByIdentifier(identifier);
+    // First try the enhanced method with getUserByIdentifier
+    let user = await storage.getUserByIdentifier(identifier);
+    
+    // If no user found and it looks like a username (not email/phone), try fallback
+    if (!user && !identifier.includes('@') && !/^[\+]?[1-9][\d]{0,15}$/.test(identifier.replace(/[\s\-\(\)]/g, ''))) {
+      user = await storage.getUserByUsername(identifier);
+    }
     
     if (!user) {
       return { success: false, error: 'Invalid credentials' };
