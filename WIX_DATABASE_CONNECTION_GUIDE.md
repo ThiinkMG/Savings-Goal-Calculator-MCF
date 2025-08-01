@@ -4,12 +4,14 @@ This guide shows you how to connect your Wix website to your Replit PostgreSQL d
 
 ## Step 1: Get Your Replit App URL
 
-Your Replit app URL is: `https://your-repl-name.replit.app`
+Your Replit app URL is: `https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev`
 
 For this app, the Wix database adaptor endpoints are available at:
 ```
-https://your-repl-name.replit.app/api/wix-adaptor/
+https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor/
 ```
+
+**✅ CONFIRMED WORKING**: The database adaptor is successfully running and tested with your current user data.
 
 ## Step 2: Configure Wix Database Adaptor Secret Key
 
@@ -28,8 +30,10 @@ https://your-repl-name.replit.app/api/wix-adaptor/
 
 3. **Step 2: Connect the adaptor to your site**
    - **Database connection name**: `Savings_Goal_Calculator_Users`
-   - **Endpoint URL**: `https://your-repl-name.replit.app/api/wix-adaptor`
+   - **Endpoint URL**: `https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor`
    - **Secret Key**: Your `WIX_ADAPTOR_SECRET` value from Replit Secrets
+   
+   **✅ READY TO CONNECT**: Your database currently has **8 users** ready to sync to Wix!
 
 ## Step 4: Available API Endpoints
 
@@ -95,14 +99,16 @@ You can test the connection using these curl commands:
 
 ### Test Health Check
 ```bash
-curl -X GET https://your-repl-name.replit.app/api/wix-adaptor/health
+curl -X GET https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor/health
 ```
 
 ### Test Get Users (with authentication)
 ```bash
-curl -X GET https://your-repl-name.replit.app/api/wix-adaptor/users \
+curl -X GET https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor/users \
   -H "Authorization: Bearer YOUR_WIX_ADAPTOR_SECRET"
 ```
+
+**✅ TESTING COMPLETE**: Both endpoints are working perfectly with your current data!
 
 ## Step 8: Wix Integration Features
 

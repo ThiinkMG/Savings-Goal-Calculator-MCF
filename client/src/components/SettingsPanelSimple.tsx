@@ -589,11 +589,11 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         onClick={onClose}
       />
       {/* Settings Panel */}
-      <div className={`absolute right-0 top-0 h-full w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
+      <div className={`absolute right-0 top-0 h-full w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f]">
+        <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f] flex-shrink-0">
           <h2 className="text-lg font-semibold">Settings</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
@@ -601,7 +601,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b">
+        <div className="border-b flex-shrink-0">
           <div className="flex flex-col p-2 space-y-1 bg-background dark:bg-[#1f1f1f]">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -621,7 +621,13 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+        <div 
+          className="flex-1 min-h-0 overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f] settings-content-scroll"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
+          }}
+        >
           {renderTabContent()}
         </div>
       </div>
