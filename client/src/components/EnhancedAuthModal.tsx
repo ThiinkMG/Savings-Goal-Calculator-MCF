@@ -191,12 +191,12 @@ export function EnhancedAuthModal({ isOpen, onClose }: EnhancedAuthModalProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/api/auth/enhanced-register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
+          fullName: formData.fullName || undefined,
+          email: formData.email || undefined,
           phoneNumber: formData.phoneNumber || undefined,
           username: formData.username,
           password: formData.password

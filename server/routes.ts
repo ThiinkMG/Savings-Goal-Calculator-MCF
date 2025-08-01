@@ -6,8 +6,10 @@ import { z } from "zod";
 import { requireAuth, register, login, logout, getCurrentUser, type AuthenticatedRequest } from "./auth";
 import { reportScheduler } from './scheduler';
 import { googleSheetsService } from './googleSheetsService';
-import { loginSchema, forgotPasswordSchema, verifyCodeSchema, resetPasswordSchema } from "@shared/schema";
+import { loginSchema, forgotPasswordSchema, verifyCodeSchema, resetPasswordSchema, insertUserSchema } from "@shared/schema";
 import { authenticateUser, sendPasswordResetCode, sendUsernameRecovery, verifyResetCode, resetPassword, detectIdentifierType } from './authService';
+import bcrypt from 'bcryptjs';
+import { sendNewSignupAlert } from './emailService';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -17,6 +19,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/me", requireAuth, getCurrentUser);
 
   // Enhanced authentication routes
+  app.post("/api/auth/enhanced-register", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if username already exists
+      const existingUser = await storage.getUserByUsername(userData.username);
+      if (existingUser) {
+        return res.status(400).json({ message: 'Username already exists' });
+      }
+      
+      // Check if email already exists (if provided)
+      if (userData.email) {
+        const existingEmail = await storage.getUserByIdentifier(userData.email);
+        if (existingEmail) {
+          return res.status(400).json({ message: 'Email already exists' });
+        }
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      
+      // Create user with all fields
+      const user = await storage.createUser({
+        ...userData,
+        password: hashedPassword
+      });
+
+      // Set session
+      req.session.userId = user.id;
+      req.session.isGuest = false;
+
+      // Send email notification to admins
+      try {
+        await sendNewSignupAlert(userData.username);
+        console.log(`New enhanced signup email sent for user: ${userData.username}`);
+      } catch (emailError) {
+        console.error('Failed to send signup email:', emailError);
+      }
+
+      // Return user without password
+      const { password: _, ...userWithoutPassword } = user;
+      res.status(201).json({ user: userWithoutPassword });
+    } catch (error) {
+      console.error('Enhanced registration error:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid registration data", errors: error.errors });
+      }
+      res.status(500).json({ message: 'Failed to register user' });
+    }
+  });
+
   app.post("/api/auth/enhanced-login", async (req, res) => {
     try {
       const { identifier, password } = loginSchema.parse(req.body);
@@ -32,6 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Set session
       req.session.userId = result.user!.id;
+      req.session.isGuest = false;
       
       res.json({ 
         user: result.user,

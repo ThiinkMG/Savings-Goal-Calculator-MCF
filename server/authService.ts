@@ -112,10 +112,10 @@ export async function sendPasswordResetCode(identifier: string): Promise<{
     if (identifierType === 'email' || user.email) {
       // Send via email
       method = 'email';
-      maskedContact = maskEmail(user.email);
+      maskedContact = maskEmail(user.email || '');
       
       await sendEmail({
-        to: user.email,
+        to: user.email || '',
         from: 'noreply@mycollegefinance.com',
         subject: 'Password Reset Code - My College Finance',
         html: `
@@ -242,7 +242,9 @@ export async function resetPassword(resetToken: string, newPassword: string): Pr
 
 // Helper functions
 function maskEmail(email: string): string {
+  if (!email || !email.includes('@')) return '';
   const [local, domain] = email.split('@');
+  if (local.length <= 2) return `${local}@${domain}`;
   const maskedLocal = local.charAt(0) + '*'.repeat(local.length - 2) + local.charAt(local.length - 1);
   return `${maskedLocal}@${domain}`;
 }
