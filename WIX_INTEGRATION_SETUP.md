@@ -1,14 +1,28 @@
 # Wix Website User Account Synchronization
 
-This document explains how to set up automated user account synchronization between your Wix website and the Replit database.
+This document explains how to set up **bidirectional** automated user account synchronization between your Wix website and the Replit database.
 
 ## Overview
 
-The Wix integration system allows you to:
-- Automatically sync user accounts from Wix to Replit database
-- Link existing Replit users to their Wix accounts
+The Wix integration system provides **complete bidirectional sync** capabilities:
+- **Wix → Replit**: Automatically sync user accounts from Wix to Replit database
+- **Replit → Wix**: Create Wix accounts when users register in the app
+- **Live Updates**: Sync changes (username, email, phone) from Replit back to Wix
+- Link existing users across both platforms
 - Perform real-time or scheduled synchronization
 - Maintain data integrity between both platforms
+
+## Bidirectional Sync Features
+
+### From Wix to Replit:
+- Import all existing Wix members to Replit database
+- Generate secure temporary passwords for new users
+- Link existing Replit users to their Wix accounts
+
+### From Replit to Wix:
+- **New User Registration**: When users sign up in the app, automatically create their Wix account
+- **Profile Updates**: When users update username, email, or phone in Replit, sync changes to Wix
+- **Account Linking**: Automatically link new Replit users to their Wix profiles
 
 ## Required Environment Variables
 

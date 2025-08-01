@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,12 @@ type SecurityStep =
 export function SecuritySettingsModal({ isOpen, onClose, initialMode }: SecuritySettingsModalProps) {
   const [step, setStep] = useState<SecurityStep>('verify-password');
   const [mode, setMode] = useState<'password' | 'username' | 'phone' | 'email'>(initialMode);
+  
+  // Reset mode when modal opens with new initial mode
+  useEffect(() => {
+    setMode(initialMode);
+    setStep('verify-password');
+  }, [initialMode, isOpen]);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -64,6 +70,7 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     setAttempts(0);
     setVerificationToken('');
     setStep('verify-password');
+    setMode(initialMode); // Reset to initial mode
   };
 
   const handleClose = () => {

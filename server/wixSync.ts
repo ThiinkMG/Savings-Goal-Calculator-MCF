@@ -103,6 +103,109 @@ class WixSyncService {
     return password;
   }
 
+  // Bidirectional sync: Create user in Wix when they register in Replit
+  public async createWixUser(user: User): Promise<{ success: boolean; wixUserId?: string; error?: string }> {
+    try {
+      if (!this.validateConfig()) {
+        return { success: false, error: 'Wix API not configured' };
+      }
+
+      // Prepare Wix user data
+      const wixUserData = {
+        loginEmail: user.email,
+        firstName: user.fullName?.split(' ')[0] || '',
+        lastName: user.fullName?.split(' ').slice(1).join(' ') || '',
+        phone: user.phoneNumber || undefined,
+        username: user.username
+      };
+
+      console.log(`Creating Wix user for ${user.email}...`);
+
+      const response = await fetch(`https://www.wixapis.com/members/v1/members`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+          'wix-account-id': this.config.accountId,
+          'wix-site-id': this.config.siteId
+        },
+        body: JSON.stringify({
+          member: wixUserData,
+          privacyStatus: 'PUBLIC',
+          status: 'ACTIVE'
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Wix user creation failed: ${response.status} - ${errorText}`);
+        return { success: false, error: `Wix API error: ${response.status} - ${errorText}` };
+      }
+
+      const result = await response.json();
+      const wixUserId = result.member?._id;
+
+      if (wixUserId) {
+        // Update local user with Wix ID
+        await storage.updateUserWixId(user.id, wixUserId);
+        console.log(`Successfully created Wix user ${wixUserId} for ${user.email}`);
+        return { success: true, wixUserId };
+      } else {
+        return { success: false, error: 'No Wix user ID returned' };
+      }
+
+    } catch (error) {
+      console.error('Error creating Wix user:', error);
+      return { success: false, error: String(error) };
+    }
+  }
+
+  // Update existing Wix user when Replit user data changes
+  public async updateWixUser(user: User): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.validateConfig() || !user.wixUserId) {
+        return { success: false, error: 'Wix API not configured or user not linked' };
+      }
+
+      // Prepare update data
+      const updateData = {
+        loginEmail: user.email,
+        firstName: user.fullName?.split(' ')[0] || '',
+        lastName: user.fullName?.split(' ').slice(1).join(' ') || '',
+        phone: user.phoneNumber || undefined,
+        username: user.username
+      };
+
+      console.log(`Updating Wix user ${user.wixUserId} for ${user.email}...`);
+
+      const response = await fetch(`https://www.wixapis.com/members/v1/members/${user.wixUserId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+          'wix-account-id': this.config.accountId,
+          'wix-site-id': this.config.siteId
+        },
+        body: JSON.stringify({
+          member: updateData
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Wix user update failed: ${response.status} - ${errorText}`);
+        return { success: false, error: `Wix API error: ${response.status} - ${errorText}` };
+      }
+
+      console.log(`Successfully updated Wix user ${user.wixUserId}`);
+      return { success: true };
+
+    } catch (error) {
+      console.error('Error updating Wix user:', error);
+      return { success: false, error: String(error) };
+    }
+  }
+
   private async mapWixUserToInsertUser(wixUser: WixUser): Promise<InsertUser & { wixUserId: string }> {
     // Generate a temporary password - users will need to reset it
     const tempPassword = this.generateTempPassword();

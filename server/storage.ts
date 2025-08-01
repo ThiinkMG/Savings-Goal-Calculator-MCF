@@ -113,6 +113,19 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
+    // Sync changes to Wix if user is linked
+    if (result.length > 0 && result[0].wixUserId) {
+      try {
+        const { wixSyncService } = await import('./wixSync');
+        const wixResult = await wixSyncService.updateWixUser(result[0]);
+        if (!wixResult.success) {
+          console.error('Failed to sync username update to Wix:', wixResult.error);
+        }
+      } catch (error) {
+        console.error('Failed to sync username to Wix:', error);
+      }
+    }
+    
     return result.length > 0;
   }
 
@@ -126,6 +139,19 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
+    // Sync changes to Wix if user is linked
+    if (result.length > 0 && result[0].wixUserId) {
+      try {
+        const { wixSyncService } = await import('./wixSync');
+        const wixResult = await wixSyncService.updateWixUser(result[0]);
+        if (!wixResult.success) {
+          console.error('Failed to sync phone update to Wix:', wixResult.error);
+        }
+      } catch (error) {
+        console.error('Failed to sync phone to Wix:', error);
+      }
+    }
+    
     return result.length > 0;
   }
 
@@ -138,6 +164,19 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(users.id, userId))
       .returning();
+    
+    // Sync changes to Wix if user is linked
+    if (result.length > 0 && result[0].wixUserId) {
+      try {
+        const { wixSyncService } = await import('./wixSync');
+        const wixResult = await wixSyncService.updateWixUser(result[0]);
+        if (!wixResult.success) {
+          console.error('Failed to sync email update to Wix:', wixResult.error);
+        }
+      } catch (error) {
+        console.error('Failed to sync email to Wix:', error);
+      }
+    }
     
     return result.length > 0;
   }
@@ -267,6 +306,19 @@ export class DatabaseStorage implements IStorage {
       }
     } catch (error) {
       console.error('Failed to sync user to Google Sheets:', error);
+    }
+
+    // Sync to Wix if user was created locally (no wixUserId)
+    if (!insertUser.wixUserId) {
+      try {
+        const { wixSyncService } = await import('./wixSync');
+        const wixResult = await wixSyncService.createWixUser(user);
+        if (!wixResult.success) {
+          console.error('Failed to sync new user to Wix:', wixResult.error);
+        }
+      } catch (error) {
+        console.error('Failed to sync user to Wix:', error);
+      }
     }
     
     return user;

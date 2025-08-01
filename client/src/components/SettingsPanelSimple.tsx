@@ -621,7 +621,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f]">
+        <div className="flex-1 overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
           {renderTabContent()}
         </div>
       </div>
