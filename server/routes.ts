@@ -9,6 +9,7 @@ import { googleSheetsService } from './googleSheetsService';
 import { wixSyncService } from './wixSync';
 import { wixSyncScheduler } from './wixScheduler';
 import { wixDatabaseRoutes } from './wixDatabaseAdaptor';
+import { dataSyncService } from './dataSyncService';
 import { loginSchema, forgotPasswordSchema, verifyCodeSchema, resetPasswordSchema, insertUserSchema } from "@shared/schema";
 import { authenticateUser, sendPasswordResetCode, sendUsernameRecovery, verifyResetCode, resetPassword, detectIdentifierType } from './authService';
 import bcrypt from 'bcryptjs';
@@ -188,6 +189,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Check username error:', error);
       res.status(500).json({ message: "Failed to check username availability" });
+    }
+  });
+
+  // Wix authentication route
+  app.post("/api/auth/wix-login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+
+      const result = await dataSyncService.authenticateAndSync(email, password);
+      
+      if (!result.success) {
+        return res.status(401).json({ 
+          message: result.error || "Authentication failed"
+        });
+      }
+
+      // Set session
+      req.session.userId = result.user!.id;
+      req.session.isGuest = false;
+      
+      res.json({ 
+        user: result.user,
+        wixMember: result.wixMember,
+        importedGoals: result.importedGoals || 0,
+        message: "Wix login successful"
+      });
+    } catch (error) {
+      console.error('Wix login error:', error);
+      res.status(500).json({ message: "Wix authentication failed" });
     }
   });
   // Get all savings goals (with auth)

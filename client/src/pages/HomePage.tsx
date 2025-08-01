@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { BrandHeader } from '@/components/BrandHeader';
 import { SavingsCalculator } from '@/components/SavingsCalculator';
+import { WixLoginModal } from '@/components/WixLoginModal';
 import { MultipleGoalsManager } from '@/components/MultipleGoalsManager';
 import { AuthModal } from '@/components/AuthModal';
 import { EnhancedAuthModal } from '@/components/EnhancedAuthModal';
@@ -16,6 +17,7 @@ export default function HomePage() {
   const [showNewGoalForm, setShowNewGoalForm] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showEnhancedAuthModal, setShowEnhancedAuthModal] = useState(false);
+  const [showWixModal, setShowWixModal] = useState(false);
   
   const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
 
@@ -346,6 +348,18 @@ export default function HomePage() {
       <EnhancedAuthModal
         isOpen={showEnhancedAuthModal}
         onClose={() => setShowEnhancedAuthModal(false)}
+        onWixLogin={() => {
+          setShowEnhancedAuthModal(false);
+          setShowWixModal(true);
+        }}
+      />
+
+      <WixLoginModal
+        isOpen={showWixModal}
+        onClose={() => setShowWixModal(false)}
+        onSuccess={(user) => {
+          setShowWixModal(false);
+        }}
       />
     </div>
   );
