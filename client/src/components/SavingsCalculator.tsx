@@ -712,15 +712,16 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                 onClick={handleExportPDF}
                 className={`w-full transition-all duration-200 ${
                   !calculations 
-                    ? 'bg-muted hover:bg-muted text-muted-foreground dark:text-slate-400 cursor-not-allowed border border-border' 
-                    : 'bg-brand-blue hover:bg-brand-blue/90 text-white dark:text-white'
+                    ? 'bg-gray-100 dark:bg-muted hover:bg-gray-100 dark:hover:bg-muted text-gray-500 dark:text-slate-400 cursor-not-allowed border border-gray-200 dark:border-border' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
                 }`}
                 disabled={!calculations}
+                style={!calculations ? {} : { backgroundColor: 'hsl(218, 99%, 40%)' }}
               >
                 <Download className={`w-4 h-4 mr-2 ${
                   !calculations 
-                    ? 'text-muted-foreground dark:text-slate-400' 
-                    : 'text-white dark:text-white'
+                    ? 'text-gray-500 dark:text-slate-400' 
+                    : 'text-white'
                 }`} />
                 Download PDF Report
               </Button>
@@ -729,15 +730,16 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                 onClick={handleShare}
                 className={`w-full transition-all duration-200 ${
                   !calculations 
-                    ? 'bg-muted hover:bg-muted text-muted-foreground dark:text-slate-400 cursor-not-allowed border border-border' 
-                    : 'bg-brand-green hover:bg-brand-green/90 text-white dark:text-white'
+                    ? 'bg-gray-100 dark:bg-muted hover:bg-gray-100 dark:hover:bg-muted text-gray-500 dark:text-slate-400 cursor-not-allowed border border-gray-200 dark:border-border' 
+                    : 'bg-green-600 hover:bg-green-700 text-white'
                 }`}
                 disabled={!calculations}
+                style={!calculations ? {} : { backgroundColor: 'hsl(115, 93%, 47%)' }}
               >
                 <Share2 className={`w-4 h-4 mr-2 ${
                   !calculations 
-                    ? 'text-muted-foreground dark:text-slate-400' 
-                    : 'text-white dark:text-white'
+                    ? 'text-gray-500 dark:text-slate-400' 
+                    : 'text-white'
                 }`} />
                 Share Savings Plan
               </Button>
@@ -746,20 +748,21 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                 onClick={handleSaveGoal}
                 className={`w-full transition-all duration-200 ${
                   (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
-                    ? 'bg-muted hover:bg-muted text-muted-foreground dark:text-slate-400 cursor-not-allowed border border-border' 
-                    : 'bg-brand-green hover:bg-brand-green/90 text-white dark:text-white hover:shadow-md'
+                    ? 'bg-gray-100 dark:bg-muted hover:bg-gray-100 dark:hover:bg-muted text-gray-500 dark:text-slate-400 cursor-not-allowed border border-gray-200 dark:border-border' 
+                    : 'bg-green-600 hover:bg-green-700 text-white hover:shadow-md'
                 }`}
                 disabled={saveGoalMutation.isPending || (!goalType || !goalName || targetAmount <= 0 || !targetDate)}
+                style={(!goalType || !goalName || targetAmount <= 0 || !targetDate) ? {} : { backgroundColor: 'hsl(115, 93%, 47%)' }}
               >
                 <Save className={`w-4 h-4 mr-2 ${
                   (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
-                    ? 'text-muted-foreground dark:text-slate-400' 
-                    : 'text-white dark:text-white'
+                    ? 'text-gray-500 dark:text-slate-400' 
+                    : 'text-white'
                 }`} />
                 {saveGoalMutation.isPending ? 'Saving...' : (existingGoal ? 'Update Goal' : 'Save as Goal')}
               </Button>
               {(!goalType || !goalName || targetAmount <= 0 || !targetDate) && (
-                <p className="text-xs text-muted-foreground dark:text-slate-400 mt-1 text-center">
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 text-center">
                   Complete all fields to enable saving
                 </p>
               )}
