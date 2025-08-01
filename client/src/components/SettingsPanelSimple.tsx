@@ -5,13 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw } from "lucide-react";
+import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { EnhancedAuthModal } from "./EnhancedAuthModal";
 import { TutorialModal } from "./TutorialModal";
 import { FAQModal } from "./FAQModal";
+import JSZip from 'jszip';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [showFAQModal, setShowFAQModal] = useState(false);
+  const [downloadFormat, setDownloadFormat] = useState<'json' | 'pdf-zip'>('json');
   
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -56,36 +58,53 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         goalsData = await response.json();
       }
       
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Check if there are no goals to export
+      if (!goalsData || goalsData.length === 0) {
+        toast({
+          title: "Nothing to Download",
+          description: "You don't have any saved goals yet. Create some goals first, then download your data.",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
       
-      // Create comprehensive export data
-      const exportData = {
-        user: user,
-        goalsCount: goalsData.length,
-        goals: goalsData,
-        exportDate: new Date().toISOString(),
-        settings: { notificationSettings, languageSettings },
-        version: "v4.1.0 (Beta)"
-      };
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Create a ZIP-like structure with JSON data
-      const jsonBlob = new Blob([JSON.stringify(exportData, null, 2)], { 
-        type: 'application/json' 
-      });
-      
-      const url = URL.createObjectURL(jsonBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `my-college-finance-complete-export-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "All Goals Exported",
-        description: `Successfully downloaded ${goalsData.length} goals and complete profile data.`
-      });
+      if (downloadFormat === 'json') {
+        // JSON Export with all data
+        const exportData = {
+          user: user,
+          goalsCount: goalsData.length,
+          goals: goalsData,
+          exportDate: new Date().toISOString(),
+          settings: { notificationSettings, languageSettings },
+          version: "v4.1.0 (Beta)",
+          exportFormat: "JSON",
+          notes: "This file contains all your savings goals, progress data, and settings. You can import this data into other financial planning tools or keep it as a backup."
+        };
+        
+        const jsonBlob = new Blob([JSON.stringify(exportData, null, 2)], { 
+          type: 'application/json' 
+        });
+        
+        const url = URL.createObjectURL(jsonBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `my-college-finance-complete-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        toast({
+          title: "All Goals Exported Successfully",
+          description: `Downloaded ${goalsData.length} goals with complete data and settings as JSON.`
+        });
+      } else {
+        // PDF + ZIP Export
+        await generatePDFZipExport(goalsData);
+      }
     } catch (error) {
       toast({
         title: "Export Failed",
@@ -94,6 +113,95 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const generatePDFZipExport = async (goalsData: any[]) => {
+    try {
+      const { jsPDF } = await import('jspdf');
+      const zip = new JSZip();
+      
+      // Generate individual PDF for each goal
+      for (let i = 0; i < goalsData.length; i++) {
+        const goal = goalsData[i];
+        const pdf = new jsPDF();
+        
+        // PDF styling and content
+        pdf.setFontSize(20);
+        pdf.setTextColor(25, 118, 210); // Brand blue
+        pdf.text('My College Finance', 20, 25);
+        
+        pdf.setFontSize(16);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Savings Goal Report', 20, 40);
+        
+        // Goal details
+        pdf.setFontSize(12);
+        pdf.text(`Goal: ${goal.name}`, 20, 60);
+        pdf.text(`Type: ${goal.goalType}`, 20, 75);
+        pdf.text(`Target Amount: $${goal.targetAmount?.toLocaleString() || '0'}`, 20, 90);
+        pdf.text(`Current Savings: $${goal.currentSavings?.toLocaleString() || '0'}`, 20, 105);
+        pdf.text(`Target Date: ${new Date(goal.targetDate).toLocaleDateString()}`, 20, 120);
+        
+        // Progress calculation
+        const progressPercent = ((goal.currentSavings || 0) / (goal.targetAmount || 1)) * 100;
+        pdf.text(`Progress: ${progressPercent.toFixed(1)}%`, 20, 135);
+        
+        // Remaining amount
+        const remaining = (goal.targetAmount || 0) - (goal.currentSavings || 0);
+        pdf.text(`Amount Remaining: $${remaining.toLocaleString()}`, 20, 150);
+        
+        // Monthly savings needed
+        const monthsRemaining = new Date(goal.targetDate).getTime() > new Date().getTime() ? 
+          Math.ceil((new Date(goal.targetDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 30)) : 0;
+        const monthlyNeeded = monthsRemaining > 0 ? remaining / monthsRemaining : 0;
+        pdf.text(`Monthly Savings Needed: $${monthlyNeeded.toFixed(2)}`, 20, 165);
+        
+        // Footer
+        pdf.setFontSize(10);
+        pdf.setTextColor(128, 128, 128);
+        pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, 280);
+        pdf.text('My College Finance - Savings Goal Calculator v4.1.0 (Beta)', 20, 290);
+        
+        // Add PDF to ZIP
+        const pdfData = pdf.output('arraybuffer');
+        zip.file(`${goal.name.replace(/[^a-z0-9]/gi, '_')}_savings_report.pdf`, pdfData);
+      }
+      
+      // Add summary JSON file
+      const summaryData = {
+        exportDate: new Date().toISOString(),
+        totalGoals: goalsData.length,
+        totalTargetAmount: goalsData.reduce((sum, goal) => sum + (goal.targetAmount || 0), 0),
+        totalCurrentSavings: goalsData.reduce((sum, goal) => sum + (goal.currentSavings || 0), 0),
+        user: user?.username || 'Guest',
+        version: "v4.1.0 (Beta)"
+      };
+      zip.file('export_summary.json', JSON.stringify(summaryData, null, 2));
+      
+      // Generate and download ZIP
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `my-college-finance-pdf-reports-${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "PDF Reports Generated",
+        description: `Downloaded ${goalsData.length} PDF reports in a ZIP file with summary data.`
+      });
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "PDF Generation Failed",
+        description: "Could not generate PDF reports. Please try the JSON export instead.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -267,13 +375,29 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <CardTitle>Data Export</CardTitle>
           <CardDescription>Download your savings goals and progress data</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Download Format</Label>
+            <Select value={downloadFormat} onValueChange={(value) => setDownloadFormat(value as 'json' | 'pdf-zip')}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="json">JSON Data Export</SelectItem>
+                <SelectItem value="pdf-zip">PDF Reports (ZIP)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
           <Button onClick={handleDataExport} disabled={isLoading} className="w-full">
             <Download className="w-4 h-4 mr-2" />
             {isLoading ? "Exporting..." : "Download All Goals"}
           </Button>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            Downloads all your goals, progress data, and settings as a JSON file
+          
+          <p className="text-xs text-muted-foreground text-center">
+            {downloadFormat === 'json' 
+              ? "Downloads all your goals, progress data, and settings as a JSON file" 
+              : "Downloads individual PDF reports for each goal in a ZIP file"}
           </p>
         </CardContent>
       </Card>
