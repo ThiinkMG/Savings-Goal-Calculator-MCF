@@ -334,9 +334,7 @@ export const wixDatabaseRoutes = {
       
       const goal = await storage.createSavingsGoal?.({
         ...goalData,
-        id: '', // Will be auto-generated
-        createdAt: new Date(),
-        updatedAt: new Date()
+        targetDate: new Date(goalData.targetDate)
       });
       
       if (!goal) {
@@ -356,10 +354,7 @@ export const wixDatabaseRoutes = {
       const { id } = req.params;
       const goalData = WixSavingsGoalSchema.partial().parse(req.body);
       
-      const updatedGoal = await storage.updateSavingsGoal?.(id, {
-        ...goalData,
-        updatedAt: new Date()
-      });
+      const updatedGoal = await storage.updateSavingsGoal?.(id, goalData);
       
       if (!updatedGoal) {
         return res.status(404).json({ error: 'Goal not found' });

@@ -36,12 +36,7 @@ export interface IStorage {
   verifyCode(code: string, identifier: string, type: string): Promise<{ valid: boolean; userId?: string }>;
   markCodeAsUsed(codeId: string): Promise<void>;
   
-  // Savings Goals
-  getSavingsGoal(id: string): Promise<SavingsGoal | undefined>;
-  getSavingsGoalsByUser(userId: string): Promise<SavingsGoal[]>;
-  createSavingsGoal(goal: InsertSavingsGoal): Promise<SavingsGoal>;
-  updateSavingsGoal(id: string, goal: UpdateSavingsGoal): Promise<SavingsGoal | undefined>;
-  deleteSavingsGoal(id: string): Promise<boolean>;
+
 }
 
 export class DatabaseStorage implements IStorage {
@@ -429,30 +424,7 @@ export class DatabaseStorage implements IStorage {
     return goal || undefined;
   }
 
-  async createSavingsGoal(goal: InsertSavingsGoal): Promise<SavingsGoal> {
-    const [newGoal] = await db
-      .insert(savingsGoals)
-      .values(goal)
-      .returning();
-    return newGoal;
-  }
 
-  async updateSavingsGoal(goalId: string, updates: Partial<SavingsGoal>): Promise<SavingsGoal | undefined> {
-    const [updatedGoal] = await db
-      .update(savingsGoals)
-      .set(updates)
-      .where(eq(savingsGoals.id, goalId))
-      .returning();
-    return updatedGoal || undefined;
-  }
-
-  async deleteSavingsGoal(goalId: string): Promise<boolean> {
-    const result = await db
-      .delete(savingsGoals)
-      .where(eq(savingsGoals.id, goalId))
-      .returning();
-    return result.length > 0;
-  }
 }
 
 export const storage = new DatabaseStorage();
