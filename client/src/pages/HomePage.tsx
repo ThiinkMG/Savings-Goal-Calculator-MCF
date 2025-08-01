@@ -189,7 +189,7 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className="group inline-block"
               >
-                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 dark:bg-transparent dark:border-2 dark:border-blue-500 px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl dark:shadow-blue-900/50 transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
+                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 border-2 border-gray-600 dark:bg-transparent dark:border-blue-500 px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl dark:shadow-blue-900/50 transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
                   
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
