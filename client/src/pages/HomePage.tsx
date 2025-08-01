@@ -176,7 +176,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-brand-blue hover:bg-brand-blue/90 text-white dark:text-white px-8 py-3 text-lg font-semibold"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-2 text-white dark:text-white" />
                 Create New Savings Goal
               </Button>
             </div>
