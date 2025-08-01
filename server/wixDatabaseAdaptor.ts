@@ -87,14 +87,17 @@ const formatUserForWix = (user: User) => ({
   email: user.email || '',
   fullName: user.fullName || '',
   phoneNumber: user.phoneNumber || '',
-  createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
-  updatedAt: user.updatedAt?.toISOString() || new Date().toISOString()
+  wixUserId: user.wixUserId || '',
+  membershipLevel: 'standard',
+  lastAppSync: user.lastWixSync?.toISOString() || new Date().toISOString(),
+  _createdDate: user.createdAt?.toISOString() || new Date().toISOString(),
+  _updatedDate: user.updatedAt?.toISOString() || new Date().toISOString()
 });
 
 // Convert internal SavingsGoal to Wix format
 const formatGoalForWix = (goal: SavingsGoal) => ({
   _id: goal.id,
-  userId: goal.userId,
+  _owner: goal.userId,
   name: goal.name,
   targetAmount: goal.targetAmount,
   currentSavings: goal.currentSavings,
@@ -102,8 +105,8 @@ const formatGoalForWix = (goal: SavingsGoal) => ({
   goalType: goal.goalType,
   monthlyCapacity: goal.monthlyCapacity || 0,
   status: goal.status || 'active',
-  createdAt: goal.createdAt?.toISOString() || new Date().toISOString(),
-  updatedAt: goal.updatedAt?.toISOString() || new Date().toISOString()
+  _createdDate: goal.createdAt?.toISOString() || new Date().toISOString(),
+  _updatedDate: goal.updatedAt?.toISOString() || new Date().toISOString()
 });
 
 // Wix Database Adaptor Routes
@@ -129,9 +132,26 @@ export const wixDatabaseRoutes = {
       const allUsers = await storage.getAllUsers?.() || [];
       const userCount = allUsers.length;
       
-      // Wix expects a specific response format
+      // Wix expects a specific response format with your actual collection names
       res.json({
         schemas: [
+          {
+            displayName: 'PrivateMemberData',
+            id: 'privateMemberData',
+            allowedOperations: ['get', 'list', 'count', 'create', 'update', 'remove'],
+            fields: {
+              _id: { displayName: 'ID', type: 'text', queryOperators: ['eq', 'ne', 'hasSome'] },
+              username: { displayName: 'Username', type: 'text', queryOperators: ['eq', 'ne', 'contains', 'startsWith'] },
+              email: { displayName: 'Email', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              fullName: { displayName: 'Full Name', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              phoneNumber: { displayName: 'Phone Number', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              wixUserId: { displayName: 'Wix User ID', type: 'text', queryOperators: ['eq', 'ne'] },
+              membershipLevel: { displayName: 'Membership Level', type: 'text', queryOperators: ['eq', 'ne'] },
+              lastAppSync: { displayName: 'Last App Sync', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
+            }
+          },
           {
             displayName: 'Users',
             id: 'users',
@@ -157,6 +177,8 @@ export const wixDatabaseRoutes = {
               targetAmount: { displayName: 'Target Amount', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
               currentSavings: { displayName: 'Current Savings', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
               goalType: { displayName: 'Goal Type', type: 'text', queryOperators: ['eq', 'ne'] },
+              monthlyCapacity: { displayName: 'Monthly Capacity', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              status: { displayName: 'Status', type: 'text', queryOperators: ['eq', 'ne'] },
               _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
               _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
             }
@@ -369,9 +391,26 @@ export const wixDatabaseRoutes = {
 
   // Schema list endpoint - Required by Wix
   schemasList: async (req: Request, res: Response) => {
-    // Return the same schema format as provision
+    // Return the same schema format as provision with your actual collection names
     res.json({
       schemas: [
+        {
+          displayName: 'PrivateMemberData',
+          id: 'privateMemberData',
+          allowedOperations: ['get', 'list', 'count', 'create', 'update', 'remove'],
+          fields: {
+            _id: { displayName: 'ID', type: 'text', queryOperators: ['eq', 'ne', 'hasSome'] },
+            username: { displayName: 'Username', type: 'text', queryOperators: ['eq', 'ne', 'contains', 'startsWith'] },
+            email: { displayName: 'Email', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            fullName: { displayName: 'Full Name', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            phoneNumber: { displayName: 'Phone Number', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            wixUserId: { displayName: 'Wix User ID', type: 'text', queryOperators: ['eq', 'ne'] },
+            membershipLevel: { displayName: 'Membership Level', type: 'text', queryOperators: ['eq', 'ne'] },
+            lastAppSync: { displayName: 'Last App Sync', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
+          }
+        },
         {
           displayName: 'Users',
           id: 'users',
@@ -397,6 +436,8 @@ export const wixDatabaseRoutes = {
             targetAmount: { displayName: 'Target Amount', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
             currentSavings: { displayName: 'Current Savings', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
             goalType: { displayName: 'Goal Type', type: 'text', queryOperators: ['eq', 'ne'] },
+            monthlyCapacity: { displayName: 'Monthly Capacity', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            status: { displayName: 'Status', type: 'text', queryOperators: ['eq', 'ne'] },
             _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
             _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
           }
