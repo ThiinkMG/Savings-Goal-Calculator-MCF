@@ -462,7 +462,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   );
 
   const renderDataSettings = () => (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full overflow-y-auto settings-content-scroll pr-2">
       <Card>
         <CardHeader>
           <CardTitle>Data Export</CardTitle>
@@ -509,11 +509,14 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Additional spacing for better scrolling */}
+      <div className="h-8"></div>
     </div>
   );
 
   const renderHelpSettings = () => (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full overflow-y-auto settings-content-scroll pr-2">
       <Card>
         <CardHeader>
           <CardTitle>Getting Help</CardTitle>
@@ -557,7 +560,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <CardDescription>Connect with other users</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button variant="outline" className="w-full" onClick={() => window.open('https://mycollegefinance.com/community', '_blank')}>
+          <Button variant="outline" className="w-full" onClick={() => window.open('https://linktr.ee/mycollegefinance', '_blank')}>
             Join Community
           </Button>
           <Button variant="outline" className="w-full" onClick={() => window.open('https://twitter.com/mycollegefinance', '_blank')}>
@@ -565,6 +568,9 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Additional spacing for better scrolling */}
+      <div className="h-8"></div>
     </div>
   );
 
@@ -622,11 +628,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
         {/* Content */}
         <div 
-          className="h-[calc(100vh-180px)] overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f] settings-content-scroll"
-          style={{
-            scrollbarWidth: 'thin',
-            scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
-          }}
+          className="h-[calc(100vh-180px)] p-4 bg-background dark:bg-[#1f1f1f]"
         >
           {renderTabContent()}
         </div>
