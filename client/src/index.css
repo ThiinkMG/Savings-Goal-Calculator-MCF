@@ -272,3 +272,23 @@
 .dark .settings-content-scroll::-webkit-scrollbar-thumb:hover {
   background-color: rgba(107, 114, 128, 0.8);
 }
+
+/* Enhanced slider styling */
+.slider-enhanced [data-radix-slider-thumb] {
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid hsl(var(--primary));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  touch-action: none;
+}
+
+.slider-enhanced [data-radix-slider-thumb]:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.slider-enhanced [data-radix-slider-track] {
+  cursor: pointer;
+  touch-action: none;
+}

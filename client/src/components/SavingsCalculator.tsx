@@ -133,8 +133,8 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     },
     onSuccess: (savedGoal: SavingsGoal) => {
       toast({
-        title: "Success!",
-        description: existingGoal ? "Goal updated successfully" : "Goal created successfully",
+        title: "Goal Saved Successfully!",
+        description: existingGoal ? "Your goal has been updated" : "Your new goal has been created",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       onSave?.(savedGoal);
@@ -337,8 +337,8 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       );
 
       toast({
-        title: "PDF Generated!",
-        description: "Your savings plan has been downloaded",
+        title: "PDF Downloaded Successfully!",
+        description: "Check your downloads folder for the savings plan report",
       });
     } catch (error) {
       console.error('PDF generation error:', error);
@@ -377,7 +377,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
         await navigator.clipboard.writeText(shareText);
         toast({
           title: "Copied to Clipboard!",
-          description: "Share text has been copied to your clipboard",
+          description: "Your savings plan details are ready to share",
         });
       } catch (error) {
         toast({
@@ -536,15 +536,21 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
               <div>
                 <Label htmlFor="target-date">Target Date</Label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300" />
+                  <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-300 pointer-events-none z-10" />
                   <Input
                     id="target-date"
                     type="date"
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
-                    className="pl-10 mt-2"
+                    onKeyDown={handleInputKeyDown}
+                    className="pl-10 mt-2 cursor-pointer"
+                    min={new Date().toISOString().split('T')[0]}
+                    placeholder="Select your target date"
                   />
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Click the field to open date picker or type directly (YYYY-MM-DD)
+                </p>
               </div>
 
               <div>
@@ -616,7 +622,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                   </div>
                 ) : (
                   <div className="mt-4">
-                    <div className="mb-6">
+                    <div className="mb-6 px-2">
                       <Slider
                         id="monthly-capacity"
                         min={50}
@@ -624,7 +630,9 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                         step={25}
                         value={monthlyCapacity}
                         onValueChange={setMonthlyCapacity}
-                        className="w-full"
+                        className="w-full slider-enhanced"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
                       />
                     </div>
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
@@ -702,31 +710,39 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
             <div className="space-y-3">
               <Button
                 onClick={handleExportPDF}
-                className="w-full bg-brand-blue hover:bg-brand-blue/90 text-[#030711] dark:text-white"
+                className="w-full bg-brand-blue hover:bg-brand-blue/90 text-white dark:text-white"
                 disabled={!calculations}
               >
-                <Download className="w-4 h-4 mr-2 text-[#030711] dark:text-white" />
+                <Download className="w-4 h-4 mr-2 text-white dark:text-white" />
                 Download PDF Report
               </Button>
               
               <Button
                 onClick={handleShare}
-                className="w-full bg-brand-green hover:bg-brand-green/90 text-[#030711] dark:text-white"
+                className="w-full bg-brand-green hover:bg-brand-green/90 text-white dark:text-white"
                 disabled={!calculations}
               >
-                <Share2 className="w-4 h-4 mr-2 text-[#030711] dark:text-white" />
+                <Share2 className="w-4 h-4 mr-2 text-white dark:text-white" />
                 Share Savings Plan
               </Button>
               
               <Button
                 onClick={handleSaveGoal}
-                variant="outline"
-                className="w-full hover:bg-muted"
-                disabled={saveGoalMutation.isPending}
+                className={`w-full transition-all duration-200 ${
+                  (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
+                    ? 'bg-muted hover:bg-muted text-muted-foreground cursor-not-allowed' 
+                    : 'bg-brand-green hover:bg-brand-green/90 text-white hover:shadow-md'
+                }`}
+                disabled={saveGoalMutation.isPending || (!goalType || !goalName || targetAmount <= 0 || !targetDate)}
               >
                 <Save className="w-4 h-4 mr-2" />
                 {saveGoalMutation.isPending ? 'Saving...' : (existingGoal ? 'Update Goal' : 'Save as Goal')}
               </Button>
+              {(!goalType || !goalName || targetAmount <= 0 || !targetDate) && (
+                <p className="text-xs text-muted-foreground mt-1 text-center">
+                  Complete all fields to enable saving
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

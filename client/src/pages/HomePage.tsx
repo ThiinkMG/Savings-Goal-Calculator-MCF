@@ -195,6 +195,12 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-block"
+                onClick={() => {
+                  // Add a brief delay to show user feedback
+                  setTimeout(() => {
+                    console.log('Opening 50/30/20 calculator in new tab');
+                  }, 100);
+                }}
               >
                 <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 border-2 border-gray-600 dark:bg-transparent dark:border-blue-500 px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl dark:shadow-blue-900/50 transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
                   

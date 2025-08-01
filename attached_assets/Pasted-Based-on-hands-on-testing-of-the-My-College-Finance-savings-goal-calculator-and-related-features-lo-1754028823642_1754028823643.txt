@@ -1,0 +1,37 @@
+Based on hands‑on testing of the My College Finance savings goal calculator and related features (logged‑in environment), here is an assessment of what it does well and where improvements are needed before final deployment.
+
+### What Works Well
+
+* **Clean, modern UI with dark‑mode support.** The app uses a clear visual hierarchy, consistent typography and ample whitespace. The header, hero section and cards create a polished first impression. Icons and color‑coded states (e.g., “On Track”, “At Risk”) help users quickly scan information.
+
+* **Intuitive navigation and settings.** The side panel settings (light/dark mode, language, data export, help) are logically organized and easy to reach without interrupting the main flow. Switching themes instantly updates all elements without breaking layout.
+
+* **Smart onboarding and goal suggestions.** When creating a new goal, choosing a category auto‑fills the goal name and displays “Smart Saving Tips” tailored to that category. This reduces cognitive load and guides users toward best practices.
+
+* **Dynamic calculations and visual progress feedback.** Entering target amount, current savings and monthly capacity instantly updates the progress card: monthly required, projected total, time remaining and progress gauge. Success probability, stress tests and trade‑offs (e.g., “add \$25 per month to finish sooner”) provide behavioural nudges rooted in user psychology.
+
+* **Reality check tools and micro‑breakdowns.** Expandable sections break the savings target down to daily and weekly habits, show trade‑offs for missing a month, and suggest lifestyle adjustments (coffee, lunch, streaming). These help users internalize the plan and understand trade‑offs.
+
+* **Export and sharing.** Users can download a PDF report, copy goal details to clipboard or share. Clicking “PDF” on a saved goal works and triggers a toast confirming the download. Sharing produces a clear toast confirming that details were copied.
+
+* **Saved goal management with status indicators.** The savings dashboard lists goals with progress bars, monthly savings rate, months left and last‑edited timestamps. Each card has PDF, share and delete buttons; deletion prompts a confirmation dialog, reducing accidental loss.
+
+### Areas for Improvement
+
+* **Save‑as‑Goal button clarity.** The “Save as Goal” button remains gray even when active. On first use it looked disabled, yet clicking still saved the goal. Consider using a distinct active color and tooltip or disabling it until required fields are filled to avoid user confusion.
+
+* **Date picker accessibility.** The target‑date field uses a native date picker icon that didn’t respond reliably to clicks, and text input was ignored. Ensure the date picker opens consistently or allow manual date entry for accessibility.
+
+* **Slider usability.** Dragging the monthly savings slider sometimes scrolled the page rather than adjusting the value. Editing the numeric input works, but improving the slider’s handle responsiveness (e.g., thicker handle, preventing page scroll) would make it friendlier.
+
+* **50/30/20 calculator integration.** The “Try 50/30/20 Calculator” button opens mycollegefinance.com in a new tab and presents a separate login page. Users must log in again via Google/Facebook/email, breaking the seamless experience. Embedding the calculator within the same session or using single sign‑on would reduce friction.
+
+* **Cross‑tab behaviour.** Some actions (e.g., share button or external links) open blank tabs or about\:blank pages, which can confuse users. Ensure external links are clearly indicated and avoid unnecessary new tabs.
+
+* **Colour contrast and feedback.** In dark mode, certain text (e.g., disabled buttons or progress‑insights headings) has low contrast. Use higher‑contrast shades to improve readability. Provide more immediate feedback when fields are incomplete or when monthly capacity is insufficient (e.g., inline warnings near the capacity slider rather than only in the progress insights).
+
+* **Loading states and offline handling.** “Saving…” appears after clicking save, but there’s no clear success message; the page simply scrolls back to the dashboard. Adding a toast (“Goal saved successfully”) and ensuring offline or slow‑network states gracefully handle errors will improve reliability.
+
+### Overall Readiness
+
+The core savings goal calculator is robust and demonstrates strong UX and behavioural‑science principles: clear navigation, dynamic feedback, helpful tips and an educational focus. Most critical workflows—setting goals, viewing progress, exporting reports and managing saved goals—function correctly. However, before final deployment the team should address the above usability issues, particularly the ambiguous save button, date picker and slider behaviour, and unify the experience across tools (50/30/20 calculator login). With these refinements and additional user testing, the app will deliver a polished and psychologically supportive budgeting experience.
