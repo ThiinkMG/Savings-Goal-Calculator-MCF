@@ -618,7 +618,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
                       <span>$50</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                        <span className="font-medium text-lg text-brand-green dark:text-brand-green">
                           $
                         </span>
                         <input
@@ -631,11 +631,11 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                             }
                           }}
                           onKeyDown={handleInputKeyDown}
-                          className="w-16 text-center text-lg font-medium bg-transparent border border-muted rounded px-1 py-0.5 text-[#3bd927] focus:border-brand-blue focus:outline-none"
+                          className="w-16 text-center text-lg font-medium bg-background dark:bg-background border border-muted dark:border-muted rounded px-1 py-0.5 text-brand-green dark:text-brand-green focus:border-brand-blue dark:focus:border-brand-blue focus:outline-none"
                           min="50"
                           max="2000"
                         />
-                        <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                        <span className="font-medium text-lg text-brand-green dark:text-brand-green">
                           per month
                         </span>
                       </div>
