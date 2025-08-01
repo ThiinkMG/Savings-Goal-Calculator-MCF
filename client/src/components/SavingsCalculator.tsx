@@ -123,9 +123,13 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       onSave?.(savedGoal);
     },
     onError: (error: Error) => {
+      console.log('Save goal error:', error.message);
       try {
         const errorData = JSON.parse(error.message);
-        if (errorData.isGuest) {
+        console.log('Parsed error data:', errorData);
+        
+        // Check if this is a guest authentication error
+        if (errorData.isGuest || (errorData.message && errorData.message.includes("create an account"))) {
           toast({
             title: "Create Account to Save",
             description: "Sign up to save your goals permanently",
@@ -135,7 +139,17 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
           return;
         }
       } catch (e) {
-        // Error parsing failed, show generic error
+        // Error parsing failed, check if the error message contains guest indicators
+        console.log('Error parsing failed, checking raw message:', error.message);
+        if (error.message.includes("create an account") || error.message.includes("isGuest")) {
+          toast({
+            title: "Create Account to Save", 
+            description: "Sign up to save your goals permanently",
+            variant: "default",
+          });
+          onAuthRequired?.();
+          return;
+        }
       }
       
       toast({
