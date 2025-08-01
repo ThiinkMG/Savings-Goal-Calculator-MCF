@@ -12,6 +12,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByWixId(wixUserId: string): Promise<User | undefined>;
   getUserByIdentifier(identifier: string): Promise<User | undefined>;
+  getAllUsers?(): Promise<User[]>;
   createUser(user: InsertUser & { wixUserId?: string }): Promise<User>;
   updateUserPassword(userId: string, newPassword: string): Promise<boolean>;
   updateUsername(userId: string, newUsername: string): Promise<boolean>;
@@ -22,6 +23,13 @@ export interface IStorage {
   lockUser(userId: string, lockDuration: number): Promise<void>;
   unlockUser(userId: string): Promise<void>;
   updateLastLogin(userId: string): Promise<void>;
+  
+  // Savings goals methods for Wix adaptor
+  getSavingsGoalsByUserId?(userId: string): Promise<SavingsGoal[]>;
+  getSavingsGoalById?(goalId: string): Promise<SavingsGoal | undefined>;
+  createSavingsGoal?(goal: InsertSavingsGoal): Promise<SavingsGoal>;
+  updateSavingsGoal?(goalId: string, updates: Partial<SavingsGoal>): Promise<SavingsGoal | undefined>;
+  deleteSavingsGoal?(goalId: string): Promise<boolean>;
   
   // Verification codes
   createVerificationCode(userId: string, code: string, type: string, method: string): Promise<string>;
@@ -405,6 +413,45 @@ export class DatabaseStorage implements IStorage {
     }
     
     return !!goal;
+  }
+
+  // Additional methods for Wix Database Adaptor
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getSavingsGoalsByUserId(userId: string): Promise<SavingsGoal[]> {
+    return await db.select().from(savingsGoals).where(eq(savingsGoals.userId, userId));
+  }
+
+  async getSavingsGoalById(goalId: string): Promise<SavingsGoal | undefined> {
+    const [goal] = await db.select().from(savingsGoals).where(eq(savingsGoals.id, goalId));
+    return goal || undefined;
+  }
+
+  async createSavingsGoal(goal: InsertSavingsGoal): Promise<SavingsGoal> {
+    const [newGoal] = await db
+      .insert(savingsGoals)
+      .values(goal)
+      .returning();
+    return newGoal;
+  }
+
+  async updateSavingsGoal(goalId: string, updates: Partial<SavingsGoal>): Promise<SavingsGoal | undefined> {
+    const [updatedGoal] = await db
+      .update(savingsGoals)
+      .set(updates)
+      .where(eq(savingsGoals.id, goalId))
+      .returning();
+    return updatedGoal || undefined;
+  }
+
+  async deleteSavingsGoal(goalId: string): Promise<boolean> {
+    const result = await db
+      .delete(savingsGoals)
+      .where(eq(savingsGoals.id, goalId))
+      .returning();
+    return result.length > 0;
   }
 }
 

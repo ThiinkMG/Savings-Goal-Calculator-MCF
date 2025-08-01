@@ -8,6 +8,7 @@ import { reportScheduler } from './scheduler';
 import { googleSheetsService } from './googleSheetsService';
 import { wixSyncService } from './wixSync';
 import { wixSyncScheduler } from './wixScheduler';
+import { wixDatabaseRoutes } from './wixDatabaseAdaptor';
 import { loginSchema, forgotPasswordSchema, verifyCodeSchema, resetPasswordSchema, insertUserSchema } from "@shared/schema";
 import { authenticateUser, sendPasswordResetCode, sendUsernameRecovery, verifyResetCode, resetPassword, detectIdentifierType } from './authService';
 import bcrypt from 'bcryptjs';
@@ -880,6 +881,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  // Wix Database Adaptor Routes
+  app.get("/api/wix-adaptor/health", wixDatabaseRoutes.health);
+  app.get("/api/wix-adaptor/users", wixDatabaseRoutes.getUsers);
+  app.get("/api/wix-adaptor/users/:id", wixDatabaseRoutes.getUserById);
+  app.post("/api/wix-adaptor/users", wixDatabaseRoutes.createUser);
+  app.put("/api/wix-adaptor/users/:id", wixDatabaseRoutes.updateUser);
+  app.get("/api/wix-adaptor/users/:userId/goals", wixDatabaseRoutes.getUserGoals);
+  app.get("/api/wix-adaptor/goals/:id", wixDatabaseRoutes.getGoalById);
+  app.post("/api/wix-adaptor/goals", wixDatabaseRoutes.createGoal);
+  app.put("/api/wix-adaptor/goals/:id", wixDatabaseRoutes.updateGoal);
+  app.delete("/api/wix-adaptor/goals/:id", wixDatabaseRoutes.deleteGoal);
 
   const httpServer = createServer(app);
   return httpServer;
