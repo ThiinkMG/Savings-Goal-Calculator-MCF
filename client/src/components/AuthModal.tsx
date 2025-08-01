@@ -104,9 +104,9 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Save Your Progress</DialogTitle>
+          <DialogTitle>Login & Save Your Progress</DialogTitle>
           <DialogDescription>
-            Create an account or log in to save your savings goals and track your progress across devices.
+            Create a free account or log in with email, phone, or username to save your goals and access them from any device.
           </DialogDescription>
         </DialogHeader>
 
@@ -128,19 +128,19 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg">Welcome Back</CardTitle>
                 <CardDescription>
-                  Log in to access your saved goals and continue tracking your progress.
+                  Log in with your email, phone number, or username to access your saved goals.
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-username">Username</Label>
+                    <Label htmlFor="login-username">Email, Phone, or Username</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="login-username"
                         type="text"
-                        placeholder="Enter your username"
+                        placeholder="Enter email, phone number, or username"
                         value={loginData.username}
                         onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
                         className="pl-10"
@@ -180,9 +180,9 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
           <TabsContent value="register">
             <Card className="border-0 shadow-none">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Create Account</CardTitle>
+                <CardTitle className="text-lg">Create Your Free Account</CardTitle>
                 <CardDescription>
-                  Sign up for free to save your goals and access them from any device.
+                  Join thousands of students building their financial future. Create an account to save your progress and unlock advanced features.
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleRegister}>
@@ -209,11 +209,11 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                       <Input
                         id="register-password"
                         type="password"
-                        placeholder="Create a password (min. 6 characters)"
+                        placeholder="Create a secure password (min. 8 characters)"
                         value={registerData.password}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
                         className="pl-10"
-                        minLength={6}
+                        minLength={8}
                         required
                       />
                     </div>
@@ -225,7 +225,7 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                     className="w-full"
                     disabled={registerMutation.isPending}
                   >
-                    {registerMutation.isPending ? 'Creating account...' : 'Create Account'}
+                    {registerMutation.isPending ? 'Creating account...' : 'Create Free Account'}
                   </Button>
                 </CardFooter>
               </form>
