@@ -44,7 +44,13 @@ Update your Wix connection with the correct URL above to resolve the connection 
    
    **✅ READY TO CONNECT**: Your database currently has **8 users** ready to sync to Wix!
 
-## Step 4: Available API Endpoints
+## Step 4: Wix Collection ID for Integration
+
+**Collection ID for Private Members Data**: `Members/PrivateMembersData`
+
+This collection ID should be used when setting up data synchronization between your Wix site and the financial calculator database.
+
+## Step 5: Available API Endpoints
 
 The Wix database adaptor provides these endpoints:
 
@@ -62,7 +68,7 @@ The Wix database adaptor provides these endpoints:
 - `PUT /api/wix-adaptor/goals/:id` - Update savings goal
 - `DELETE /api/wix-adaptor/goals/:id` - Delete savings goal
 
-## Step 5: Authentication
+## Step 6: Authentication
 
 All requests to the Wix adaptor endpoints require authentication using the Bearer token:
 
@@ -70,7 +76,7 @@ All requests to the Wix adaptor endpoints require authentication using the Beare
 Authorization: Bearer YOUR_WIX_ADAPTOR_SECRET
 ```
 
-## Step 6: Data Schema
+## Step 7: Data Schema
 
 ### User Schema (Wix Format)
 ```json
