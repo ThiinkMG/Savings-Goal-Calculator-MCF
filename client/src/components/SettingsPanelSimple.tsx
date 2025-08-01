@@ -563,9 +563,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <Button variant="outline" className="w-full" onClick={() => window.open('https://linktr.ee/mycollegefinance', '_blank')}>
             Join Community
           </Button>
-          <Button variant="outline" className="w-full" onClick={() => window.open('https://twitter.com/mycollegefinance', '_blank')}>
-            Follow on Twitter
-          </Button>
         </CardContent>
       </Card>
 
