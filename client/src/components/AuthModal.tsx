@@ -138,7 +138,7 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Login & Save Your Progress</DialogTitle>
           <DialogDescription>
@@ -222,102 +222,102 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleRegister}>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-fullName">Full Name</Label>
+                <CardContent className="space-y-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="register-fullName" className="text-sm">Full Name</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-fullName"
                         type="text"
                         placeholder="Enter your full name"
                         value={registerData.fullName}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, fullName: e.target.value }))}
-                        className="pl-10"
+                        className="pl-10 h-9"
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email">Email Address</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="register-email" className="text-sm">Email Address</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-email"
                         type="email"
                         placeholder="Enter your email address"
                         value={registerData.email}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
-                        className="pl-10"
+                        className="pl-10 h-9"
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-phoneNumber">Phone Number (Optional)</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="register-phoneNumber" className="text-sm">Phone Number (Optional)</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-phoneNumber"
                         type="tel"
                         placeholder="Enter your phone number"
                         value={registerData.phoneNumber}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                        className="pl-10"
+                        className="pl-10 h-9"
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-username">Username</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="register-username" className="text-sm">Username</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-username"
                         type="text"
                         placeholder="Choose a unique username"
                         value={registerData.username}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, username: e.target.value }))}
-                        className="pl-10"
+                        className="pl-10 h-9"
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="register-password" className="text-sm">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-password"
                         type="password"
                         placeholder="Create a secure password (min. 8 characters)"
                         value={registerData.password}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
-                        className="pl-10"
+                        className="pl-10 h-9"
                         minLength={8}
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-confirmPassword">Confirm Password</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="register-confirmPassword" className="text-sm">Confirm Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-confirmPassword"
                         type="password"
                         placeholder="Confirm your password"
                         value={registerData.confirmPassword}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        className="pl-10"
+                        className="pl-10 h-9"
                         required
                       />
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="pt-4">
                   <Button 
                     type="submit" 
-                    className="w-full"
+                    className="w-full h-9"
                     disabled={registerMutation.isPending}
                   >
                     {registerMutation.isPending ? 'Creating account...' : 'Create Free Account'}
