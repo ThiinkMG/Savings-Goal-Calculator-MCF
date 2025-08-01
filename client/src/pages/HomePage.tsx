@@ -5,6 +5,7 @@ import { BrandHeader } from '@/components/BrandHeader';
 import { SavingsCalculator } from '@/components/SavingsCalculator';
 import { MultipleGoalsManager } from '@/components/MultipleGoalsManager';
 import { AuthModal } from '@/components/AuthModal';
+import { EnhancedAuthModal } from '@/components/EnhancedAuthModal';
 import { type SavingsGoal } from '@shared/schema';
 import { useAuth } from '@/hooks/useAuth';
 import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield } from 'lucide-react';
@@ -14,6 +15,7 @@ export default function HomePage() {
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [showNewGoalForm, setShowNewGoalForm] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showEnhancedAuthModal, setShowEnhancedAuthModal] = useState(false);
   
   const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
 
@@ -80,7 +82,7 @@ export default function HomePage() {
               </span>
             </div>
             <Button
-              onClick={() => setShowAuthModal(true)}
+              onClick={() => setShowEnhancedAuthModal(true)}
               size="sm"
               variant="secondary"
               className="bg-brand-blue/90 hover:bg-brand-blue text-white dark:bg-brand-blue dark:hover:bg-brand-blue/80 border-brand-blue/50 dark:border-brand-blue/30 font-medium shadow-sm"
@@ -318,6 +320,18 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Authentication Modals */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        onSuccess={() => setShowAuthModal(false)}
+      />
+      
+      <EnhancedAuthModal
+        isOpen={showEnhancedAuthModal}
+        onClose={() => setShowEnhancedAuthModal(false)}
+      />
     </div>
   );
 }
