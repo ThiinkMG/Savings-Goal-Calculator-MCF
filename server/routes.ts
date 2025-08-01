@@ -32,7 +32,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Set session
       req.session.userId = result.user!.id;
-      req.session.user = result.user;
       
       res.json({ 
         user: result.user,
