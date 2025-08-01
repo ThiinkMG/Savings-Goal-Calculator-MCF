@@ -3,14 +3,15 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, Target, TrendingUp, Download, Share2, Settings, PieChart, Calendar, DollarSign, BookOpen } from "lucide-react";
+import { Calculator, Target, TrendingUp, Download, Share2, Settings, PieChart, Calendar, DollarSign, BookOpen, MessageCircle, ExternalLink } from "lucide-react";
 
 interface TutorialModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenFAQ?: () => void;
 }
 
-export function TutorialModal({ isOpen, onClose }: TutorialModalProps) {
+export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[85vh] p-0">
@@ -212,9 +213,30 @@ export function TutorialModal({ isOpen, onClose }: TutorialModalProps) {
 
         <div className="px-6 py-4 border-t bg-gray-50 dark:bg-gray-900/50">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              Need more help? Check our FAQ or contact support.
-            </p>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">Need more help?</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  onClose();
+                  onOpenFAQ?.();
+                }}
+                className="h-8"
+              >
+                <MessageCircle className="w-3 h-3 mr-1" />
+                FAQ
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScYaEGpSP3GsvLPWMx4yAk-uckDCG32HqoXYgtzh4npLDPjNw/viewform?usp=sharing&ouid=105426481604057488731', '_blank')}
+                className="h-8"
+              >
+                <ExternalLink className="w-3 h-3 mr-1" />
+                Contact Support
+              </Button>
+            </div>
             <Button onClick={onClose}>
               Got it!
             </Button>

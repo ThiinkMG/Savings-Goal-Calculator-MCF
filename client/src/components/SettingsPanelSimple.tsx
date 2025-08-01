@@ -543,6 +543,10 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       <TutorialModal
         isOpen={showTutorialModal}
         onClose={() => setShowTutorialModal(false)}
+        onOpenFAQ={() => {
+          setShowTutorialModal(false);
+          setShowFAQModal(true);
+        }}
       />
       
       {/* FAQ Modal */}
