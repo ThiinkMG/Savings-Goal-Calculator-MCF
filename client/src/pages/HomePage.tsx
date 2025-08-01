@@ -171,18 +171,7 @@ export default function HomePage() {
               </div>
             </section>
 
-            {/* Create New Goal Button */}
-            <div className="text-center mb-8 z-10 relative">
-              <Button 
-                onClick={handleAddGoal}
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold shadow-lg border-2 border-blue-600"
-                style={{ backgroundColor: 'hsl(218, 99%, 40%)', borderColor: 'hsl(218, 99%, 40%)' }}
-              >
-                <Plus className="w-5 h-5 mr-2 text-white" />
-                Create New Savings Goal
-              </Button>
-            </div>
+
 
             {/* Multiple Goals Dashboard */}
             <MultipleGoalsManager
