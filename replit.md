@@ -44,7 +44,7 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 ### Data & Services
-- **Wix Data API**: For automated user account synchronization and management between Wix website and the application.
+- **Wix Data API**: ✅ Successfully integrated - automated user account synchronization between Wix website and application using external database adaptor with payload-based authentication.
 - **Google Sheets**: Real-time database synchronization for user data and savings goals, enabling live progress tracking and analytics.
 - **SendGrid Email**: For automated email notifications, including signup alerts and scheduled monthly reports.
 - **Neon Database**: Serverless PostgreSQL database provider.

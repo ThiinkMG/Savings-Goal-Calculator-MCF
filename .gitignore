@@ -4,3 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Integration Reports
+WIX_INTEGRATION_SUCCESS_REPORT.md
