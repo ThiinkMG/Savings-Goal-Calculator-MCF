@@ -196,16 +196,16 @@ export default function HomePage() {
                   
                   {/* Button content */}
                   <div className="relative flex items-center gap-3">
-                    <span className="tracking-wide text-white">Try 50/30/20 Calculator</span>
+                    <span className="tracking-wide text-white dark:text-gray-100 font-semibold">Try 50/30/20 Calculator</span>
                     <div className="transform group-hover:translate-x-1 transition-transform duration-300 ease-out">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-white dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </div>
                   </div>
                   
                   {/* Animated underline */}
-                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 dark:bg-white/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
+                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 dark:bg-gray-100/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
                 </div>
               </a>
               
