@@ -20,12 +20,23 @@ interface AuthModalProps {
 interface AuthFormData {
   username: string;
   password: string;
+  email?: string;
+  fullName?: string;
+  phoneNumber?: string;
+  confirmPassword?: string;
 }
 
 export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState('login');
   const [loginData, setLoginData] = useState<AuthFormData>({ username: '', password: '' });
-  const [registerData, setRegisterData] = useState<AuthFormData>({ username: '', password: '' });
+  const [registerData, setRegisterData] = useState<AuthFormData>({ 
+    username: '', 
+    password: '', 
+    email: '', 
+    fullName: '', 
+    phoneNumber: '', 
+    confirmPassword: '' 
+  });
   const [error, setError] = useState<string>('');
   const { toast } = useToast();
 
@@ -52,7 +63,14 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
 
   const registerMutation = useMutation({
     mutationFn: async (data: AuthFormData) => {
-      const response = await apiRequest('POST', '/api/auth/register', data);
+      // Validate passwords match
+      if (data.password !== data.confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+      
+      // Remove confirmPassword before sending to API
+      const { confirmPassword, ...apiData } = data;
+      const response = await apiRequest('POST', '/api/auth/register', apiData);
       return await response.json();
     },
     onSuccess: () => {
@@ -84,14 +102,32 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!registerData.username || !registerData.password) {
-      setError('Please fill in all fields');
+    
+    // Validate all required fields
+    if (!registerData.fullName || !registerData.email || !registerData.username || !registerData.password || !registerData.confirmPassword) {
+      setError('Please fill in all required fields');
       return;
     }
-    if (registerData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(registerData.email || '')) {
+      setError('Please enter a valid email address');
       return;
     }
+    
+    // Validate password length
+    if (registerData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+    
+    // Validate passwords match
+    if (registerData.password !== registerData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
     registerMutation.mutate(registerData);
   };
 
@@ -188,13 +224,57 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
               <form onSubmit={handleRegister}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="register-fullName">Full Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="register-fullName"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={registerData.fullName}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, fullName: e.target.value }))}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email Address</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="register-email"
+                        type="email"
+                        placeholder="Enter your email address"
+                        value={registerData.email}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-phoneNumber">Phone Number (Optional)</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="register-phoneNumber"
+                        type="tel"
+                        placeholder="Enter your phone number"
+                        value={registerData.phoneNumber}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="register-username">Username</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="register-username"
                         type="text"
-                        placeholder="Choose a username"
+                        placeholder="Choose a unique username"
                         value={registerData.username}
                         onChange={(e) => setRegisterData(prev => ({ ...prev, username: e.target.value }))}
                         className="pl-10"
@@ -214,6 +294,21 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
                         onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
                         className="pl-10"
                         minLength={8}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-confirmPassword">Confirm Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="register-confirmPassword"
+                        type="password"
+                        placeholder="Confirm your password"
+                        value={registerData.confirmPassword}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        className="pl-10"
                         required
                       />
                     </div>
