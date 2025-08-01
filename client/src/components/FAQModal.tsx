@@ -304,7 +304,16 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
         <div className="px-6 py-4 border-t bg-gray-50 dark:bg-gray-900/50">
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              Still have questions? Feel free to contact our support team.
+              Still have questions? Feel free to{' '}
+              <a 
+                href="https://docs.google.com/forms/d/e/1FAIpQLScYaEGpSP3GsvLPWMx4yAk-uckDCG32HqoXYgtzh4npLDPjNw/viewform?usp=sharing&ouid=105426481604057488731" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline font-medium"
+              >
+                contact
+              </a>{' '}
+              our support team.
             </p>
             <Button onClick={onClose}>
               Close
