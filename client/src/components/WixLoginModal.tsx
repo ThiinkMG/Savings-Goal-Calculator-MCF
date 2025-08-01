@@ -70,7 +70,7 @@ export function WixLoginModal({ isOpen, onClose, onSuccess }: WixLoginModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="wix-login-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-blue-600" />
@@ -79,7 +79,7 @@ export function WixLoginModal({ isOpen, onClose, onSuccess }: WixLoginModalProps
         </DialogHeader>
         
         <div className="space-y-4">
-          <div className="text-center text-sm text-muted-foreground">
+          <div id="wix-login-description" className="text-center text-sm text-muted-foreground">
             <p>📚 Sign in with your website account</p>
             <p>Use the same credentials from MyCollegeFinance.com</p>
           </div>
@@ -170,10 +170,10 @@ export function WixLoginModal({ isOpen, onClose, onSuccess }: WixLoginModalProps
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleExternalLink('https://www.mycollegefinance.com/signup')}
+                onClick={() => handleExternalLink('https://www.mycollegefinance.com/savings-goal-calculator')}
                 className="w-full"
               >
-                Create Website Account
+                Create and M.C.F Account
               </Button>
             </div>
           </div>
