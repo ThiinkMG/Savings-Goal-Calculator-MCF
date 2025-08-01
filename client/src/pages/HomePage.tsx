@@ -189,23 +189,23 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className="group inline-block"
               >
-                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 dark:from-blue-700 dark:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl dark:shadow-blue-900/50 transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
+                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 dark:from-blue-700 dark:to-blue-800 px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl dark:shadow-blue-900/50 transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
                   
                   {/* Shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
                   
                   {/* Button content */}
                   <div className="relative flex items-center gap-3">
-                    <span className="tracking-wide text-white dark:text-gray-100 font-semibold">Try 50/30/20 Calculator</span>
+                    <span className="tracking-wide text-white font-semibold drop-shadow-sm">Try 50/30/20 Calculator</span>
                     <div className="transform group-hover:translate-x-1 transition-transform duration-300 ease-out">
-                      <svg className="w-5 h-5 text-white dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </div>
                   </div>
                   
                   {/* Animated underline */}
-                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 dark:bg-gray-100/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
+                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
                 </div>
               </a>
               
