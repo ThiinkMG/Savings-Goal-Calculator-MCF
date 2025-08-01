@@ -1,0 +1,68 @@
+Integrating External Databases with Your Wix Site
+Wix's built-in data management solution is the Wix Content Management System (CMS).
+
+3 min. readView original
+In This Article
+
+Wix's built-in data management solution is the Wix Content Management System (CMS). While CMS collections cover a wide range of use cases for content-driven websites and applications, some projects may have specific requirements that can't be addressed by the integrated database solution.
+
+To address such cases, Wix allows users to connect an external database to Wix sites using an external database adaptor. Once the connection is set up, users can interact with these databases and use them to populate site elements as though they were Wix CMS collections.
+
+This article gives an overview of the ways you can connect an external database to Wix sites using an external database adaptor.
+
+Supported IDEs
+You can work CMS collections and connected external databases in the following IDEs:
+
+The editor (Wix Studio and Wix Editor).
+The Wix IDE (Wix Studio).
+Your local IDE (Wix Studio and Wix Editor).
+External database adaptors
+To establish a connection between a site and an external database, you need to prepare an external database adaptor.
+
+An external database adaptor is a server that translates Wix Data requests from your site to an external database’s protocol and translates the response back to a Wix Data format. From the Wix site’s point of view, the external database is a data collection and behaves exactly like an internal collection. This means that your external database collections can be managed via the Wix Data APIs (REST|SDK), and used (with or without datasets) to populate Wix UI elements like repeatersand tables.
+
+External database flows:
+
+
+
+A Wix Data request is made to an external database collection. The request is sent to the adaptor.
+
+The adaptor validates the request and translates it to a native database request in the required protocol.
+
+The native protocol request is sent to the external database.
+
+The external database sends a response in its native protocol and format.
+
+The adaptor translates the response to a Wix Data format.
+
+The translated response is sent to the Wix site and processed in the same way as an internal data response.
+
+Preparing an adaptor
+You can prepare an external database adaptor in one of the following ways:
+
+Out-of-the-box external database adaptors
+Wix created out-of-the-box container image adaptors for several databases on external platforms, including AWS, Azure, and Google Cloud Platform.
+
+The following database types are supported with out-of-the-box adaptors:
+
+Click to expand list of supported databases
+
+Learn how to deploy an out-of-the-box external database adaptor for:
+
+Connecting to an external database
+Once you've prepared an external database adaptor, you can use it to connect Wix sites to the external database.
+
+If you implemented your adaptor as part of a Wix app, the connection is made automatically when the app is installed on a site.
+
+Otherwise, you need to make the connection manually using either of the following methods:
+
+Use existing data
+You can use existing data from your external database in your Wix site. If you want your existing database table to be read-write on your site, it must contain the following columns:
+
+_id
+_createdDate
+_updatedDate
+_owner
+Tables without these columns are read-only in your Wix site.
+
+When creating new tables, include these columns to make the table writable from your site.

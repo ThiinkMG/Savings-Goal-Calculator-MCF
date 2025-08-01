@@ -76,7 +76,24 @@ All requests to the Wix adaptor endpoints require authentication using the Beare
 Authorization: Bearer YOUR_WIX_ADAPTOR_SECRET
 ```
 
-## Step 7: Data Schema
+## Step 7: Wix External Database Requirements
+
+According to Wix documentation, external databases must include these columns for read-write functionality:
+- `_id` ✅ (implemented as `id`)
+- `_createdDate` ✅ (implemented as `createdAt`)  
+- `_updatedDate` ✅ (implemented as `updatedAt`)
+- `_owner` ✅ (implemented as `userId`)
+
+**✅ Your database is fully compatible** - all required columns are present for read-write operations.
+
+### Data Flow Process:
+1. Wix Data request → Your adaptor endpoint
+2. Adaptor validates and translates to PostgreSQL query
+3. Database processes query and returns data
+4. Adaptor translates response back to Wix Data format
+5. Wix receives and displays the data
+
+## Step 8: Data Schema
 
 ### User Schema (Wix Format)
 ```json
