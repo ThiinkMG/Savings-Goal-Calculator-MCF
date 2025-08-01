@@ -327,7 +327,9 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     <div className={`fixed inset-0 z-50 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 backdrop-blur-sm transition-opacity duration-300 opacity-100 bg-[#00000000]"
+        className={`absolute inset-0 transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        }`}
         onClick={onClose}
       />
       {/* Settings Panel */}
