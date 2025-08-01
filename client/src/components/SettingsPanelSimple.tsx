@@ -114,8 +114,21 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
           </div>
         </div>
-        <Button onClick={() => { logout(); onClose(); }} variant="outline" className="w-full">
-          Log Out
+        <Button 
+          onClick={() => { 
+            if (user) {
+              logout(); 
+              onClose(); 
+            } else {
+              // Show login modal or redirect to login
+              onClose();
+              // You can add login modal trigger here if needed
+            }
+          }} 
+          variant="outline" 
+          className="w-full"
+        >
+          {user ? 'Log Out' : 'Log In'}
         </Button>
       </CardContent>
     </Card>
