@@ -83,10 +83,10 @@ export default function HomePage() {
               onClick={() => setShowAuthModal(true)}
               size="sm"
               variant="secondary"
-              className="bg-white/20 hover:bg-white/30 border-white/30"
+              className="bg-brand-blue/90 hover:bg-brand-blue text-white dark:bg-brand-blue dark:hover:bg-brand-blue/80 border-brand-blue/50 dark:border-brand-blue/30 font-medium shadow-sm"
             >
               <User className="w-4 h-4 mr-2" />
-              Save Progress
+              Login & Save Progress
             </Button>
           </div>
         </div>
