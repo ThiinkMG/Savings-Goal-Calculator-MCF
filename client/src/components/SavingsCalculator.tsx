@@ -199,9 +199,10 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
   const handleGoalTypeSelect = (newGoalType: GoalType) => {
     setGoalType(newGoalType);
     
-    // Only auto-update name if user hasn't manually edited it
-    if (!goalNameTouched) {
+    // Auto-update name if field is empty OR user hasn't manually edited it
+    if (!goalNameTouched || goalName.trim() === '') {
       setGoalName(defaultGoalNames[newGoalType]);
+      setGoalNameTouched(false); // Reset touched state when auto-populating
     }
   };
 
@@ -256,8 +257,19 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
   };
 
   const handleGoalNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGoalName(e.target.value);
-    setGoalNameTouched(true);
+    const newValue = e.target.value;
+    setGoalName(newValue);
+    
+    // If user types something, mark as touched. If they clear it completely, allow auto-population again
+    if (newValue.trim() !== '') {
+      setGoalNameTouched(true);
+    } else {
+      setGoalNameTouched(false);
+      // If there's a selected goal type and field is now empty, auto-populate
+      if (goalType) {
+        setGoalName(defaultGoalNames[goalType]);
+      }
+    }
   };
 
   // Fix Ctrl+A behavior for inputs
