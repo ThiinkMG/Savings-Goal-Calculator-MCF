@@ -746,14 +746,17 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
               
               <Button
                 onClick={handleSaveGoal}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-10 px-4 py-2 w-full transition-all duration-200 hover:bg-green-700 text-white hover:shadow-md bg-[#000000]"
+                className={`w-full transition-all duration-200 ${
+                  (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
+                    ? 'bg-gray-100 dark:bg-muted hover:bg-gray-100 dark:hover:bg-muted text-gray-500 dark:text-slate-400 cursor-not-allowed border border-gray-200 dark:border-border' 
+                    : 'bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-black hover:shadow-md'
+                }`}
                 disabled={saveGoalMutation.isPending || (!goalType || !goalName || targetAmount <= 0 || !targetDate)}
-                style={(!goalType || !goalName || targetAmount <= 0 || !targetDate) ? {} : { backgroundColor: 'hsl(115, 93%, 47%)' }}
               >
                 <Save className={`w-4 h-4 mr-2 ${
                   (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
                     ? 'text-gray-500 dark:text-slate-400' 
-                    : 'text-white'
+                    : 'text-white dark:text-black'
                 }`} />
                 {saveGoalMutation.isPending ? 'Saving...' : (existingGoal ? 'Update Goal' : 'Save as Goal')}
               </Button>
