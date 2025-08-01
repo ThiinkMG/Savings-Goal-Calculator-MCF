@@ -43,7 +43,9 @@ The "WDE0116: Invalid connector response" error has been fixed! The missing `/pr
 3. **Step 2: Connect the adaptor to your site**
    - **Database connection name**: `Savings_Goal_Calculator_Users`
    - **Endpoint URL**: `https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor`
-   - **Secret Key**: Your `WIX_ADAPTOR_SECRET` value from Replit Secrets
+   - **Secret Key**: Enter the exact value you set for `WIX_ADAPTOR_SECRET` in Replit Secrets
+   
+   **⚠️ IMPORTANT**: Make sure the secret key you enter in Wix EXACTLY matches the value in your Replit `WIX_ADAPTOR_SECRET` secret.
    
    **✅ READY TO CONNECT**: Your database currently has **8 users** ready to sync to Wix!
 
@@ -76,11 +78,20 @@ The Wix database adaptor provides these endpoints:
 
 ## Step 6: Authentication
 
-All requests to the Wix adaptor endpoints require authentication using the Bearer token:
+**Important**: Wix uses payload-based authentication, NOT HTTP headers.
 
+The secret key is sent in every request from Wix within the request body:
+```json
+{
+  "requestContext": {
+    "settings": {
+      "secretKey": "your-secret-key-here"
+    }
+  }
+}
 ```
-Authorization: Bearer YOUR_WIX_ADAPTOR_SECRET
-```
+
+Your adaptor validates this key against the `WIX_ADAPTOR_SECRET` environment variable.
 
 ## Step 7: Wix External Database Requirements
 

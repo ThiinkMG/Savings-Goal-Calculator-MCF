@@ -3,30 +3,53 @@ import { storage } from './storage';
 import { users, savingsGoals, User, SavingsGoal, InsertSavingsGoal } from '@shared/schema';
 import { z } from 'zod';
 
+// Extend Express Request type to include Wix context
+declare global {
+  namespace Express {
+    interface Request {
+      wixContext?: any;
+    }
+  }
+}
+
 // Wix Database Adaptor API Key for security
 const WIX_ADAPTOR_SECRET = process.env.WIX_ADAPTOR_SECRET || 'your-secure-adaptor-key';
 
+console.log('WIX_ADAPTOR_SECRET configured:', WIX_ADAPTOR_SECRET ? 'Yes (value hidden)' : 'No - using default');
+
 // Middleware to verify Wix adaptor requests
 const verifyWixAdaptor = (req: Request, res: Response, next: Function) => {
-  const authHeader = req.headers.authorization;
-  const customHeader = req.headers['x-wix-adaptor-secret'];
+  // Wix sends the secret key in the request body, not headers
+  const requestContext = req.body?.requestContext;
+  const secretKey = requestContext?.settings?.secretKey;
   
-  let providedKey = null;
+  console.log('Wix Request Context:', {
+    hasRequestContext: !!requestContext,
+    hasSettings: !!requestContext?.settings,
+    hasSecretKey: !!secretKey,
+    endpoint: req.path
+  });
   
-  // Support both Bearer token and custom header formats
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    providedKey = authHeader.replace('Bearer ', '');
-  } else if (customHeader) {
-    providedKey = customHeader;
+  // For health check endpoint, skip auth
+  if (req.path === '/api/wix-adaptor/health') {
+    return next();
   }
   
-  if (!providedKey || providedKey !== WIX_ADAPTOR_SECRET) {
+  if (!secretKey || secretKey !== WIX_ADAPTOR_SECRET) {
+    console.log('Authentication failed:', {
+      providedKey: secretKey ? 'Key provided but incorrect' : 'No key provided',
+      expectedKeyExists: !!WIX_ADAPTOR_SECRET
+    });
+    
     return res.status(401).json({ 
       error: 'Unauthorized',
       message: 'Invalid adaptor secret key',
-      hint: 'Use Authorization: Bearer <secret> or X-WIX-ADAPTOR-SECRET header'
+      details: 'Secret key must be provided in requestContext.settings.secretKey'
     });
   }
+  
+  // Store the request context for use in route handlers
+  req.wixContext = requestContext;
   
   next();
 };
@@ -99,36 +122,46 @@ export const wixDatabaseRoutes = {
   // Provision endpoint - Required by Wix for initial setup
   provision: [verifyWixAdaptor, async (req: Request, res: Response) => {
     try {
-      const { externalDatabaseId } = req.body;
+      const requestContext = req.body?.requestContext;
+      const externalDatabaseId = requestContext?.installationId || 'my-college-finance-db';
       
       // Get current user count
       const allUsers = await storage.getAllUsers?.() || [];
       const userCount = allUsers.length;
       
+      // Wix expects a specific response format
       res.json({
-        success: true,
-        message: 'Database adaptor provisioned successfully',
-        externalDatabaseId: externalDatabaseId || 'my-college-finance-db',
-        userCount,
-        collections: {
-          users: {
-            name: 'users',
-            fields: ['_id', 'username', 'email', 'fullName', 'phoneNumber', '_createdDate', '_updatedDate'],
-            count: userCount
+        schemas: [
+          {
+            displayName: 'Users',
+            id: 'users',
+            allowedOperations: ['get', 'list', 'count', 'create', 'update', 'remove'],
+            fields: {
+              _id: { displayName: 'ID', type: 'text', queryOperators: ['eq', 'ne', 'hasSome'] },
+              username: { displayName: 'Username', type: 'text', queryOperators: ['eq', 'ne', 'contains', 'startsWith'] },
+              email: { displayName: 'Email', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              fullName: { displayName: 'Full Name', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              phoneNumber: { displayName: 'Phone Number', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
+            }
           },
-          savingsGoals: {
-            name: 'savingsGoals', 
-            fields: ['_id', '_owner', 'name', 'targetAmount', 'currentSavings', 'goalType', '_createdDate', '_updatedDate'],
-            count: 0 // Can implement count if needed
+          {
+            displayName: 'Savings Goals',
+            id: 'savingsGoals',
+            allowedOperations: ['get', 'list', 'count', 'create', 'update', 'remove'],
+            fields: {
+              _id: { displayName: 'ID', type: 'text', queryOperators: ['eq', 'ne'] },
+              _owner: { displayName: 'Owner', type: 'text', queryOperators: ['eq', 'ne'] },
+              name: { displayName: 'Goal Name', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+              targetAmount: { displayName: 'Target Amount', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              currentSavings: { displayName: 'Current Savings', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              goalType: { displayName: 'Goal Type', type: 'text', queryOperators: ['eq', 'ne'] },
+              _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+              _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
+            }
           }
-        },
-        capabilities: {
-          read: true,
-          write: true,
-          delete: true,
-          pagination: true
-        },
-        timestamp: new Date().toISOString()
+        ]
       });
     } catch (error) {
       console.error('Provision error:', error);
