@@ -730,16 +730,20 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                 onClick={handleSaveGoal}
                 className={`w-full transition-all duration-200 ${
                   (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
-                    ? 'bg-muted hover:bg-muted text-muted-foreground cursor-not-allowed' 
-                    : 'bg-brand-green hover:bg-brand-green/90 text-white hover:shadow-md'
+                    ? 'bg-muted hover:bg-muted text-muted-foreground dark:text-slate-400 cursor-not-allowed border border-border' 
+                    : 'bg-brand-green hover:bg-brand-green/90 text-white dark:text-white hover:shadow-md'
                 }`}
                 disabled={saveGoalMutation.isPending || (!goalType || !goalName || targetAmount <= 0 || !targetDate)}
               >
-                <Save className="w-4 h-4 mr-2" />
+                <Save className={`w-4 h-4 mr-2 ${
+                  (!goalType || !goalName || targetAmount <= 0 || !targetDate) 
+                    ? 'text-muted-foreground dark:text-slate-400' 
+                    : 'text-white dark:text-white'
+                }`} />
                 {saveGoalMutation.isPending ? 'Saving...' : (existingGoal ? 'Update Goal' : 'Save as Goal')}
               </Button>
               {(!goalType || !goalName || targetAmount <= 0 || !targetDate) && (
-                <p className="text-xs text-muted-foreground mt-1 text-center">
+                <p className="text-xs text-muted-foreground dark:text-slate-400 mt-1 text-center">
                   Complete all fields to enable saving
                 </p>
               )}
