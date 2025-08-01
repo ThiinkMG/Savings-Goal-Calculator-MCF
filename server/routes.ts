@@ -567,6 +567,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/user/phone", requireAuth, async (req, res) => {
+    try {
+      const { token, newPhoneNumber } = req.body;
+      const userId = (req as AuthenticatedRequest).session.userId!;
+
+      // Verify token
+      try {
+        const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (Date.now() > payload.expires || payload.userId !== userId) {
+          return res.status(401).json({ message: "Invalid or expired token" });
+        }
+      } catch {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      // Check if phone number is available
+      const existingUser = await storage.getUserByPhone(newPhoneNumber);
+      if (existingUser) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
+
+      // Update phone number
+      const success = await storage.updatePhoneNumber(userId, newPhoneNumber);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update phone number" });
+      }
+
+      res.json({ message: "Phone number updated successfully" });
+    } catch (error) {
+      console.error('Phone update error:', error);
+      res.status(500).json({ message: "Failed to update phone number" });
+    }
+  });
+
+  app.get("/api/auth/check-phone/:phone", async (req, res) => {
+    try {
+      const phone = decodeURIComponent(req.params.phone);
+      
+      if (!phone || phone.length < 10) {
+        return res.status(400).json({ 
+          available: false, 
+          message: "Phone number too short" 
+        });
+      }
+
+      // Basic phone validation
+      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+      if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+        return res.status(400).json({ 
+          available: false, 
+          message: "Invalid phone number format" 
+        });
+      }
+
+      const existingUser = await storage.getUserByPhone(phone);
+      const available = !existingUser;
+      
+      res.json({
+        available,
+        message: available ? "Phone number is available" : "Phone number already in use"
+      });
+    } catch (error) {
+      console.error('Phone check error:', error);
+      res.status(500).json({ message: "Failed to check phone availability" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

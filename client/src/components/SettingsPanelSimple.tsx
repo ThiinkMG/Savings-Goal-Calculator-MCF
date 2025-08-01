@@ -29,7 +29,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [showFAQModal, setShowFAQModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
-  const [securityMode, setSecurityMode] = useState<'password' | 'username'>('password');
+  const [securityMode, setSecurityMode] = useState<'password' | 'username' | 'phone'>('password');
   const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
   const { user, logout } = useAuth();
@@ -50,7 +50,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     numberFormat: 'US'
   });
 
-  const handleSecurityAction = (mode: 'password' | 'username') => {
+  const handleSecurityAction = (mode: 'password' | 'username' | 'phone') => {
     if (!user) {
       // Guest user - show auth modal
       setShowAuthModal(true);
@@ -306,6 +306,14 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                   className="w-full justify-start"
                 >
                   Update Username
+                </Button>
+                <Button 
+                  onClick={() => handleSecurityAction('phone')}
+                  variant="outline" 
+                  size="sm"
+                  className="w-full justify-start"
+                >
+                  Update Phone Number
                 </Button>
               </div>
             </div>

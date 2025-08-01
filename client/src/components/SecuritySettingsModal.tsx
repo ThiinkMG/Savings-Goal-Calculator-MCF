@@ -10,20 +10,21 @@ import { useAuth } from "@/hooks/useAuth";
 interface SecuritySettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode: 'password' | 'username';
+  initialMode: 'password' | 'username' | 'phone';
 }
 
 type SecurityStep = 
   | 'verify-password' 
   | 'change-password' 
-  | 'change-username' 
+  | 'change-username'
+  | 'change-phone'
   | 'password-reset' 
   | 'username-recovery' 
   | 'success';
 
 export function SecuritySettingsModal({ isOpen, onClose, initialMode }: SecuritySettingsModalProps) {
   const [step, setStep] = useState<SecurityStep>('verify-password');
-  const [mode, setMode] = useState<'password' | 'username'>(initialMode);
+  const [mode, setMode] = useState<'password' | 'username' | 'phone'>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -31,10 +32,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
-    newUsername: ''
+    newUsername: '',
+    newPhoneNumber: ''
   });
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [usernameStatus, setUsernameStatus] = useState<'checking' | 'available' | 'taken' | null>(null);
+  const [phoneStatus, setPhoneStatus] = useState<'checking' | 'available' | 'taken' | 'invalid' | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [verificationToken, setVerificationToken] = useState('');
@@ -47,10 +50,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
-      newUsername: ''
+      newUsername: '',
+      newPhoneNumber: ''
     });
     setPasswordStrength(0);
     setUsernameStatus(null);
+    setPhoneStatus(null);
     setAttempts(0);
     setVerificationToken('');
     setStep('verify-password');
@@ -86,6 +91,29 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     }
   };
 
+  const checkPhoneAvailability = async (phoneNumber: string) => {
+    if (!phoneNumber || phoneNumber.length < 10) {
+      setPhoneStatus(null);
+      return;
+    }
+
+    // Basic phone number validation
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    if (!phoneRegex.test(phoneNumber.replace(/[\s\-\(\)]/g, ''))) {
+      setPhoneStatus('invalid');
+      return;
+    }
+
+    setPhoneStatus('checking');
+    try {
+      const response = await fetch(`/api/auth/check-phone/${encodeURIComponent(phoneNumber)}`);
+      const data = await response.json();
+      setPhoneStatus(data.available ? 'available' : 'taken');
+    } catch (error) {
+      setPhoneStatus(null);
+    }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -95,6 +123,10 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
 
     if (field === 'newUsername' && step === 'change-username') {
       checkUsernameAvailability(value);
+    }
+
+    if (field === 'newPhoneNumber' && step === 'change-phone') {
+      checkPhoneAvailability(value);
     }
   };
 
@@ -130,7 +162,13 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
       }
 
       setVerificationToken(data.token);
-      setStep(mode === 'password' ? 'change-password' : 'change-username');
+      if (mode === 'password') {
+        setStep('change-password');
+      } else if (mode === 'username') {
+        setStep('change-username');
+      } else if (mode === 'phone') {
+        setStep('change-phone');
+      }
       toast({
         title: "Identity Verified",
         description: "You can now make changes to your account"
@@ -251,6 +289,54 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     }
   };
 
+  const handleChangePhone = async () => {
+    if (phoneStatus !== 'available') {
+      toast({
+        title: "Phone Number Unavailable",
+        description: "Please choose a different phone number",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/user/phone', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: verificationToken,
+          newPhoneNumber: formData.newPhoneNumber
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Update Failed",
+          description: data.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setStep('success');
+      toast({
+        title: "Phone Number Updated",
+        description: `Your phone number has been updated successfully`
+      });
+    } catch (error) {
+      toast({
+        title: "Update Error",
+        description: "Failed to update phone number. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handlePasswordReset = async () => {
     setIsLoading(true);
     try {
@@ -329,12 +415,21 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
 
   const getStepTitle = () => {
     switch (step) {
-      case 'verify-password': return mode === 'password' ? 'Change Password' : 'Update Username';
+      case 'verify-password': 
+        if (mode === 'password') return 'Change Password';
+        if (mode === 'username') return 'Update Username';
+        if (mode === 'phone') return 'Update Phone Number';
+        return 'Security Settings';
       case 'change-password': return 'Create New Password';
       case 'change-username': return 'Choose New Username';
+      case 'change-phone': return 'Update Phone Number';
       case 'password-reset': return 'Reset Password';
       case 'username-recovery': return 'Recover Username';
-      case 'success': return mode === 'password' ? 'Password Updated' : 'Username Updated';
+      case 'success': 
+        if (mode === 'password') return 'Password Updated';
+        if (mode === 'username') return 'Username Updated';
+        if (mode === 'phone') return 'Phone Number Updated';
+        return 'Update Complete';
       default: return 'Security Settings';
     }
   };
@@ -345,7 +440,11 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
         <div className="text-4xl mb-2">🔒</div>
         <h3 className="text-lg font-semibold">Verify Your Identity</h3>
         <p className="text-sm text-muted-foreground">
-          Enter your current password to {mode === 'password' ? 'make changes to your account' : 'change your username'}
+          Enter your current password to {
+            mode === 'password' ? 'make changes to your account' : 
+            mode === 'username' ? 'change your username' :
+            mode === 'phone' ? 'update your phone number' : 'make changes'
+          }
         </p>
       </div>
 
@@ -353,6 +452,14 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
         <div className="bg-muted p-3 rounded-md">
           <p className="text-sm">
             <span className="font-medium">Current Username:</span> {user?.username}
+          </p>
+        </div>
+      )}
+
+      {mode === 'phone' && (
+        <div className="bg-muted p-3 rounded-md">
+          <p className="text-sm">
+            <span className="font-medium">Current Phone:</span> {user?.phoneNumber || 'Not set'}
           </p>
         </div>
       )}
@@ -570,6 +677,68 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     </div>
   );
 
+  const renderChangePhoneStep = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-4">
+        <div className="text-2xl mb-2">✅</div>
+        <h3 className="text-lg font-semibold">Identity Verified</h3>
+      </div>
+
+      <div className="bg-muted p-3 rounded-md">
+        <p className="text-sm">
+          <span className="font-medium">Current Phone:</span> {user?.phoneNumber || 'Not set'}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="newPhoneNumber">New Phone Number</Label>
+        <div className="relative">
+          <Input
+            id="newPhoneNumber"
+            placeholder="+1 234-567-8900"
+            value={formData.newPhoneNumber}
+            onChange={(e) => handleInputChange('newPhoneNumber', e.target.value)}
+          />
+          {phoneStatus && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {phoneStatus === 'checking' && <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />}
+              {phoneStatus === 'available' && <Check className="w-4 h-4 text-green-600" />}
+              {phoneStatus === 'taken' && <X className="w-4 h-4 text-red-600" />}
+              {phoneStatus === 'invalid' && <X className="w-4 h-4 text-red-600" />}
+            </div>
+          )}
+        </div>
+        {phoneStatus === 'taken' && (
+          <p className="text-xs text-red-600">Phone number is already in use</p>
+        )}
+        {phoneStatus === 'invalid' && (
+          <p className="text-xs text-red-600">Invalid phone number format</p>
+        )}
+        {phoneStatus === 'available' && (
+          <p className="text-xs text-green-600">Phone number is available</p>
+        )}
+      </div>
+
+      <div className="bg-muted p-3 rounded-md text-sm">
+        <div className="font-medium mb-1">Phone Number Format:</div>
+        <div className="space-y-1 text-xs text-muted-foreground">
+          <div>• Include country code (e.g., +1 for US)</div>
+          <div>• 10-15 digits total</div>
+          <div>• Can include spaces, dashes, or parentheses</div>
+          <div>• Must be a valid, active phone number</div>
+        </div>
+      </div>
+
+      <Button 
+        onClick={handleChangePhone} 
+        className="w-full" 
+        disabled={isLoading || phoneStatus !== 'available'}
+      >
+        {isLoading ? "Updating Phone..." : "Update Phone Number"}
+      </Button>
+    </div>
+  );
+
   const renderPasswordResetStep = () => (
     <div className="space-y-4">
       <Button
@@ -654,7 +823,9 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
     <div className="space-y-4 text-center">
       <div className="text-6xl mb-4">✅</div>
       <h3 className="text-lg font-semibold">
-        {mode === 'password' ? 'Password Updated Successfully' : 'Username Updated Successfully'}
+        {mode === 'password' ? 'Password Updated Successfully' : 
+         mode === 'username' ? 'Username Updated Successfully' : 
+         'Phone Number Updated Successfully'}
       </h3>
       <div className="text-sm text-muted-foreground space-y-2">
         {mode === 'password' ? (
@@ -662,10 +833,15 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             <p>Your password has been changed.</p>
             <p>You'll remain logged in on this device, but will need to sign in again on other devices.</p>
           </>
-        ) : (
+        ) : mode === 'username' ? (
           <>
             <p>Your username is now: <span className="font-medium">{formData.newUsername}</span></p>
             <p>Note: You can't change your username again for 30 days.</p>
+          </>
+        ) : (
+          <>
+            <p>Your phone number has been updated successfully.</p>
+            <p>You can now use this number to log in and receive notifications.</p>
           </>
         )}
       </div>
@@ -680,6 +856,7 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
       case 'verify-password': return renderVerifyPasswordStep();
       case 'change-password': return renderChangePasswordStep();
       case 'change-username': return renderChangeUsernameStep();
+      case 'change-phone': return renderChangePhoneStep();
       case 'password-reset': return renderPasswordResetStep();
       case 'username-recovery': return renderUsernameRecoveryStep();
       case 'success': return renderSuccessStep();
