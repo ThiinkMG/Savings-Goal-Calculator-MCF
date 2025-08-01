@@ -6,6 +6,8 @@ import { z } from "zod";
 import { requireAuth, register, login, logout, getCurrentUser, type AuthenticatedRequest } from "./auth";
 import { reportScheduler } from './scheduler';
 import { googleSheetsService } from './googleSheetsService';
+import { wixSyncService } from './wixSync';
+import { wixSyncScheduler } from './wixScheduler';
 import { loginSchema, forgotPasswordSchema, verifyCodeSchema, resetPasswordSchema, insertUserSchema } from "@shared/schema";
 import { authenticateUser, sendPasswordResetCode, sendUsernameRecovery, verifyResetCode, resetPassword, detectIdentifierType } from './authService';
 import bcrypt from 'bcryptjs';
@@ -698,6 +700,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Email check error:', error);
       res.status(500).json({ message: "Failed to check email availability" });
+    }
+  });
+
+  // Wix Sync API Routes
+  app.post("/api/admin/wix/sync", async (req, res) => {
+    try {
+      console.log('Starting Wix user synchronization...');
+      const result = await wixSyncService.syncAllUsers();
+      
+      res.json({
+        success: result.success,
+        message: `Sync completed: ${result.created} created, ${result.updated} updated, ${result.processed} processed`,
+        details: result
+      });
+    } catch (error) {
+      console.error('Wix sync error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Sync failed',
+        error: String(error)
+      });
+    }
+  });
+
+  app.post("/api/admin/wix/sync/:wixUserId", async (req, res) => {
+    try {
+      const { wixUserId } = req.params;
+      const result = await wixSyncService.syncSingleUser(wixUserId);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Single user sync error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to sync user',
+        error: String(error)
+      });
+    }
+  });
+
+  app.get("/api/admin/wix/test", async (req, res) => {
+    try {
+      const result = await wixSyncService.testConnection();
+      res.json(result);
+    } catch (error) {
+      console.error('Wix connection test error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Test failed',
+        error: String(error)
+      });
+    }
+  });
+
+  app.get("/api/admin/wix/user/:wixUserId", async (req, res) => {
+    try {
+      const { wixUserId } = req.params;
+      const wixUser = await wixSyncService.getWixUserById(wixUserId);
+      
+      if (!wixUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'Wix user not found'
+        });
+      }
+      
+      res.json({
+        success: true,
+        user: wixUser
+      });
+    } catch (error) {
+      console.error('Get Wix user error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get Wix user',
+        error: String(error)
+      });
+    }
+  });
+
+  // Wix Sync Scheduler Management Routes
+  app.get("/api/admin/wix/scheduler/status", async (req, res) => {
+    try {
+      const status = wixSyncScheduler.getStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Get scheduler status error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get scheduler status',
+        error: String(error)
+      });
+    }
+  });
+
+  app.post("/api/admin/wix/scheduler/run", async (req, res) => {
+    try {
+      // Trigger manual sync
+      wixSyncScheduler.runSync();
+      res.json({
+        success: true,
+        message: 'Manual sync triggered successfully'
+      });
+    } catch (error) {
+      console.error('Manual sync trigger error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to trigger manual sync',
+        error: String(error)
+      });
+    }
+  });
+
+  app.post("/api/admin/wix/scheduler/enable", async (req, res) => {
+    try {
+      wixSyncScheduler.enable();
+      res.json({
+        success: true,
+        message: 'Wix sync scheduler enabled'
+      });
+    } catch (error) {
+      console.error('Enable scheduler error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to enable scheduler',
+        error: String(error)
+      });
+    }
+  });
+
+  app.post("/api/admin/wix/scheduler/disable", async (req, res) => {
+    try {
+      wixSyncScheduler.disable();
+      res.json({
+        success: true,
+        message: 'Wix sync scheduler disabled'
+      });
+    } catch (error) {
+      console.error('Disable scheduler error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to disable scheduler',
+        error: String(error)
+      });
+    }
+  });
+
+  app.post("/api/admin/wix/scheduler/update", async (req, res) => {
+    try {
+      const { schedule, timezone } = req.body;
+      
+      if (!schedule) {
+        return res.status(400).json({
+          success: false,
+          message: 'Schedule is required'
+        });
+      }
+
+      const success = wixSyncScheduler.updateSchedule(schedule, timezone);
+      
+      if (success) {
+        res.json({
+          success: true,
+          message: 'Sync schedule updated successfully'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'Failed to update sync schedule'
+        });
+      }
+    } catch (error) {
+      console.error('Update scheduler error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update scheduler',
+        error: String(error)
+      });
     }
   });
 

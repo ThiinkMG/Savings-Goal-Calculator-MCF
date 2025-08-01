@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   phoneVerified: boolean("phone_verified").default(false),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  wixUserId: text("wix_user_id").unique(), // Store original Wix user ID for sync reference
   isLocked: boolean("is_locked").default(false),
   lockoutUntil: timestamp("lockout_until"),
   failedLoginAttempts: integer("failed_login_attempts").default(0),

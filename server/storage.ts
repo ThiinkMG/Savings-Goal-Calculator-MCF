@@ -10,12 +10,14 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByPhone(phoneNumber: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByWixId(wixUserId: string): Promise<User | undefined>;
   getUserByIdentifier(identifier: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createUser(user: InsertUser & { wixUserId?: string }): Promise<User>;
   updateUserPassword(userId: string, newPassword: string): Promise<boolean>;
   updateUsername(userId: string, newUsername: string): Promise<boolean>;
   updatePhoneNumber(userId: string, newPhoneNumber: string): Promise<boolean>;
   updateEmail(userId: string, newEmail: string): Promise<boolean>;
+  updateUserWixId(userId: string, wixUserId: string): Promise<boolean>;
   incrementFailedAttempts(userId: string): Promise<void>;
   lockUser(userId: string, lockDuration: number): Promise<void>;
   unlockUser(userId: string): Promise<void>;
@@ -57,6 +59,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserByWixId(wixUserId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.wixUserId, wixUserId));
     return user || undefined;
   }
 
@@ -127,6 +134,19 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ 
         email: newEmail,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return result.length > 0;
+  }
+
+  async updateUserWixId(userId: string, wixUserId: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ 
+        wixUserId: wixUserId,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))
@@ -233,7 +253,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(verificationCodes.id, codeId));
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createUser(insertUser: InsertUser & { wixUserId?: string }): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(insertUser)
