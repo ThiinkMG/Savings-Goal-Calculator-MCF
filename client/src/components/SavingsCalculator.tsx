@@ -604,7 +604,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                   </div>
                 ) : (
                   <div className="mt-4">
-                    <div className="relative">
+                    <div className="mb-6">
                       <Slider
                         id="monthly-capacity"
                         min={50}
@@ -614,8 +614,13 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                         onValueChange={setMonthlyCapacity}
                         className="w-full"
                       />
-                      {/* Precise value input overlay */}
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background border rounded px-2 py-1 shadow-sm">
+                    </div>
+                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                      <span>$50</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                          $
+                        </span>
                         <input
                           type="number"
                           value={monthlyCapacity[0]}
@@ -626,21 +631,18 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                             }
                           }}
                           onKeyDown={handleInputKeyDown}
-                          className="w-16 text-center text-sm bg-transparent border-none outline-none"
+                          className="w-16 text-center text-lg font-medium bg-transparent border border-muted rounded px-1 py-0.5 text-[#3bd927] focus:border-brand-blue focus:outline-none"
                           min="50"
                           max="2000"
                         />
+                        <span className="font-medium brand-blue text-lg text-[#3bd927]">
+                          per month
+                        </span>
                       </div>
-                    </div>
-                    <div className="flex justify-between text-sm text-muted-foreground mt-4">
-                      <span>$50</span>
-                      <span className="font-medium brand-blue text-lg text-[#3bd927]">
-                        ${monthlyCapacity[0]} per month
-                      </span>
                       <span>$2000+</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1 text-center">
-                      Use slider for quick adjustments or click "Precise Amount" for exact values
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      Use slider for quick adjustments or edit the number directly for precise values
                     </p>
                   </div>
                 )}
