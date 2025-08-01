@@ -5,11 +5,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, User, Globe, Bell, BarChart3, HelpCircle, Download } from "lucide-react";
+import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { EnhancedAuthModal } from "./EnhancedAuthModal";
+import { TutorialModal } from "./TutorialModal";
+import { FAQModal } from "./FAQModal";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -22,6 +24,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(false);
+  const [showFAQModal, setShowFAQModal] = useState(false);
   
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -44,27 +48,43 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const handleDataExport = async () => {
     setIsLoading(true);
     try {
+      // Fetch all goals data
+      const response = await fetch('/api/savings-goals');
+      let goalsData = [];
+      
+      if (response.ok) {
+        goalsData = await response.json();
+      }
+      
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const data = {
+      // Create comprehensive export data
+      const exportData = {
         user: user,
+        goalsCount: goalsData.length,
+        goals: goalsData,
         exportDate: new Date().toISOString(),
-        settings: { notificationSettings, languageSettings }
+        settings: { notificationSettings, languageSettings },
+        version: "v4.1.0 (Beta)"
       };
       
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+      // Create a ZIP-like structure with JSON data
+      const jsonBlob = new Blob([JSON.stringify(exportData, null, 2)], { 
+        type: 'application/json' 
+      });
+      
+      const url = URL.createObjectURL(jsonBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `my-college-finance-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `my-college-finance-complete-export-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
       toast({
-        title: "Data Exported",
-        description: "Your data has been downloaded successfully."
+        title: "All Goals Exported",
+        description: `Successfully downloaded ${goalsData.length} goals and complete profile data.`
       });
     } catch (error) {
       toast({
@@ -252,6 +272,9 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             <Download className="w-4 h-4 mr-2" />
             {isLoading ? "Exporting..." : "Download All Goals"}
           </Button>
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Downloads all your goals, progress data, and settings as a JSON file
+          </p>
         </CardContent>
       </Card>
 
@@ -261,10 +284,10 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <CardDescription>Review our privacy practices</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button variant="outline" className="w-full" onClick={() => window.open('https://mycollegefinance.com/privacy', '_blank')}>
+          <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/privacy-policy', '_blank')}>
             View Privacy Policy
           </Button>
-          <Button variant="outline" className="w-full" onClick={() => window.open('https://mycollegefinance.com/terms', '_blank')}>
+          <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/terms-policy', '_blank')}>
             Terms of Service
           </Button>
         </CardContent>
@@ -280,13 +303,15 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <CardDescription>Find answers and get support</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button variant="outline" className="w-full" onClick={() => toast({ title: "Tutorial", description: "Tutorial feature coming soon!" })}>
+          <Button variant="outline" className="w-full" onClick={() => setShowTutorialModal(true)}>
+            <BookOpen className="w-4 h-4 mr-2" />
             Tutorial
           </Button>
-          <Button variant="outline" className="w-full" onClick={() => toast({ title: "FAQ", description: "FAQ section coming soon!" })}>
+          <Button variant="outline" className="w-full" onClick={() => setShowFAQModal(true)}>
+            <MessageCircle className="w-4 h-4 mr-2" />
             FAQ
           </Button>
-          <Button variant="outline" className="w-full" onClick={() => window.open('mailto:support@mycollegefinance.com', '_blank')}>
+          <Button variant="outline" className="w-full" onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScYaEGpSP3GsvLPWMx4yAk-uckDCG32HqoXYgtzh4npLDPjNw/viewform?usp=sharing&ouid=105426481604057488731', '_blank')}>
             Contact Support
           </Button>
         </CardContent>
@@ -302,7 +327,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             <span>Version</span>
             <span className="text-sm text-muted-foreground">v4.1.0 (Beta)</span>
           </div>
-          <Button variant="outline" className="w-full" onClick={() => toast({ title: "Up to Date", description: "You're running the latest version!" })}>
+          <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/knowledge-bank/categories/oliver-s-nest-update', '_blank')}>
+            <RefreshCw className="w-4 h-4 mr-2" />
             Check for Updates
           </Button>
         </CardContent>
@@ -387,6 +413,18 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       <EnhancedAuthModal 
         isOpen={showAuthModal} 
         onClose={() => setShowAuthModal(false)} 
+      />
+      
+      {/* Tutorial Modal */}
+      <TutorialModal
+        isOpen={showTutorialModal}
+        onClose={() => setShowTutorialModal(false)}
+      />
+      
+      {/* FAQ Modal */}
+      <FAQModal
+        isOpen={showFAQModal}
+        onClose={() => setShowFAQModal(false)}
       />
     </div>
   );
