@@ -73,11 +73,11 @@ export default function HomePage() {
       
       {/* Authentication Banner for Guest Users */}
       {isGuest && (
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white py-3 px-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5" />
-              <span className="text-sm font-medium">
+              <Shield className="w-5 h-5 text-white" />
+              <span className="text-sm font-medium text-white">
                 You're using My College Finance as a guest. Your data won't be saved between sessions.
               </span>
             </div>
@@ -85,7 +85,7 @@ export default function HomePage() {
               onClick={() => setShowEnhancedAuthModal(true)}
               size="sm"
               variant="secondary"
-              className="bg-brand-blue/90 hover:bg-brand-blue text-white dark:bg-brand-blue dark:hover:bg-brand-blue/80 border-brand-blue/50 dark:border-brand-blue/30 font-medium shadow-sm"
+              className="bg-white/90 hover:bg-white text-blue-700 dark:bg-white/95 dark:hover:bg-white dark:text-blue-800 border-white/50 font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
               <User className="w-4 h-4 mr-2" />
               Login & Save Progress
@@ -96,10 +96,10 @@ export default function HomePage() {
 
       {/* User Authentication Status */}
       {isAuthenticated && (
-        <div className="bg-green-50 dark:bg-green-950/20 border-b border-green-200 dark:border-green-800 py-3 px-4">
+        <div className="bg-green-50 dark:bg-green-950/30 border-b border-green-200 dark:border-green-800 py-3 px-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <User className="w-5 h-5 text-green-600" />
+              <User className="w-5 h-5 text-green-600 dark:text-green-400" />
               <span className="text-sm text-green-800 dark:text-green-200">
                 Welcome back, <strong>{user?.username}</strong>! Your progress is being saved.
               </span>
@@ -109,7 +109,7 @@ export default function HomePage() {
               size="sm"
               variant="outline"
               disabled={isLoggingOut}
-              className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-950"
+              className="border-green-300 text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-950/50"
             >
               <LogOut className="w-4 h-4 mr-2" />
               {isLoggingOut ? 'Logging out...' : 'Log Out'}
@@ -189,23 +189,23 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className="group inline-block"
               >
-                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 text-white px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
+                <div className="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-600 dark:from-blue-700 dark:to-blue-800 text-white px-10 py-5 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl dark:shadow-blue-900/50 transition-all duration-300 ease-out transform hover:-translate-y-2 hover:scale-105">
                   
                   {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
                   
                   {/* Button content */}
                   <div className="relative flex items-center gap-3">
-                    <span className="tracking-wide">Try 50/30/20 Calculator</span>
+                    <span className="tracking-wide text-white">Try 50/30/20 Calculator</span>
                     <div className="transform group-hover:translate-x-1 transition-transform duration-300 ease-out">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </div>
                   </div>
                   
                   {/* Animated underline */}
-                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
+                  <div className="absolute bottom-2 left-6 right-6 h-0.5 bg-white/80 dark:bg-white/90 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 ease-out origin-center"></div>
                 </div>
               </a>
               
