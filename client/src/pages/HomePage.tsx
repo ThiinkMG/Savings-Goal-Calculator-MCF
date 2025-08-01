@@ -237,6 +237,7 @@ export default function HomePage() {
             <SavingsCalculator
               existingGoal={editingGoal}
               onSave={handleGoalSaved}
+              onAuthRequired={() => setShowEnhancedAuthModal(true)}
             />
           </div>
         )}

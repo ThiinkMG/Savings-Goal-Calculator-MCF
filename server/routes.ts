@@ -140,9 +140,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
+      
+      // Return empty array for guests since they can't have saved goals
+      if (req.isGuest || userId.startsWith('guest_')) {
+        return res.json([]);
+      }
+      
       const goals = await storage.getSavingsGoalsByUser(userId);
       res.json(goals);
     } catch (error) {
+      console.error('Fetch savings goals error:', error);
       res.status(500).json({ message: "Failed to fetch savings goals" });
     }
   });
@@ -175,6 +182,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not authenticated" });
       }
       
+      // Check if user is a guest - guests cannot save goals permanently
+      if (req.isGuest || userId.startsWith('guest_')) {
+        return res.status(401).json({ 
+          message: "Please create an account to save your goals permanently",
+          isGuest: true 
+        });
+      }
+      
       const validatedData = insertSavingsGoalSchema.parse({
         ...req.body,
         userId: userId // Ensure goal is tied to current user
@@ -182,6 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const goal = await storage.createSavingsGoal(validatedData);
       res.status(201).json(goal);
     } catch (error) {
+      console.error('Create savings goal error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid goal data", errors: error.errors });
       }

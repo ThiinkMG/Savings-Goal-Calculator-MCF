@@ -20,9 +20,10 @@ import { WhatIfScenarios } from './WhatIfScenarios';
 interface SavingsCalculatorProps {
   existingGoal?: SavingsGoal;
   onSave?: (goal: SavingsGoal) => void;
+  onAuthRequired?: () => void;
 }
 
-export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorProps) {
+export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: SavingsCalculatorProps) {
   const { theme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -105,6 +106,12 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
       const url = existingGoal ? `/api/savings-goals/${existingGoal.id}` : '/api/savings-goals';
       const method = existingGoal ? 'PATCH' : 'POST';
       const response = await apiRequest(method, url, goalData);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(JSON.stringify(errorData));
+      }
+      
       return response.json();
     },
     onSuccess: (savedGoal: SavingsGoal) => {
@@ -115,7 +122,22 @@ export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorPro
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       onSave?.(savedGoal);
     },
-    onError: () => {
+    onError: (error: Error) => {
+      try {
+        const errorData = JSON.parse(error.message);
+        if (errorData.isGuest) {
+          toast({
+            title: "Create Account to Save",
+            description: "Sign up to save your goals permanently",
+            variant: "default",
+          });
+          onAuthRequired?.();
+          return;
+        }
+      } catch (e) {
+        // Error parsing failed, show generic error
+      }
+      
       toast({
         title: "Error",
         description: "Failed to save goal. Please try again.",
