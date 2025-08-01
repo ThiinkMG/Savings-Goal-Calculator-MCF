@@ -6,10 +6,12 @@ import bcrypt from 'bcryptjs';
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByIdentifier(identifier: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(userId: string, newPassword: string): Promise<boolean>;
+  updateUsername(userId: string, newUsername: string): Promise<boolean>;
   incrementFailedAttempts(userId: string): Promise<void>;
   lockUser(userId: string, lockDuration: number): Promise<void>;
   unlockUser(userId: string): Promise<void>;
@@ -30,6 +32,11 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
@@ -60,14 +67,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserPassword(userId: string, newPassword: string): Promise<boolean> {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
     const result = await db
       .update(users)
       .set({ 
-        password: hashedPassword,
+        password: newPassword,
         failedLoginAttempts: 0,
         isLocked: false,
         lockoutUntil: null,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return result.length > 0;
+  }
+
+  async updateUsername(userId: string, newUsername: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ 
+        username: newUsername,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))

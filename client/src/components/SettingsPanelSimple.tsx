@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { EnhancedAuthModal } from "./EnhancedAuthModal";
 import { TutorialModal } from "./TutorialModal";
 import { FAQModal } from "./FAQModal";
+import { SecuritySettingsModal } from "./SecuritySettingsModal";
 import JSZip from 'jszip';
 
 interface SettingsPanelProps {
@@ -27,6 +28,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [showFAQModal, setShowFAQModal] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
+  const [securityMode, setSecurityMode] = useState<'password' | 'username'>('password');
   const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
   const { user, logout } = useAuth();
@@ -46,6 +49,18 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     dateFormat: 'MM/DD/YYYY',
     numberFormat: 'US'
   });
+
+  const handleSecurityAction = (mode: 'password' | 'username') => {
+    if (!user) {
+      // Guest user - show auth modal
+      setShowAuthModal(true);
+      return;
+    }
+    
+    // Authenticated user - show security modal
+    setSecurityMode(mode);
+    setShowSecurityModal(true);
+  };
 
   const handleDataExport = async () => {
     setIsLoading(true);
@@ -271,6 +286,41 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
           </div>
         </div>
+        {user && (
+          <div className="space-y-4 pt-4 border-t">
+            <div>
+              <h4 className="font-medium text-sm mb-3">Security & Access</h4>
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => handleSecurityAction('password')}
+                  variant="outline" 
+                  size="sm"
+                  className="w-full justify-start"
+                >
+                  Change Password
+                </Button>
+                <Button 
+                  onClick={() => handleSecurityAction('username')}
+                  variant="outline" 
+                  size="sm"
+                  className="w-full justify-start"
+                >
+                  Update Username
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-sm mb-3">Login Methods</h4>
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                {user.email && <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Email</span>}
+                <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Username</span>
+                {user.phoneNumber && <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">✓ Phone</span>}
+              </div>
+            </div>
+          </div>
+        )}
+
         <Button 
           onClick={() => { 
             if (user) {
@@ -281,7 +331,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             }
           }} 
           variant="outline" 
-          className="w-full"
+          className="w-full mt-4"
         >
           {user ? 'Log Out' : 'Log In'}
         </Button>
@@ -580,6 +630,13 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       <FAQModal
         isOpen={showFAQModal}
         onClose={() => setShowFAQModal(false)}
+      />
+      
+      {/* Security Settings Modal */}
+      <SecuritySettingsModal
+        isOpen={showSecurityModal}
+        onClose={() => setShowSecurityModal(false)}
+        initialMode={securityMode}
       />
     </div>
   );

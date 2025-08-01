@@ -473,6 +473,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User security endpoints
+  app.post("/api/user/verify-password", requireAuth, async (req, res) => {
+    try {
+      const { password } = req.body;
+      const userId = (req as AuthenticatedRequest).session.userId!;
+      
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) {
+        return res.status(401).json({ message: "Incorrect password" });
+      }
+
+      // Generate verification token (valid for 15 minutes)
+      const token = Buffer.from(JSON.stringify({
+        userId,
+        expires: Date.now() + 15 * 60 * 1000
+      })).toString('base64');
+
+      res.json({ token, message: "Password verified" });
+    } catch (error) {
+      console.error('Password verification error:', error);
+      res.status(500).json({ message: "Verification failed" });
+    }
+  });
+
+  app.patch("/api/user/password", requireAuth, async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      const userId = (req as AuthenticatedRequest).session.userId!;
+
+      // Verify token
+      try {
+        const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (Date.now() > payload.expires || payload.userId !== userId) {
+          return res.status(401).json({ message: "Invalid or expired token" });
+        }
+      } catch {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Update password
+      const success = await storage.updateUserPassword(userId, hashedPassword);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error('Password update error:', error);
+      res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+
+  app.patch("/api/user/username", requireAuth, async (req, res) => {
+    try {
+      const { token, newUsername } = req.body;
+      const userId = (req as AuthenticatedRequest).session.userId!;
+
+      // Verify token
+      try {
+        const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (Date.now() > payload.expires || payload.userId !== userId) {
+          return res.status(401).json({ message: "Invalid or expired token" });
+        }
+      } catch {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      // Check if username is available
+      const existingUser = await storage.getUserByUsername(newUsername);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      // Update username
+      const success = await storage.updateUsername(userId, newUsername);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update username" });
+      }
+
+      res.json({ message: "Username updated successfully" });
+    } catch (error) {
+      console.error('Username update error:', error);
+      res.status(500).json({ message: "Failed to update username" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
