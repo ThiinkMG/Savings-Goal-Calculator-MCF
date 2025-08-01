@@ -196,9 +196,9 @@ export default function HomePage() {
                   
                   {/* Button content */}
                   <div className="relative flex items-center gap-3">
-                    <span className="tracking-wide text-white font-semibold drop-shadow-sm">Try 50/30/20 Calculator</span>
+                    <span className="tracking-wide text-black dark:text-white font-semibold drop-shadow-sm">Try 50/30/20 Calculator</span>
                     <div className="transform group-hover:translate-x-1 transition-transform duration-300 ease-out">
-                      <svg className="w-5 h-5 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-black dark:text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </div>
