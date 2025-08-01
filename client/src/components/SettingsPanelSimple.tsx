@@ -327,9 +327,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     <div className={`fixed inset-0 z-50 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       {/* Backdrop */}
       <div 
-        className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
-          isOpen ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute inset-0 backdrop-blur-sm transition-opacity duration-300 opacity-100 bg-[#00000000]"
         onClick={onClose}
       />
       {/* Settings Panel */}
@@ -337,7 +335,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-[#1f1f1f]">
+        <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f]">
           <h2 className="text-lg font-semibold">Settings</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4" />
@@ -346,7 +344,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
         {/* Tab Navigation */}
         <div className="border-b">
-          <div className="flex flex-col p-2 space-y-1 bg-[#1f1f1f]">
+          <div className="flex flex-col p-2 space-y-1 bg-background dark:bg-[#1f1f1f]">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -365,7 +363,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#1f1f1f]">
+        <div className="flex-1 overflow-y-auto p-4 bg-background dark:bg-[#1f1f1f]">
           {renderTabContent()}
         </div>
       </div>
