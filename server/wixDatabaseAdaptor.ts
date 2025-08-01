@@ -365,5 +365,43 @@ export const wixDatabaseRoutes = {
       console.error('Delete goal error:', error);
       res.status(500).json({ error: 'Failed to delete goal' });
     }
-  }]
+  }],
+
+  // Schema list endpoint - Required by Wix
+  schemasList: async (req: Request, res: Response) => {
+    // Return the same schema format as provision
+    res.json({
+      schemas: [
+        {
+          displayName: 'Users',
+          id: 'users',
+          allowedOperations: ['get', 'list', 'count', 'create', 'update', 'remove'],
+          fields: {
+            _id: { displayName: 'ID', type: 'text', queryOperators: ['eq', 'ne', 'hasSome'] },
+            username: { displayName: 'Username', type: 'text', queryOperators: ['eq', 'ne', 'contains', 'startsWith'] },
+            email: { displayName: 'Email', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            fullName: { displayName: 'Full Name', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            phoneNumber: { displayName: 'Phone Number', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
+          }
+        },
+        {
+          displayName: 'Savings Goals',
+          id: 'savingsGoals',
+          allowedOperations: ['get', 'list', 'count', 'create', 'update', 'remove'],
+          fields: {
+            _id: { displayName: 'ID', type: 'text', queryOperators: ['eq', 'ne'] },
+            _owner: { displayName: 'Owner', type: 'text', queryOperators: ['eq', 'ne'] },
+            name: { displayName: 'Goal Name', type: 'text', queryOperators: ['eq', 'ne', 'contains'] },
+            targetAmount: { displayName: 'Target Amount', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            currentSavings: { displayName: 'Current Savings', type: 'number', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            goalType: { displayName: 'Goal Type', type: 'text', queryOperators: ['eq', 'ne'] },
+            _createdDate: { displayName: 'Created Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] },
+            _updatedDate: { displayName: 'Updated Date', type: 'datetime', queryOperators: ['eq', 'ne', 'lt', 'gt'] }
+          }
+        }
+      ]
+    });
+  }
 };
