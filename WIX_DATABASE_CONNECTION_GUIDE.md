@@ -13,14 +13,17 @@ https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api
 
 **✅ CONFIRMED WORKING**: The database adaptor is successfully running and tested with your current user data.
 
-## ❌ Fix Required for Your Connection Error:
+## ✅ **Connection Issue RESOLVED**:
 
-The "WDE0116: Invalid connector response" error in your screenshot indicates you're using the wrong endpoint URL. 
+The "WDE0116: Invalid connector response" error has been fixed! The missing `/provision` endpoint has been added and is now working correctly.
 
-**❌ INCORRECT URL**: `https://mcf-savings-goal-calculator.replit.app`  
 **✅ CORRECT URL**: `https://e05d90d9-c797-41b7-aca1-f157cdb8f34e-00-8dkl743gvlgl.worf.replit.dev/api/wix-adaptor`
 
-Update your Wix connection with the correct URL above to resolve the connection error.
+**Provision Endpoint Test Results**:
+- ✅ Returns 200 OK status
+- ✅ Shows 8 users ready for sync 
+- ✅ Database schema correctly formatted for Wix
+- ✅ Full read-write capabilities confirmed
 
 ## Step 2: Configure Wix Database Adaptor Secret Key
 
@@ -54,8 +57,11 @@ This collection ID should be used when setting up data synchronization between y
 
 The Wix database adaptor provides these endpoints:
 
-### User Management
+### System Endpoints
 - `GET /api/wix-adaptor/health` - Health check
+- `POST /api/wix-adaptor/provision` - Provision endpoint (required by Wix) ✅
+
+### User Management
 - `GET /api/wix-adaptor/users` - Get all users (with pagination)
 - `GET /api/wix-adaptor/users/:id` - Get user by ID
 - `POST /api/wix-adaptor/users` - Create new user

@@ -911,6 +911,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Wix Database Adaptor Routes
   app.get("/api/wix-adaptor/health", wixDatabaseRoutes.health);
+  app.post("/api/wix-adaptor/provision", wixDatabaseRoutes.provision);
   app.get("/api/wix-adaptor/users", wixDatabaseRoutes.getUsers);
   app.get("/api/wix-adaptor/users/:id", wixDatabaseRoutes.getUserById);
   app.post("/api/wix-adaptor/users", wixDatabaseRoutes.createUser);

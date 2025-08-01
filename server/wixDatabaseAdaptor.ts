@@ -9,12 +9,22 @@ const WIX_ADAPTOR_SECRET = process.env.WIX_ADAPTOR_SECRET || 'your-secure-adapto
 // Middleware to verify Wix adaptor requests
 const verifyWixAdaptor = (req: Request, res: Response, next: Function) => {
   const authHeader = req.headers.authorization;
-  const providedKey = authHeader?.replace('Bearer ', '');
+  const customHeader = req.headers['x-wix-adaptor-secret'];
+  
+  let providedKey = null;
+  
+  // Support both Bearer token and custom header formats
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    providedKey = authHeader.replace('Bearer ', '');
+  } else if (customHeader) {
+    providedKey = customHeader;
+  }
   
   if (!providedKey || providedKey !== WIX_ADAPTOR_SECRET) {
     return res.status(401).json({ 
       error: 'Unauthorized',
-      message: 'Invalid adaptor secret key' 
+      message: 'Invalid adaptor secret key',
+      hint: 'Use Authorization: Bearer <secret> or X-WIX-ADAPTOR-SECRET header'
     });
   }
   
@@ -85,6 +95,49 @@ export const wixDatabaseRoutes = {
       timestamp: new Date().toISOString()
     });
   },
+
+  // Provision endpoint - Required by Wix for initial setup
+  provision: [verifyWixAdaptor, async (req: Request, res: Response) => {
+    try {
+      const { externalDatabaseId } = req.body;
+      
+      // Get current user count
+      const allUsers = await storage.getAllUsers?.() || [];
+      const userCount = allUsers.length;
+      
+      res.json({
+        success: true,
+        message: 'Database adaptor provisioned successfully',
+        externalDatabaseId: externalDatabaseId || 'my-college-finance-db',
+        userCount,
+        collections: {
+          users: {
+            name: 'users',
+            fields: ['_id', 'username', 'email', 'fullName', 'phoneNumber', '_createdDate', '_updatedDate'],
+            count: userCount
+          },
+          savingsGoals: {
+            name: 'savingsGoals', 
+            fields: ['_id', '_owner', 'name', 'targetAmount', 'currentSavings', 'goalType', '_createdDate', '_updatedDate'],
+            count: 0 // Can implement count if needed
+          }
+        },
+        capabilities: {
+          read: true,
+          write: true,
+          delete: true,
+          pagination: true
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Provision error:', error);
+      res.status(500).json({ 
+        error: 'Provision failed',
+        message: String(error)
+      });
+    }
+  }],
 
   // Get all users (with pagination)
   getUsers: [verifyWixAdaptor, async (req: Request, res: Response) => {
