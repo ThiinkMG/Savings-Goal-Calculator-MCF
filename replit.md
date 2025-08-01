@@ -33,7 +33,7 @@ Preferred communication style: Simple, everyday language.
 - **Savings Goal Management**: Users can create, edit, and delete savings goals with persistent storage. Goals include type, target amount, current savings, target date, monthly capacity, and status.
 - **Progress Visualization**: Circular progress indicators and milestone tracking for savings goals.
 - **Reporting**: PDF export for savings plan reports and CSV data export for compatibility with tools like Excel.
-- **UI Improvements**: Enhanced "Savings Tracker Dashboard" with individual goal management, prominent "Create New Savings Goal" button, redesigned footer with My College Finance logo, and updated header.
+- **UI Improvements**: Enhanced "Savings Tracker Dashboard" with individual goal management, prominent "Create New Savings Goal" button, redesigned footer with My College Finance logo, updated header, auto-populating goal names based on category selection, improved input validation with user feedback, fixed Ctrl+A behavior for input fields, and enhanced monthly capacity slider with precise amount controls.
 
 ### System Design Choices
 - **Data Models**: Users (with Wix ID for integration), Savings Goals, and Verification Codes.

@@ -28,6 +28,18 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Default goal names for each category
+  const defaultGoalNames = {
+    education: 'College Tuition Fund',
+    emergency: 'Emergency Fund (6 months)',
+    home: 'House Down Payment',
+    vacation: 'Dream Vacation',
+    car: 'New Vehicle Fund',
+    retirement: 'Retirement Savings',
+    investment: 'Investment Portfolio',
+    other: 'Custom Savings Goal'
+  };
+
   // Form state
   const [userName, setUserName] = useState('Student'); // Default user name for PDF
   const [startDate, setStartDate] = useState(
@@ -45,6 +57,11 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
   const [monthlyCapacity, setMonthlyCapacity] = useState([existingGoal?.monthlyCapacity || 300]);
   const [isManualEntry, setIsManualEntry] = useState(false);
   const [manualAmount, setManualAmount] = useState('');
+  
+  // Input validation state
+  const [targetAmountError, setTargetAmountError] = useState('');
+  const [currentSavingsError, setCurrentSavingsError] = useState('');
+  const [goalNameTouched, setGoalNameTouched] = useState(!!existingGoal?.name);
 
   // Calculation state
   const [calculations, setCalculations] = useState<CalculationResult | null>(null);
@@ -178,8 +195,79 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
   }, [targetAmount, currentSavings, targetDate, monthlyCapacity]);
 
+  // Auto-populate goal name when goal type changes
+  const handleGoalTypeSelect = (newGoalType: GoalType) => {
+    setGoalType(newGoalType);
+    
+    // Only auto-update name if user hasn't manually edited it
+    if (!goalNameTouched) {
+      setGoalName(defaultGoalNames[newGoalType]);
+    }
+  };
+
   const handleQuickAmount = (amount: number) => {
     setTargetAmount(amount);
+    setTargetAmountError('');
+  };
+
+  // Enhanced input validation
+  const validateTargetAmount = (value: string) => {
+    const numValue = Number(value);
+    if (value === '' || isNaN(numValue)) {
+      setTargetAmountError('Please enter a valid amount');
+      return false;
+    }
+    if (numValue <= 0) {
+      setTargetAmountError('Target amount must be greater than $0');
+      return false;
+    }
+    if (numValue > 10000000) {
+      setTargetAmountError('Target amount seems unrealistic. Please enter a reasonable goal.');
+      return false;
+    }
+    setTargetAmountError('');
+    return true;
+  };
+
+  const validateCurrentSavings = (value: string) => {
+    const numValue = Number(value);
+    if (value !== '' && (isNaN(numValue) || numValue < 0)) {
+      setCurrentSavingsError('Current savings cannot be negative');
+      return false;
+    }
+    if (numValue > targetAmount && targetAmount > 0) {
+      setCurrentSavingsError('Current savings cannot exceed target amount');
+      return false;
+    }
+    setCurrentSavingsError('');
+    return true;
+  };
+
+  const handleTargetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTargetAmount(Number(value));
+    validateTargetAmount(value);
+  };
+
+  const handleCurrentSavingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCurrentSavings(Number(value));
+    validateCurrentSavings(value);
+  };
+
+  const handleGoalNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGoalName(e.target.value);
+    setGoalNameTouched(true);
+  };
+
+  // Fix Ctrl+A behavior for inputs
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.ctrlKey && e.key === 'a') {
+      e.stopPropagation();
+      // Let the default behavior happen for the input only
+      e.currentTarget.select();
+      e.preventDefault();
+    }
   };
 
   const handleSaveGoal = () => {
@@ -333,7 +421,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
         {/* Goal Selection */}
         <GoalSelectionCard
           selectedGoal={goalType}
-          onGoalSelect={setGoalType}
+          onGoalSelect={handleGoalTypeSelect}
         />
 
         {/* Goal Details */}
@@ -363,10 +451,16 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                 <Input
                   id="goal-name"
                   value={goalName}
-                  onChange={(e) => setGoalName(e.target.value)}
+                  onChange={handleGoalNameChange}
+                  onKeyDown={handleInputKeyDown}
                   placeholder="My Dream Vacation"
                   className="mt-2"
                 />
+                {goalType && !goalNameTouched && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tip: Goal name auto-updates based on category. Edit to customize.
+                  </p>
+                )}
               </div>
               
               <div>
@@ -380,13 +474,17 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                     id="target-amount"
                     type="number"
                     value={targetAmount || ''}
-                    onChange={(e) => setTargetAmount(Number(e.target.value))}
+                    onChange={handleTargetAmountChange}
+                    onKeyDown={handleInputKeyDown}
                     placeholder="10000"
                     min="0"
                     step="100"
-                    className="pl-10 mt-2"
+                    className={`pl-10 mt-2 ${targetAmountError ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
                 </div>
+                {targetAmountError && (
+                  <p className="text-red-500 text-xs mt-1">{targetAmountError}</p>
+                )}
                 <div className="flex gap-2 mt-3">
                   {[1000, 5000, 10000, 25000].map((amount) => (
                     <Button
@@ -410,13 +508,17 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                     id="current-savings"
                     type="number"
                     value={currentSavings || ''}
-                    onChange={(e) => setCurrentSavings(Number(e.target.value))}
+                    onChange={handleCurrentSavingsChange}
+                    onKeyDown={handleInputKeyDown}
                     placeholder="0"
                     min="0"
                     step="50"
-                    className="pl-10 mt-2"
+                    className={`pl-10 mt-2 ${currentSavingsError ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
                 </div>
+                {currentSavingsError && (
+                  <p className="text-red-500 text-xs mt-1">{currentSavingsError}</p>
+                )}
               </div>
 
               <div>
@@ -436,18 +538,20 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <Label htmlFor="monthly-capacity">Monthly Savings Capacity</Label>
-                  {!isManualEntry && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleManualEntry}
-                      className="text-xs"
-                    >
-                      <Edit3 className="w-3 h-3 mr-1" />
-                      Manual Entry
-                    </Button>
-                  )}
+                  <div className="flex gap-2">
+                    {!isManualEntry && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleManualEntry}
+                        className="text-xs"
+                      >
+                        <Edit3 className="w-3 h-3 mr-1" />
+                        Precise Amount
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 {isManualEntry ? (
@@ -459,14 +563,15 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                           type="number"
                           value={manualAmount}
                           onChange={(e) => handleManualAmountChange(e.target.value)}
-                          onKeyPress={(e) => {
+                          onKeyDown={(e) => {
+                            handleInputKeyDown(e);
                             if (e.key === 'Enter') {
                               handleSubmitManualEntry();
                             }
                           }}
-                          placeholder="Enter amount"
+                          placeholder="Enter precise amount"
                           min="0"
-                          step="50"
+                          step="25"
                           className="pl-10"
                           autoFocus
                         />
@@ -499,22 +604,44 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                   </div>
                 ) : (
                   <div className="mt-4">
-                    <Slider
-                      id="monthly-capacity"
-                      min={50}
-                      max={2000}
-                      step={50}
-                      value={monthlyCapacity}
-                      onValueChange={setMonthlyCapacity}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                    <div className="relative">
+                      <Slider
+                        id="monthly-capacity"
+                        min={50}
+                        max={2000}
+                        step={25}
+                        value={monthlyCapacity}
+                        onValueChange={setMonthlyCapacity}
+                        className="w-full"
+                      />
+                      {/* Precise value input overlay */}
+                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background border rounded px-2 py-1 shadow-sm">
+                        <input
+                          type="number"
+                          value={monthlyCapacity[0]}
+                          onChange={(e) => {
+                            const value = Number(e.target.value);
+                            if (value >= 50 && value <= 2000) {
+                              setMonthlyCapacity([value]);
+                            }
+                          }}
+                          onKeyDown={handleInputKeyDown}
+                          className="w-16 text-center text-sm bg-transparent border-none outline-none"
+                          min="50"
+                          max="2000"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-sm text-muted-foreground mt-4">
                       <span>$50</span>
                       <span className="font-medium brand-blue text-lg text-[#3bd927]">
-                        ${monthlyCapacity[0]}
+                        ${monthlyCapacity[0]} per month
                       </span>
                       <span>$2000+</span>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-1 text-center">
+                      Use slider for quick adjustments or click "Precise Amount" for exact values
+                    </p>
                   </div>
                 )}
               </div>
