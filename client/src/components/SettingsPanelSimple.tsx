@@ -9,6 +9,7 @@ import { X, User, Globe, Bell, BarChart3, HelpCircle, Download } from "lucide-re
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
+import { EnhancedAuthModal } from "./EnhancedAuthModal";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ type SettingsTab = 'account' | 'appearance' | 'notifications' | 'data' | 'help';
 export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
   const [isLoading, setIsLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -120,9 +122,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
               logout(); 
               onClose(); 
             } else {
-              // Show login modal or redirect to login
-              onClose();
-              // You can add login modal trigger here if needed
+              setShowAuthModal(true);
             }
           }} 
           variant="outline" 
@@ -382,6 +382,12 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           {renderTabContent()}
         </div>
       </div>
+      
+      {/* Enhanced Auth Modal */}
+      <EnhancedAuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 }
