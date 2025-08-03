@@ -48,27 +48,62 @@
     const state = urlParams.get('state');
     const error = urlParams.get('error');
 
+    // Get stored state for validation
+    const storedState = localStorage.getItem('oauth_state');
+    const returnUrl = localStorage.getItem('oauth_return_url') || '/';
+
     if (error) {
-      // Handle OAuth error
-      window.opener?.postMessage({
-        type: 'AUTH_ERROR',
-        data: { message: error }
-      }, '*');
-      window.close();
+      // Handle OAuth error - redirect back with error
+      localStorage.removeItem('oauth_state');
+      localStorage.removeItem('oauth_return_url');
+      alert('Authentication failed: ' + error);
+      window.location.href = returnUrl;
     } else if (code && state) {
-      // Send success message with auth code
-      window.opener?.postMessage({
-        type: 'AUTH_SUCCESS',
-        data: { code, state }
-      }, '*');
-      window.close();
+      // Validate state parameter
+      if (state !== storedState) {
+        alert('Invalid authentication state. Possible security issue.');
+        window.location.href = returnUrl;
+        return;
+      }
+
+      // Exchange code for tokens via our backend
+      fetch('/api/auth/wix-callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          code: code,
+          state: state,
+          redirectUri: window.location.origin + '/wix-callback.html'
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        localStorage.removeItem('oauth_state');
+        localStorage.removeItem('oauth_return_url');
+        
+        if (result.success) {
+          // Authentication successful - redirect back to app
+          window.location.href = returnUrl + '?auth=success';
+        } else {
+          // Authentication failed
+          alert('Authentication failed: ' + (result.message || 'Unknown error'));
+          window.location.href = returnUrl;
+        }
+      })
+      .catch(error => {
+        console.error('Auth callback error:', error);
+        localStorage.removeItem('oauth_state');
+        localStorage.removeItem('oauth_return_url');
+        alert('Authentication failed: ' + error.message);
+        window.location.href = returnUrl;
+      });
     } else {
       // Handle missing parameters
-      window.opener?.postMessage({
-        type: 'AUTH_ERROR',
-        data: { message: 'Missing authorization code' }
-      }, '*');
-      window.close();
+      localStorage.removeItem('oauth_state');
+      localStorage.removeItem('oauth_return_url');
+      alert('Missing authorization code or state parameter');
+      window.location.href = returnUrl;
     }
   </script>
 </body>

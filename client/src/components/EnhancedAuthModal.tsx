@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,19 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   const { toast } = useToast();
   const { login } = useAuth();
 
+  // Check for OAuth success on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('auth') === 'success') {
+      // Remove the auth parameter from URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Refresh user data to show logged in state
+      window.location.reload();
+    }
+  }, []);
+
   const resetForm = () => {
     setFormData({
       fullName: '',
@@ -71,16 +84,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       .join('');
   };
 
-  // OAuth popup login handler
+  // OAuth redirect login handler (more reliable than popup)
   const handleOAuthLogin = async () => {
     setIsLoading(true);
     
     try {
-      // Generate secure state parameter
+      // Generate secure state parameter and store it
       const state = generateSecureState();
-      setOauthState(state);
+      localStorage.setItem('oauth_state', state);
+      localStorage.setItem('oauth_return_url', window.location.href);
       
-      // Build real Wix OAuth URL - use the public callback page
+      // Build real Wix OAuth URL with direct redirect
       const redirectUri = `${window.location.origin}/wix-callback.html`;
       
       // Request OAuth URL from our backend
@@ -96,76 +110,14 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       
       const { authUrl } = await authUrlResponse.json();
       
-      // Open popup window
-      const popup = window.open(
-        authUrl,
-        'mcf_auth',
-        'width=500,height=700,scrollbars=yes,resizable=yes,location=yes'
-      );
-      
-      if (!popup) {
-        throw new Error('Popup blocked. Please allow popups for this site.');
-      }
-      
-      // Listen for auth completion
-      const handleAuthCallback = (event: MessageEvent) => {
-        console.log('Received message from:', event.origin, 'Data:', event.data);
-        
-        // Verify origin for security - accept from Wix OAuth and our own domain
-        if (!event.origin.includes('wix.com') && 
-            event.origin !== window.location.origin) {
-          console.warn('Received message from unauthorized origin:', event.origin);
-          return;
-        }
-        
-        const { type, data } = event.data;
-        
-        switch (type) {
-          case 'AUTH_SUCCESS':
-            handleOAuthSuccess(data);
-            break;
-          case 'AUTH_ERROR':
-            handleOAuthError(data);
-            break;
-          case 'AUTH_CANCELLED':
-            handleOAuthCancelled();
-            break;
-        }
-        
-        // Clean up
-        window.removeEventListener('message', handleAuthCallback);
-        popup.close();
-      };
-      
-      window.addEventListener('message', handleAuthCallback, false);
-      
-      // Check if popup was closed manually (with debugging)
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          window.removeEventListener('message', handleAuthCallback);
-          setIsLoading(false);
-          console.log('Popup was closed unexpectedly after redirect to Wix login');
-          toast({
-            title: "Login Window Closed", 
-            description: "Please ensure popups are enabled and try signing in again. The Wix login page should stay open.",
-            variant: "destructive"
-          });
-        }
-      }, 2000); // Check every 2 seconds instead of 1
-
-      // Add a longer timeout for OAuth completion
-      setTimeout(() => {
-        if (!popup.closed) {
-          console.log('OAuth flow taking longer than expected, but popup is still open');
-        }
-      }, 5000);
+      // Redirect directly instead of using popup
+      window.location.href = authUrl;
       
     } catch (error) {
       setIsLoading(false);
       toast({
         title: "Login Error",
-        description: error instanceof Error ? error.message : "Failed to open login window",
+        description: error instanceof Error ? error.message : "Failed to start authentication",
         variant: "destructive"
       });
     }
