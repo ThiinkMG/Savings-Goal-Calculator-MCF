@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Wix OAuth - Complete Flow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+        .code-display {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test Wix OAuth Flow</h1>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="step">
+            <h3>Step 1: Start OAuth Flow</h3>
+            <p>Click the button below to begin the Wix OAuth authentication:</p>
+            <button id="startOAuth" class="button" onclick="startOAuthFlow()">
+                Login with Wix
+            </button>
+        </div>
+        
+        <div id="callbackStep" class="step" style="display: none;">
+            <h3>Step 2: Authorization Code Received</h3>
+            <p>Authorization code:</p>
+            <div id="authCode" class="code-display"></div>
+            <button id="exchangeToken" class="button" onclick="exchangeToken()">
+                Exchange Code for Tokens
+            </button>
+        </div>
+        
+        <div id="tokenStep" class="step" style="display: none;">
+            <h3>Step 3: Tokens Received</h3>
+            <div id="tokenInfo" class="code-display"></div>
+        </div>
+    </div>
+
+    <script>
+        // Check for OAuth callback parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('wix_auth_code');
+        const state = urlParams.get('wix_auth_state');
+        const error = urlParams.get('wix_auth_error');
+        
+        if (error) {
+            showStatus('error', `OAuth Error: ${error}`);
+        } else if (code && state) {
+            // OAuth callback received
+            document.getElementById('callbackStep').style.display = 'block';
+            document.getElementById('authCode').textContent = code;
+            document.getElementById('startOAuth').disabled = true;
+            document.getElementById('startOAuth').textContent = 'OAuth Flow Completed';
+            showStatus('success', 'Authorization code received! Now exchange it for tokens.');
+            
+            // Store for token exchange
+            window.authCode = code;
+            window.authState = state;
+        }
+        
+        function showStatus(type, message) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${type}`;
+            statusEl.textContent = message;
+        }
+        
+        async function startOAuthFlow() {
+            try {
+                // Generate random state
+                const state = Math.random().toString(36).substring(7);
+                localStorage.setItem('oauth_state', state);
+                localStorage.setItem('oauth_return_url', window.location.href);
+                
+                // Get redirect URI
+                const redirectUri = window.location.origin + '/wix-callback.html';
+                
+                // Request OAuth URL from backend
+                const response = await fetch('/api/auth/wix-auth-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ state, redirectUri })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus('info', 'Redirecting to Wix for authentication...');
+                    setTimeout(() => {
+                        window.location.href = data.authUrl;
+                    }, 1000);
+                } else {
+                    showStatus('error', 'Failed to generate OAuth URL');
+                }
+            } catch (error) {
+                showStatus('error', `Error: ${error.message}`);
+            }
+        }
+        
+        async function exchangeToken() {
+            if (!window.authCode) {
+                showStatus('error', 'No authorization code available');
+                return;
+            }
+            
+            document.getElementById('exchangeToken').disabled = true;
+            document.getElementById('exchangeToken').textContent = 'Exchanging...';
+            
+            try {
+                const redirectUri = window.location.origin + '/wix-callback.html';
+                
+                // Call the backend to exchange code for tokens
+                const response = await fetch('/api/auth/wix-callback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        code: window.authCode,
+                        state: window.authState,
+                        redirectUri: redirectUri
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('tokenStep').style.display = 'block';
+                    document.getElementById('tokenInfo').innerHTML = `
+                        <strong>Success!</strong><br><br>
+                        <strong>User:</strong> ${data.user.email}<br>
+                        <strong>Username:</strong> ${data.user.username}<br>
+                        <strong>Wix User ID:</strong> ${data.user.wixUserId || 'N/A'}<br><br>
+                        <strong>You are now logged in!</strong>
+                    `;
+                    showStatus('success', 'Authentication successful! User session created.');
+                    
+                    // Redirect to main app after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 3000);
+                } else {
+                    showStatus('error', `Token exchange failed: ${data.message}`);
+                    document.getElementById('exchangeToken').disabled = false;
+                    document.getElementById('exchangeToken').textContent = 'Retry Exchange';
+                }
+            } catch (error) {
+                showStatus('error', `Error: ${error.message}`);
+                document.getElementById('exchangeToken').disabled = false;
+                document.getElementById('exchangeToken').textContent = 'Retry Exchange';
+            }
+        }
+    </script>
+</body>
+</html>

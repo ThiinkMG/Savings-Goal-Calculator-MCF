@@ -2,7 +2,7 @@ import { createClient, OAuthStrategy } from '@wix/sdk';
 import { members } from '@wix/members';
 import { redirects } from '@wix/redirects';
 
-const WIX_CLIENT_ID = process.env.WIX_CLIENT_ID || '2583909e-4c0c-429e-b4d3-8d58e7096828';
+const WIX_CLIENT_ID = process.env.WIX_CLIENT_ID || '';
 const WIX_SITE_ID = process.env.WIX_SITE_ID || '';
 
 // For OAuth flow, we only need CLIENT_ID
