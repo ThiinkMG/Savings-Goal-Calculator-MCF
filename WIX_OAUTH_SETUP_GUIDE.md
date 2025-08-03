@@ -3,16 +3,21 @@
 ## Current Status
 ✅ Real Wix OAuth implementation complete  
 ✅ Callback page created at `/wix-callback.html`  
-⚠️ **Action Required**: Configure redirect URI in Wix Dashboard
+⚠️ **Action Required**: Create OAuth app and configure redirect URIs in Wix Dashboard
 
-## Required Wix Configuration
+## How to Register Your App on Wix
 
-### Step 1: Access Your Wix OAuth App Settings
-1. Go to your Wix project dashboard
+### Step 1: Create OAuth App in Wix Dashboard
+1. Go to your **Wix.com account** and log in to your site dashboard
 2. Navigate to **Settings → Development & integrations → Headless Settings**
-3. Under **Headless clients**, find your OAuth app
-4. Click the **three dots** next to your app
-5. Select **Settings**
+3. In the **Headless clients** section, click **"Create New Client"**
+4. Enter app name: **"My College Finance Calculator"**
+5. Select: **"OAuth App for Visitors and Members"**
+6. Click **"Create & Continue"**
+7. **Copy the Client ID** - you'll need to update your secrets
+
+### Step 2: Configure OAuth App Settings
+After creating the app, access its settings:
 
 ### Step 2: Add Authorization Redirect URI
 In the app settings, find the **URLs** section:
