@@ -39,22 +39,24 @@ export function generateWixAuthUrl(state: string, redirectUri: string): string {
 
 // Exchange authorization code for tokens
 export async function exchangeCodeForTokens(code: string, redirectUri: string) {
-  const tokenUrl = 'https://www.wix.com/oauth/access';
+  const tokenUrl = 'https://www.wixapis.com/oauth/access';
   
   const response = await fetch(tokenUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     },
-    body: new URLSearchParams({
+    body: JSON.stringify({
       grant_type: 'authorization_code',
       client_id: WIX_CLIENT_ID,
+      client_secret: process.env.WIX_OAUTH_CLIENT_SECRET || '',
       code,
-      redirect_uri: redirectUri,
     }),
   });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Token exchange failed:', errorText);
     throw new Error(`Token exchange failed: ${response.statusText}`);
   }
 
@@ -85,16 +87,17 @@ export async function getMemberInfo(accessToken: string) {
 
 // Refresh access token using refresh token
 export async function refreshAccessToken(refreshToken: string) {
-  const tokenUrl = 'https://www.wix.com/oauth/access';
+  const tokenUrl = 'https://www.wixapis.com/oauth/access';
   
   const response = await fetch(tokenUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     },
-    body: new URLSearchParams({
+    body: JSON.stringify({
       grant_type: 'refresh_token',
       client_id: WIX_CLIENT_ID,
+      client_secret: process.env.WIX_OAUTH_CLIENT_SECRET || '',
       refresh_token: refreshToken,
     }),
   });
