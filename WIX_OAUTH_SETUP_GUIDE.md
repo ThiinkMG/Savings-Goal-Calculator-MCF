@@ -16,23 +16,32 @@
 6. Click **"Create & Continue"**
 7. **Copy the Client ID** - you'll need to update your secrets
 
-### Step 2: Configure OAuth App Settings
-After creating the app, access its settings:
+### Step 2: Update Client ID Secret
+✅ **Your Client ID:** `294a4d93-c607-4962-b2af-5b0fde201848`
 
-### Step 2: Add Authorization Redirect URI
-In the app settings, find the **URLs** section:
+You need to update your `WIX_HEADLESS_CLIENT_ID` secret with this value.
 
-1. Look for **"Allowed authorization redirect URIs"**
-2. Click **"Add Redirect URI"**
-3. Add this exact URI:
+### Step 3: Configure Redirect URIs
+In your OAuth app settings, you need to add the redirect URI:
+
+### Step 4: Add Authorization Redirect URI
+You need to go back to your Wix dashboard and add the redirect URI:
+
+1. Go to **Settings → Development & integrations → Headless Settings**
+2. Find your **"Savings Goal Calculator"** app
+3. Click the **three dots** and select **Settings**
+4. Find the **URLs** section
+5. Look for **"Allowed authorization redirect URIs"**
+6. Click **"Add Redirect URI"**
+7. Add this exact URI:
    ```
-   https://your-replit-app-url.replit.app/wix-callback.html
+   http://localhost:5000/wix-callback.html
    ```
 
-### Step 3: Development/Testing URI
-For local testing, also add:
+### Step 5: Production URI (After Deployment)
+Also add your production URL:
 ```
-http://localhost:5000/wix-callback.html
+https://your-replit-app-url.replit.app/wix-callback.html
 ```
 
 ## Important Notes
