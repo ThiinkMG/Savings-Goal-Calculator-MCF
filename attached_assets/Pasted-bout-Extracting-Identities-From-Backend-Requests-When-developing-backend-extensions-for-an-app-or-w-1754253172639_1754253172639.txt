@@ -1,0 +1,25 @@
+bout Extracting Identities From Backend Requests
+When developing backend extensions for an app or web methods, you might need to know the identity of the session making the request to your backend. This identity is encoded in a token sent along with the request. To learn more about identity and access management in Wix, see About Identities.
+
+To extract the identity from the request to your backend extension, you can use the getTokenInfo() function from the @wix/essentials package. This function returns the information encoded in the currently active token (the token sent with the request). For an example of how to do this, see the getTokenInfo() documentation.
+
+Use cases
+The following are examples of use cases that require the identity of the request.
+
+Identity-specific data
+Store data in a database based on the identity of whoever made the request. This can include data that only the owner of the identity should have access to. For example information bout a user's profile, or their shopping cart.
+
+Authentication
+Verify that the request is coming from an authenticated identity, ensuring that the request is made from the Wix platform and not from an unverified external source. This is critical for securing your app and ensuring that your data can't be accessed or modified by unauthenticated users.
+
+Authorization
+Determine if the identity making the request has the necessary permissions to perform the operation. By having access to the subject ID (the ID of the identity making the request), you can implement logic to determine if the identity has the necessary permissions. The logic can be based on the identity's role, group, or any other attribute that you have associated with the identity.
+
+Auditing
+Log the identity of the user or app making the request for auditing purposes. This can help you track who is making requests to your app and what operations they're performing.
+
+Personalization
+Personalize the response based on the identity of the user or app making the request. This can include showing personalized content, recommendations, or any other data specific to the identity making the request.
+
+Billing
+Implement usage-based billing based on the identity making the request. Using the identity of the user or app making the request, you can track the usage of your app and bill the user or app accordingly, such as by the number of users using the app or the number of members or visitors on the site.

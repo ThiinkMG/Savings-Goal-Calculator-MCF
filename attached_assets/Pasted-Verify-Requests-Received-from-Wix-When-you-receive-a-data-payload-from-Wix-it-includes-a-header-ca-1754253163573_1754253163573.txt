@@ -1,0 +1,42 @@
+Verify Requests Received from Wix
+When you receive a data payload from Wix, it includes a header called digest. The header holds a JSON Web Token (JWT) with the signed data.
+
+Before using the data you've received, you should:
+
+Verify the JWT's signature to confirm that the data was sent by Wix.
+Verify the integrity of the data (for encrypted payloads only – not webhooks).
+Here's a sample JWT:
+
+Copy
+eyJraWQiOiJxRzFrRDJkeiIsImFsZyI6IlJTMjU2In0.eyJkYXRhIjp7IlNIQTI1NiI6IjNmZDA1ZGZlNDI5ODM3ZGE4NmNiYzcxMDE5MGM5YTY3Mjk2MjAzYmJkNGJkMzE2MGFiMGZmMDdiNjU5YjAxNjAifSwiaWF0IjoxNTUwOTM2NzMxLCJleHAiOjE1NTEyMzY3MzF9.JSRB5MbSNQEXd3we4SJR9voXTIePHlVGSGOb6OXV2v7oHBfRxaisE-ZIdNDMW2Wyy_u48VbKOUxOMdaBGRbP9Vy8S7AuXwixswBYqBS-CG2VffHVAbuijTxUkRzu7Fp29xfC14nDOdF_-aOS5morA_4j-Vbcju3ZwJsk23XLvqLuNmjCgces5QHqYDYazhX8oIqncfEHr1ZJadSFrFZeDhwQmwUGr6xwW8pNi5EJqby1sOAe8r7I3OnYG6qSWrnUHaHfSNJxEzZGST-oFJhaWSc2jGJ8ZyOhtr6UA-j6zdcqEuJBpA_YFpL23eI5vDCkVs6hSOtQ8FkiyFPy07OFzQ
+Step 1 | Verify that the data came from Wix
+To verify that the data came from Wix:
+
+Select your app from the Custom Apps page in your Wix Studio Workspace.
+At the top of your app's home page, click More Actions  and select View ID & keys.
+Copy the public key and use it to decode the JWT.
+Here's what the data looks like once its been decoded and verified with your public key:
+
+
+
+Note: View a sample decoded JWT in the JWT debugger.
+
+Step 2 | Verify the integrity of the data
+In some cases, the payload data will be encrypted as a security precaution. If the data is encrypted, it's crucial to ensure its integrity and confirm that it hasn't been altered during transit.
+
+Note: Webhook payloads are not encrypted.
+
+The encrypted payload data includes an object with a hash of the payload data, and the hash type as its key. For example: 
+
+Copy
+"data": 
+{
+    "SHA256": "3fd05dfe429837da86cbc710190c9a67296203bbd4bd3160ab0ff07b659b0160"
+}
+To verify the integrity of the data:
+
+Take the encrypted body data you received and hash it using the same hashing algorithm listed in the data object. In our example: 
+
+Hash type: SHA256
+Body data: {"mydata":"is secured"}
+Compare the new hash with the hash listed in the data object. For example: Sha256({"mydata":"is secured"}) yields 3fd05dfe429837da86cbc710190c9a67296203bbd4bd3160ab0ff07b659b0160.

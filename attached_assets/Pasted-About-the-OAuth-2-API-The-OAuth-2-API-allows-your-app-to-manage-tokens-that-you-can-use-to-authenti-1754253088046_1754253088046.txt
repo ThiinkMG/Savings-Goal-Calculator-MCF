@@ -1,0 +1,25 @@
+About the OAuth 2 API
+The OAuth 2 API allows your app to manage tokens that you can use to authenticate Wix API calls. By default, OAuth authentication follows the OAuth Client Credentials protocol.
+
+With the OAuth 2 API, you can:
+
+Create access tokens for OAuth.
+Request an access token for custom authentication (legacy).
+Refresh an access token for custom authentication (legacy).
+Get information about a specific access token.
+Learn more:
+
+About OAuth
+How to authenticate using OAuth
+How to set up and use custom authentication (legacy)
+Before you begin
+It's important to note the following points before starting to code:
+
+If your app uses OAuth to authenticate Wix API calls, you must create access tokens by calling Create Access Token.
+If your app uses custom authentication, Wix sends you an authorization code while redirecting new users to your app URL. You must use this authorization code within 10 minutes to create a refresh token by calling Request an access token. If the process fails, you're unable to retrieve access tokens with Refresh an Access Token. From the site owner's point-of-view, it seems that the app installation has succeeded. You have 2 options in this situation: Ask the site owners to re-install your app, or fall back to retrieving access tokens with the OAuth strategy by calling Create Access Token.
+Terminology
+OAuth: Authorization protocol used by Wix to allow third-party apps to securely obtain access to Wix APIs.
+Access token: A string used in the "authorization" header to make authenticated calls to Wix APIs. All Wix access tokens are of type "Bearer". Learn more about access token types.
+Custom authentication (legacy): A legacy version of the OAuth protocol used by Wix. This method is only applicable if your app needs to redirect users to a URL outside the Wix ecosystem during the app installation process.
+Authorization code: A temporary string sent by Wix to your app during the custom authentication process, after a user completes the installation and grants your app the necessary permissions. The authorization code expires in 10 minutes. Use it to generate a refresh token before it expires.
+Refresh token: A persistent string used by your app to generate access tokens in the custom authentication process. The refresh token does not expire. Store it securely and never share or expose it publicly.

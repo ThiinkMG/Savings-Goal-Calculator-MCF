@@ -1,0 +1,50 @@
+Authenticate on behalf of a Wix User
+Your app can authenticate on behalf of a Wix user to access site data and perform actions, combining the permissions of the app and the user. Wix users may have different user roles, resulting in different permissions granted to your app for each user.
+
+On behalf of user authentication is supported for dashboard pages, which facilitate user site and business management. It allows your app to recognize requests aligned with the permissions of the Wix user within the dashboard.
+
+This article explains how to authenticate on behalf of a Wix user using the Javascript SDK. The SDK manages the OAuth process for you behind the scenes. This functionality isn't currently supported using the REST API.
+
+Important: This authentication strategy is currently only supported for dashboard pages.
+
+Javascript SDK
+To authenticate your app on behalf of a Wix user using the JavaScript SDK:
+
+Install the SDK:
+
+Copy
+npm install @wix/sdk
+The SDK module is used to communicate with the Wix platform from JavaScript code by providing a client for making authenticated calls to Wix APIs.
+
+Install the Dashboard SDK:
+
+Copy
+npm install @wix/dashboard
+The Dashboard SDK allows code in custom dashboard components to interact with the Wix dashboard. This includes features like navigating users, displaying modals, and sending alerts and updates.
+
+Create a WixClient instance with the dashboard host and authentication strategy:
+
+Copy
+import { createClient } from "@wix/sdk";
+import { dashboard } from "@wix/dashboard";
+
+const myClient = createClient({
+  host: dashboard.host(),
+  auth: dashboard.auth(),
+  modules: {
+    dashboard,
+  },
+});
+The dashboard authentication strategy considers the Wix user in context, providing an app access token with combined app and user permissions.
+
+Make an API request. Behind the scenes, the client makes a request to obtain an access token and incorporates it into the Authorization request header. For example:
+
+Copy
+import { products } from "@wix/stores";
+
+const { items } = await myClient.products
+  .queryProducts()
+  .startsWith("name", "shoes")
+  .limit(4)
+  .find();
+Tip: If a REST API isn't available in the SDK, you can still access it using the fetch() method.

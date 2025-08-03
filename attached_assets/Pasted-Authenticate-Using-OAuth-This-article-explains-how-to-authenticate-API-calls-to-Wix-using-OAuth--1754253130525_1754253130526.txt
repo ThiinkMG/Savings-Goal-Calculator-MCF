@@ -1,0 +1,75 @@
+Authenticate Using OAuth
+This article explains how to authenticate API calls to Wix using OAuth.
+
+Important: Extensions built with Wix Blocks or the Wix CLI handle authentication automatically.
+
+Step 1 | Get app credentials and instance ID
+To authenticate, you need the following information:
+
+App ID: Find it on the OAuth page of your app's dashboard.
+App secret: Find it on the OAuth page of your app's dashboard. Keep this value confidential.
+App instance ID: The unique identifier (instanceId) for your app on a site.
+There are different ways to get the instanceId, depending on your app's logic. The most common methods for getting it to generate an access token are:
+
+App Instance Installed webhook: Triggered when your app is installed on a Wix site. We recommend saving the instanceId at this point.
+Webhook payloads: Each webhook sent by Wix includes the instanceId.
+Service plugin metadata: Each service plugin request from Wix includes the instanceId in the metadata.
+Encoded query parameter: External pages and iframe extensions receive an encoded query parameter with the instanceId.
+To learn more, see About App Instances.
+
+Step 2 | Make an authenticated API request
+The authentication process varies depending on whether you use the JavaScript SDK or REST API.
+
+JavaScript SDK
+To make an authenticated API request with the JavaScript SDK in a self-hosted extension:
+
+Create a WixClient using the AppStrategy.
+
+Copy
+import { createClient, AppStrategy } from "@wix/sdk";
+import { products } from "@wix/stores";
+
+const myClient = createClient({
+  auth: AppStrategy({
+    appId: "<APP_ID>",
+    appSecret: "<APP_SECRET>",
+    publicKey: "<APP_PUBLIC_KEY_FOR_WEBHOOKS>",
+    instanceId: "<INSTANCE_ID>",
+  }),
+  modules: {
+    products,
+  },
+});
+Make an API request. The client automatically obtains and includes the access token in the Authorization header. For example, call queryProducts().
+
+Copy
+const { items } = await myClient.products.queryProducts().find();
+Important: The Wix CLI also uses the JavaScript SDK but handles authentication automatically. To make API requests from CLI extensions, use the httpClient.
+
+REST API
+To make an authenticated API request with the REST API:
+
+Send a request to Create Access Token. Include your app ID, app secret, and instanceId in the HTTP body.
+
+Copy
+curl -X POST 'https://www.wixapis.com/oauth2/token' -H 'Content-Type: application/json' -d '{
+  "grant_type": "client_credentials",
+  "client_id": "<APP_ID>",
+  "client_secret": "<APP_SECRET_KEY>",
+  "instance_id": "<APP_INSTANCE_ID>"
+}'
+Store the access_token from the response. The token is valid for 4 hours.
+
+Make an API request by including the access_token in the Authorization header. For example, call Query Products.
+
+Copy
+curl -X POST \
+   'https://www.wixapis.com/stores/v1/products/query' \
+    --data-binary '{}' \
+   -H 'Content-Type: application/json' \
+   -H 'Authorization: <ACCESS_TOKEN>'
+Migrate from custom authentication (legacy)
+To migrate from custom authentication to OAuth:
+
+Replace requests to Refresh an Access Token with Create an Access Token.
+Make sure that you have a method to get instanceId as described in step 1. We recommend subscribing to the App Instance Installed webhook.
