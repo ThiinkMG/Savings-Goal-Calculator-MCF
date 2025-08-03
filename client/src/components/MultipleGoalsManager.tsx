@@ -138,7 +138,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
   return (
     <Card className="animate-slide-in">
       <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
             <div className="p-2 bg-brand-blue/10 rounded-lg">
               <List className="w-5 h-5 brand-blue" />
@@ -148,7 +148,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
           
           <Button 
             onClick={onAddGoal}
-            className="bg-brand-blue hover:bg-brand-blue/90 text-white"
+            className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Goal
@@ -168,7 +168,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
             </Button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {goals.map((goal) => {
               const progress = getProgressPercent(goal);
               const monthlyRequired = calculateMonthlyRequired(goal);
@@ -179,23 +179,23 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
               return (
                 <div
                   key={goal.id}
-                  className="p-4 border border-border rounded-lg hover:shadow-md transition-shadow"
+                  className="p-4 border border-border rounded-lg hover:shadow-md transition-shadow overflow-hidden max-w-full"
                 >
                   <div 
                     className="cursor-pointer"
                     onClick={() => onEditGoal(goal.id)}
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <h4 className="font-medium text-foreground truncate">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
+                      <h4 className="font-medium text-foreground break-words max-w-full">
                         {goal.name}
                       </h4>
                       {getStatusBadge(goal)}
                     </div>
                     
                     <div className="mb-3">
-                      <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                        <span>${(goal.currentSavings || 0).toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
-                        <span>{Math.round(progress)}%</span>
+                      <div className="flex flex-col sm:flex-row justify-between text-sm text-muted-foreground mb-2 gap-1">
+                        <span className="break-words">${(goal.currentSavings || 0).toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
+                        <span className="font-medium">{Math.round(progress)}%</span>
                       </div>
                       <Progress value={progress} className="h-2" />
                     </div>
@@ -205,9 +205,9 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         <TrendingUp className="w-3 h-3" />
                         ${monthlyRequired}/month
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
                         <span>{monthsLeft} months left</span>
-                        <span className="text-xs">
+                        <span className="text-xs break-words">
                           Edited: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'} {goal.updatedAt ? new Date(goal.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                         </span>
                       </div>

@@ -106,6 +106,33 @@
   .dark textarea::placeholder {
     color: hsl(215, 20%, 65%) !important;
   }
+
+  /* Mobile date input fixes */
+  input[type="date"] {
+    max-width: 100%;
+    overflow: hidden;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+  }
+
+  /* Prevent mobile overflow on containers */
+  .savings-calculator-container * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
   
   .brand-blue {
     color: hsl(var(--brand-blue));

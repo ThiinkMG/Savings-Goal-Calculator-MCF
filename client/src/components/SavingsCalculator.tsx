@@ -390,9 +390,9 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8">
+    <div className="grid lg:grid-cols-3 gap-4 lg:gap-8 max-w-full overflow-hidden">
       {/* Main Calculator Form */}
-      <div className="lg:col-span-2 space-y-8">
+      <div className="lg:col-span-2 space-y-6 lg:space-y-8 max-w-full overflow-hidden">
         {/* Personal Information */}
         <Card className="animate-slide-in">
           <CardContent className="p-6">
@@ -402,7 +402,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
               </div>
               Personal Information
             </h3>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -422,7 +422,11 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="pl-10 mt-2"
+                    className="pl-10 mt-2 w-full max-w-full overflow-hidden"
+                    style={{ 
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'textfield'
+                    }}
                   />
                 </div>
               </div>
@@ -497,14 +501,14 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                 {targetAmountError && (
                   <p className="text-red-500 text-xs mt-1">{targetAmountError}</p>
                 )}
-                <div className="flex gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-3">
                   {[1000, 5000, 10000, 25000].map((amount) => (
                     <Button
                       key={amount}
                       variant="outline"
                       size="sm"
                       onClick={() => handleQuickAmount(amount)}
-                      className="text-xs hover:bg-brand-blue hover:text-white"
+                      className="text-xs hover:bg-brand-blue hover:text-white flex-1 min-w-0 sm:flex-none"
                     >
                       ${(amount / 1000).toFixed(0)}K
                     </Button>
@@ -543,12 +547,16 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
                     onKeyDown={handleInputKeyDown}
-                    className="pl-10 mt-2 cursor-pointer"
+                    className="pl-10 mt-2 cursor-pointer w-full max-w-full overflow-hidden"
                     min={new Date().toISOString().split('T')[0]}
                     placeholder="Select your target date"
+                    style={{ 
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'textfield'
+                    }}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-1 break-words">
                   Click the field to open date picker or type directly (YYYY-MM-DD)
                 </p>
               </div>

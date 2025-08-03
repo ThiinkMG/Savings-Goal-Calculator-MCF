@@ -127,7 +127,7 @@ export default function HomePage() {
         </div>
       )}
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-6 lg:py-8 overflow-hidden savings-calculator-container">
         {!showCalculator && (
           <>
             {/* Welcome Section */}
