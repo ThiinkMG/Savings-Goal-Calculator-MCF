@@ -13,13 +13,13 @@ export function BrandHeader() {
     <header className="sticky top-0 z-50 backdrop-blur-sm bg-background/80 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <Logo size={70} className="animate-gentle-bounce" />
+          <a href="https://www.mycollegefinance.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+            <Logo size={60} className="animate-gentle-bounce sm:w-[70px] sm:h-[70px]" />
             <div>
-              <h1 className="text-xl font-black brand-blue font-sans">
+              <h1 className="text-lg sm:text-xl font-black brand-blue font-sans">
                 MY COLLEGE FINANCE
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs sm:text-xs text-muted-foreground">
                 EDUCATE • MOTIVATE • ELEVATE
               </p>
             </div>
