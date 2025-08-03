@@ -540,7 +540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // OAuth callback endpoint for Wix authentication (demo implementation)
+  // OAuth callback endpoint for Wix authentication
   app.post('/api/auth/wix-callback', async (req, res) => {
     try {
       const { code, state, redirectUri } = req.body;
@@ -552,47 +552,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Demo OAuth flow - simulate successful Wix member authentication
-      console.log('Processing OAuth callback with code:', code.substring(0, 15) + '...');
+      const { exchangeCodeForTokens, getMemberInfo } = await import('./wixAuth.js');
       
-      // Create demo member data (in real implementation, this would come from Wix)
-      const demoMember = {
-        _id: `wix_member_${Date.now()}`,
-        loginEmail: 'member@mycollegefinance.com',
-        profile: {
-          nickname: 'CollegeFinanceUser',
-          firstName: 'College',
-          lastName: 'Finance'
-        },
-        contactDetails: {
-          firstName: 'College',
-          lastName: 'Finance',
-          emails: [{ email: 'member@mycollegefinance.com' }]
-        }
-      };
+      // Exchange code for tokens
+      const tokenData = await exchangeCodeForTokens(code, redirectUri);
       
-      const email = demoMember.loginEmail;
+      if (!tokenData.access_token) {
+        throw new Error('No access token received from Wix');
+      }
+      
+      // Get member information
+      const memberInfo = await getMemberInfo(tokenData.access_token);
+      
+      if (!memberInfo.member) {
+        throw new Error('No member information available');
+      }
+      
+      const member = memberInfo.member;
+      const email = member.loginEmail || member.contactDetails?.emails?.[0]?.email;
+      
+      if (!email) {
+        throw new Error('No email address found for member');
+      }
       
       // Check if user already exists with this email
       let user = await storage.getUserByEmail?.(email);
       
       if (!user) {
         // Create new user with Wix member data
-        const fullName = `${demoMember.contactDetails.firstName} ${demoMember.contactDetails.lastName}`;
+        const fullName = member.profile?.nickname || 
+                         (member.contactDetails?.firstName && member.contactDetails?.lastName 
+                           ? `${member.contactDetails.firstName} ${member.contactDetails.lastName}` 
+                           : email.split('@')[0]);
         
         user = await storage.createUser({
           email,
-          username: demoMember.profile.nickname,
+          username: member.profile?.nickname || email.split('@')[0],
           fullName,
           password: 'wix-oauth-user', // OAuth users don't have traditional passwords
-          wixUserId: demoMember._id
+          wixUserId: member._id
         });
       } else if (!user.wixUserId) {
         // Link existing user to Wix account
-        user.wixUserId = demoMember._id;
+        user.wixUserId = member._id;
       }
       
-      // Set session for successful OAuth login
+      // Store tokens securely (in production, encrypt these)
+      req.session.wixAccessToken = tokenData.access_token;
+      if (tokenData.refresh_token) {
+        req.session.wixRefreshToken = tokenData.refresh_token;
+      }
+      
+      // Set session
       req.session.userId = user.id;
       req.session.isGuest = false;
       req.session.authMethod = 'wix-oauth';
@@ -607,10 +618,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           wixUserId: user.wixUserId
         },
         member: {
-          id: demoMember._id,
+          id: member._id,
           email: email,
-          profile: demoMember.profile,
-          contactDetails: demoMember.contactDetails
+          profile: member.profile,
+          contactDetails: member.contactDetails
         }
       });
       

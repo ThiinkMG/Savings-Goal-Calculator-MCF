@@ -24,15 +24,17 @@ export const wixClient = createClient({
   })
 });
 
-// Generate demo OAuth URL (for testing OAuth flow without full Wix configuration)
+// Generate Wix Headless OAuth authorization URL for member login
 export function generateWixAuthUrl(state: string, redirectUri: string): string {
-  // Create a demo OAuth URL that redirects directly to our callback with success
-  // This demonstrates the OAuth flow working without requiring complex Wix setup
-  const demoAuthUrl = new URL(redirectUri);
-  demoAuthUrl.searchParams.set('code', 'demo_auth_code_' + Date.now());
-  demoAuthUrl.searchParams.set('state', state);
+  // Use the standard Wix OAuth authorization endpoint
+  const authUrl = new URL('https://www.wix.com/oauth/authorize');
+  authUrl.searchParams.set('client_id', WIX_CLIENT_ID);
+  authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('scope', 'offline_access');
+  authUrl.searchParams.set('state', state);
+  authUrl.searchParams.set('redirect_uri', redirectUri);
   
-  return demoAuthUrl.toString();
+  return authUrl.toString();
 }
 
 // Exchange authorization code for tokens

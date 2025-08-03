@@ -84,7 +84,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       .join('');
   };
 
-  // OAuth demo login handler 
+  // OAuth redirect login handler
   const handleOAuthLogin = async () => {
     setIsLoading(true);
     
@@ -94,10 +94,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_return_url', window.location.href);
       
-      // Build demo OAuth URL that redirects to our callback immediately
+      // Build OAuth redirect URI
       const redirectUri = `${window.location.origin}/wix-callback.html`;
       
-      // Request OAuth URL from our backend (this will return a demo URL)
+      // Request OAuth URL from our backend
       const authUrlResponse = await fetch('/api/auth/wix-auth-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -110,17 +110,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       
       const { authUrl } = await authUrlResponse.json();
       
-      // For demo purposes, we'll redirect to show OAuth flow working
+      // Redirect to Wix OAuth
       toast({
-        title: "OAuth Demo Active",
-        description: "Redirecting to demo OAuth flow to show successful authentication...",
+        title: "Redirecting to Wix",
+        description: "Taking you to My College Finance login...",
         variant: "default"
       });
       
       // Small delay to show the message, then redirect
       setTimeout(() => {
         window.location.href = authUrl;
-      }, 1500);
+      }, 1000);
       
     } catch (error) {
       setIsLoading(false);
