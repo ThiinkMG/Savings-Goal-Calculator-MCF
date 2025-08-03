@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wix OAuth Setup Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #495057;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #007bff;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #155724;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #0c5460;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .button:hover {
+            background: #0056b3;
+            text-decoration: none;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Wix OAuth Setup Guide</h1>
+        
+        <div class="info">
+            <strong>Current Status:</strong> You have a Client ID but need to register it properly in the Wix Developer Center to get your Client Secret.
+        </div>
+
+        <h2>Quick Start: Register Your App</h2>
+        
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Go to Wix Developer Center</strong>
+            <p>Visit <a href="https://dev.wix.com" target="_blank">https://dev.wix.com</a> and sign in with your Wix account.</p>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Create a New App</strong>
+            <ul>
+                <li>Click "Create New App"</li>
+                <li>Choose "Website / Business App"</li>
+                <li>Select "Build a client-side app"</li>
+                <li>Give your app a name (e.g., "My College Finance OAuth")</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Configure OAuth Settings</strong>
+            <ul>
+                <li>In your app dashboard, navigate to "OAuth" settings</li>
+                <li>Add your redirect URL: <code id="redirectUrl"></code></li>
+                <li>Select permissions:
+                    <ul>
+                        <li>✓ Read Members</li>
+                        <li>✓ Read Emails</li>
+                        <li>✓ Offline Access (for refresh tokens)</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Get Your Credentials</strong>
+            <p>After saving, you'll see:</p>
+            <ul>
+                <li><strong>App ID (Client ID)</strong> - This should match your existing ID or you'll get a new one</li>
+                <li><strong>App Secret (Client Secret)</strong> - Copy this securely, you'll need it for token exchange</li>
+            </ul>
+        </div>
+
+        <h2>OAuth Flow Overview</h2>
+        
+        <div class="info">
+            <strong>How Wix OAuth Works:</strong>
+            <ol>
+                <li>User clicks "Login with Wix"</li>
+                <li>Redirected to Wix authorization page</li>
+                <li>User logs in and approves permissions</li>
+                <li>Wix redirects back with authorization code</li>
+                <li>Your app exchanges code for access tokens</li>
+                <li>Use tokens to access member data via Wix APIs</li>
+            </ol>
+        </div>
+
+        <h2>Testing Your Setup</h2>
+        
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Use the OAuth Test Page</strong>
+            <p>Once you have your Client Secret:</p>
+            <a href="/wix-oauth-test.html" class="button">Open OAuth Test Page</a>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Manual Token Exchange</strong>
+            <p>If you already have an authorization code, you can exchange it using curl:</p>
+            <div class="code-block">curl -X POST https://www.wixapis.com/oauth/access \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "authorization_code",
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET",
+    "code": "YOUR_AUTH_CODE"
+  }'</div>
+        </div>
+
+        <h2>Common Issues</h2>
+        
+        <div class="warning">
+            <strong>⚠️ Important Notes:</strong>
+            <ul>
+                <li>The redirect URI must match exactly (including protocol and port)</li>
+                <li>Authorization codes expire quickly (usually within 10 minutes)</li>
+                <li>Each authorization code can only be used once</li>
+                <li>Keep your Client Secret secure - never expose it in frontend code</li>
+            </ul>
+        </div>
+
+        <h2>API Endpoints Available</h2>
+        
+        <p>Your app provides these endpoints for OAuth:</p>
+        <ul>
+            <li><code>POST /api/auth/wix-auth-url</code> - Generate authorization URL</li>
+            <li><code>POST /api/auth/wix-callback</code> - Handle OAuth callback</li>
+            <li><code>POST /api/auth/wix-exchange-token</code> - Manual token exchange</li>
+        </ul>
+
+        <h2>Need Help?</h2>
+        
+        <div class="info">
+            <strong>Resources:</strong>
+            <ul>
+                <li><a href="https://dev.wix.com/docs/rest/getting-started/authentication" target="_blank">Wix OAuth Documentation</a></li>
+                <li><a href="https://support.wix.com/en/article/about-the-wix-developer-center" target="_blank">Wix Developer Center Help</a></li>
+                <li>Your test page: <a href="/wix-oauth-test.html">/wix-oauth-test.html</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Set the redirect URL dynamically
+        document.getElementById('redirectUrl').textContent = window.location.origin + '/wix-callback.html';
+    </script>
+</body>
+</html>
