@@ -392,60 +392,61 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
 
   const renderEntryStep = () => (
     <div className="space-y-6">
-      <Tabs defaultValue="login" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login" onClick={() => setStep('login')}>Sign In</TabsTrigger>
-          <TabsTrigger value="register" onClick={() => setStep('register')}>Create Account</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      
-      {onWixLogin && (
-        <>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or</span>
-            </div>
+      <div className="grid grid-cols-1 gap-3">
+        <Button
+          onClick={() => setStep('login')}
+          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base"
+        >
+          <BookOpen className="w-4 h-4 mr-2" />
+          Sign In with My College Finance
+        </Button>
+        
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
           </div>
-          
-          <Button
-            onClick={onWixLogin}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all duration-200"
-          >
-            <BookOpen className="w-4 h-4 mr-2" />
-            Log In with My College Finance
-          </Button>
-        </>
-      )}
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">Don't have a website account?</span>
+          </div>
+        </div>
+        
+        <Button
+          onClick={() => setStep('register')}
+          variant="outline"
+          className="w-full h-12 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium text-base"
+        >
+          Create and M.C.F Account
+        </Button>
+      </div>
     </div>
   );
 
   const renderLoginStep = () => (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="identifier">Email, Phone, or Username</Label>
+        <Label htmlFor="identifier" className="text-sm font-medium">Email Address</Label>
         <Input
           id="identifier"
-          placeholder="Enter your email, phone, or username"
+          type="email"
+          placeholder="Enter your website email"
           value={formData.identifier}
           onChange={(e) => handleInputChange('identifier', e.target.value)}
+          className="h-12 text-base"
+          autoComplete="email"
         />
-        <p className="text-xs text-muted-foreground">
-          Type: {detectIdentifierType(formData.identifier)}
-        </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-sm font-medium">Password</Label>
         <div className="relative">
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
+            placeholder="Enter your website password"
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
+            className="h-12 text-base pr-12"
+            autoComplete="current-password"
           />
           <Button
             type="button"
@@ -461,26 +462,26 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
 
       <Button 
         onClick={handleEnhancedLogin} 
-        className="w-full" 
+        className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700 text-white font-medium" 
         disabled={isLoading}
       >
-        {isLoading ? "Signing In..." : "Sign In"}
+        {isLoading ? "Signing In..." : "Sign In & Sync Account"}
       </Button>
 
-      <div className="text-center space-y-2">
+      <div className="flex flex-col sm:flex-row gap-2 justify-center text-center">
         <Button
           variant="link"
           onClick={() => setStep('forgot-password')}
-          className="text-sm"
+          className="text-sm h-auto p-2"
         >
-          Forgot Password?
+          Forgot Password
         </Button>
         <Button
           variant="link"
           onClick={() => setStep('forgot-username')}
-          className="text-sm"
+          className="text-sm h-auto p-2"
         >
-          Forgot Username?
+          Forgot Username
         </Button>
       </div>
     </div>
@@ -818,14 +819,41 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md" aria-describedby="auth-modal-description">
-        <DialogHeader>
-          <DialogTitle>{getStepTitle()}</DialogTitle>
+      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto" aria-describedby="auth-modal-description">
+        <DialogHeader className="text-center space-y-2 pb-4">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-brand-blue flex items-center justify-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            My College Finance Login
+          </DialogTitle>
           <div id="auth-modal-description" className="sr-only">
             Authentication modal for creating an account or logging in
           </div>
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+            <BookOpen className="w-4 h-4" />
+            Sign in with your website account
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Use the same credentials from MyCollegeFinance.com
+          </p>
         </DialogHeader>
-        {renderStepContent()}
+        
+        <div className="space-y-4">
+          {renderStepContent()}
+          
+          {/* Security badges */}
+          <div className="mt-6 pt-4 border-t border-border">
+            <div className="flex flex-col gap-2 text-xs text-muted-foreground text-center">
+              <div className="flex items-center justify-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>Secure connection to MyCollegeFinance</span>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>Auto-sync your data across platforms</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
