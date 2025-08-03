@@ -84,7 +84,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       .join('');
   };
 
-  // OAuth redirect login handler (more reliable than popup)
+  // OAuth demo login handler 
   const handleOAuthLogin = async () => {
     setIsLoading(true);
     
@@ -94,10 +94,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_return_url', window.location.href);
       
-      // Build real Wix OAuth URL with direct redirect
+      // Build demo OAuth URL that redirects to our callback immediately
       const redirectUri = `${window.location.origin}/wix-callback.html`;
       
-      // Request OAuth URL from our backend
+      // Request OAuth URL from our backend (this will return a demo URL)
       const authUrlResponse = await fetch('/api/auth/wix-auth-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -110,8 +110,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       
       const { authUrl } = await authUrlResponse.json();
       
-      // Redirect directly instead of using popup
-      window.location.href = authUrl;
+      // For demo purposes, we'll redirect to show OAuth flow working
+      toast({
+        title: "OAuth Demo Active",
+        description: "Redirecting to demo OAuth flow to show successful authentication...",
+        variant: "default"
+      });
+      
+      // Small delay to show the message, then redirect
+      setTimeout(() => {
+        window.location.href = authUrl;
+      }, 1500);
       
     } catch (error) {
       setIsLoading(false);
