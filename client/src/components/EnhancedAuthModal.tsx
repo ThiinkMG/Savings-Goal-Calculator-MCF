@@ -562,12 +562,15 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       <div className="space-y-4">
         <Button
           onClick={handleOAuthLogin}
-          className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium text-base shadow-md hover:shadow-lg transition-all duration-200"
-          disabled={isLoading}
+          className="w-full h-12 bg-gray-400 hover:bg-gray-400 text-gray-600 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-600 font-medium text-base shadow-md cursor-not-allowed transition-all duration-200"
+          disabled={true}
           data-testid="button-oauth-login"
         >
-          {isLoading ? "Connecting..." : "Sign In with My College Finance"}
+          Sign In with My College Finance
         </Button>
+        <p className="text-xs text-center text-orange-600 dark:text-orange-400 font-medium px-2">
+          Feature coming soon
+        </p>
         <p className="text-xs text-center text-muted-foreground px-2">
           Connect with your MyCollegeFinance.com account for full access to courses and premium features
         </p>
