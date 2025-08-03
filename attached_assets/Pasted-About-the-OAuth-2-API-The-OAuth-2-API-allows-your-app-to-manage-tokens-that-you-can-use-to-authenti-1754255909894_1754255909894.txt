@@ -1,0 +1,308 @@
+About the OAuth 2 API
+The OAuth 2 API allows your app to manage tokens that you can use to authenticate Wix API calls. By default, OAuth authentication follows the OAuth Client Credentials protocol.
+
+With the OAuth 2 API, you can:
+
+Create access tokens for OAuth.
+Request an access token for custom authentication (legacy).
+Refresh an access token for custom authentication (legacy).
+Get information about a specific access token.
+Learn more:
+
+About OAuth
+How to authenticate using OAuth
+How to set up and use custom authentication (legacy)
+Before you begin
+It's important to note the following points before starting to code:
+
+If your app uses OAuth to authenticate Wix API calls, you must create access tokens by calling Create Access Token.
+If your app uses custom authentication, Wix sends you an authorization code while redirecting new users to your app URL. You must use this authorization code within 10 minutes to create a refresh token by calling Request an access token. If the process fails, you're unable to retrieve access tokens with Refresh an Access Token. From the site owner's point-of-view, it seems that the app installation has succeeded. You have 2 options in this situation: Ask the site owners to re-install your app, or fall back to retrieving access tokens with the OAuth strategy by calling Create Access Token.
+Terminology
+OAuth: Authorization protocol used by Wix to allow third-party apps to securely obtain access to Wix APIs.
+Access token: A string used in the "authorization" header to make authenticated calls to Wix APIs. All Wix access tokens are of type "Bearer". Learn more about access token types.
+Custom authentication (legacy): A legacy version of the OAuth protocol used by Wix. This method is only applicable if your app needs to redirect users to a URL outside the Wix ecosystem during the app installation process.
+Authorization code: A temporary string sent by Wix to your app during the custom authentication process, after a user completes the installation and grants your app the necessary permissions. The authorization code expires in 10 minutes. Use it to generate a refresh token before it expires.
+Refresh token: A persistent string used by your app to generate access tokens in the custom authentication process. The refresh token does not expire. Store it securely and never share or expose it publicly.
+Did this help?
+
+Yes
+
+No
+POST
+Request an Access Token
+Creates your app’s refresh token and an initial access token.
+
+Important: Authentication methods differ depending on whether you're building a Wix app or a Wix Headless project.
+
+For apps using custom authentication (legacy), this is the correct method.
+For apps using OAuth, call Create an Access Token.
+For headless projects, use one of the authentication strategies for Wix Headless.
+Wix sends your app the authorization code after a new user has completed the installation process and given your app permission to access their data.
+
+You must pass the authorization code, your app ID, your app’s secret key, and {“grant_type”: “authorization_code”} to create the refresh token and an initial access token.
+
+Endpoint
+POST
+https://www.wixapis.com/oauth/access
+Body Params
+grant_type
+string
+Request type. You must pass "authorization_code" to request a custom authentication (legacy) refresh token and an initial access token.
+
+client_id
+string
+Your app ID, as defined in the Wix Dev Center.
+
+client_secret
+string
+Your app's secret key ID, as defined in the Dev Center.
+
+code
+string
+The authorization code that your app has received from Wix
+
+Response Object
+Returns an empty object.
+Example shown:
+Create a custom authentication refresh and access token.
+Request
+cURL
+curl -X POST \
+'https://www.wixapis.com/oauth/access' \
+-H 'Content-Type: application/json' \
+-d '{
+  "grant_type": "authorization_code",
+  "client_id": "<APP_ID>",
+  "client_secret": "<APP_SECRET_KEY>",
+  "code": "<AUTH_CODE>"
+}'
+Response
+JSON
+{
+  "access_token": "<SAMPLE_ACCESS_TOKEN>",
+  "refresh_token": "<SAMPLE_REFRESH_TOKEN>"
+}
+Errors
+This method doesn't return any custom errors, but may return standard errors. Learn more about standard Wix errors.
+
+Did this help?
+
+Yes
+
+No
+POST
+Refresh an Access Token
+Creates a new access token.
+
+Important: Authentication methods differ depending on whether you're building a Wix app or a Wix Headless project.
+
+For apps using custom authentication (legacy), this is the correct method.
+For apps using OAuth, call Create an Access Token.
+For headless projects, use one of the authentication strategies for Wix Headless.
+You must pass your app ID, your app’s secret key, the refresh token, and {“grant_type”: “refresh_token”} to create a new access token.
+
+Endpoint
+POST
+https://www.wixapis.com/oauth/access/
+Body Params
+grant_type
+string
+Request type. You must pass "refresh_token" to request a new access token when using custom authentication (legacy).
+
+client_id
+string
+Your app ID, as defined in the Wix Dev Center.
+
+client_secret
+string
+Your app's secret key ID, as defined in the Dev Center.
+
+refresh_token
+string
+Your app instance’s refresh token.
+
+Response Object
+refresh_token
+string
+Your app instance’s refresh token that never expires. Identical to the one that you’ve sent in the request.
+
+access_token
+string
+Created access token that you can use to make Wix API calls. It expires after 5 minutes.
+
+Example shown:
+Create a custom authentication access token.
+Request
+cURL
+curl -X POST \
+'https://www.wixapis.com/oauth/access' \
+-H 'Content-Type: application/json' \
+-d '{
+  "grant_type": "refresh_token",
+  "client_id": "<APP_ID>",
+  "client_secret": "<APP_SECRET_KEY>",
+  "refresh_token": "<REFRESH_TOKEN>"
+}'
+Response
+JSON
+{
+  "access_token": "<SAMPLE_ACCESS_TOKEN>",
+  "refresh_token": "<SAMPLE_REFRESH_TOKEN>"
+}
+Errors
+This method doesn't return any custom errors, but may return standard errors. Learn more about standard Wix errors.
+
+Did this help?
+
+Yes
+
+No
+POST
+Create Access Token
+Creates an access token.
+
+Important: Authentication methods differ depending on whether you're building a Wix app or a Wix Headless project.
+
+For apps using OAuth, this is the correct method.
+For apps using custom authentication (legacy), call Request an Access Token or Refresh an Access Token.
+For headless projects, use one of the authentication strategies for Wix Headless.
+The endpoint accepts raw HTTP requests. You must pass the request's body parameters formatted as bytes in the raw HTTP request's body field, following this template: {"grant_type": "client_credentials", "client_id": "<APP_ID>", "client_secret": "<APP_SECRET_KEY>", "instance_id": "<INSTANCE_ID>"}.
+
+When the call succeeds, Wix returns {"statusCode": 200} and the created access token in the body field of the raw HTTP response.
+
+In case the call fails, Wix returns the relevant 4XX error code in the raw HTTP response's statusCode field and details about the error in body. Error details follow the conventions of the Internet Engineering Task Force (IETF).
+
+Endpoint
+POST
+https://www.wixapis.com/oauth2/token
+Body Params
+grant_type
+string
+Request type. You must pass "client_credentials" to request a new access token when using basic OAuth.
+
+client_id
+string
+Your app ID, as defined in the Wix Dev Center.
+
+client_secret
+string
+Your app's secret key ID, as defined in the Dev Center.
+
+instance_id
+string
+The instance ID of your app for which you want to create the access token. Subscribe to the Instance App Installed webhook to receive a notification including the new app instance ID whenever a version of your app is installed on a Wix site.
+
+Response Object
+access_token
+string
+Created access token.
+
+token_type
+string
+Type of the created access token. Always ”Bearer”. Learn more about access token types.
+
+expires_in
+integer
+Time the access token expires in seconds. Always 14400 (4 hours).
+
+Example shown:
+Create an OAuth access token.
+Request
+cURL
+curl -X POST 'https://www.wixapis.com/oauth2/token' -H 'Content-Type: application/json' -d '{
+  "grant_type": "client_credentials",
+  "client_id": "<APP_ID>",
+  "client_secret": "<APP_SECRET_KEY>",
+  "instance_id": "<APP_INSTANCE_ID>"
+}'
+Response
+JSON
+{
+  "access_token": "<SAMPLE_ACCESS_TOKEN>",
+  "token_type": "Bearer",
+  "expires_in": 14400
+}
+Errors
+This method doesn't return any custom errors, but may return standard errors. Learn more about standard Wix errors.
+
+Did this help?
+
+Yes
+
+No
+POST
+Token Info
+Retrieves information about a specific access token.
+
+Access tokens are specific to a subject and a client. A client (app) creates and issues an access token to a subject. The client may request a valid token from a subject to perform a certain action, such as an API call.
+
+This endpoint works with both OAuth and custom authentication tokens.
+
+Endpoint
+POST
+https://www.wixapis.com/oauth2/token-info
+Body Params
+token
+string
+Access token.
+
+Response Object
+active
+boolean
+Whether the token is active.
+
+subjectType
+enum
+Type of subject to which the token is issued.
+
+Show Enum Values
+subjectId
+string
+ID of the subject to which the token is issued.
+
+exp
+number
+Token expiration timestamp.
+
+iat
+number
+Token issue timestamp.
+
+clientId
+number
+ID of the app that created the token, as defined in the Wix Dev Center.
+
+accountId
+number
+ID of the account that created the token, as defined in the Wix Dev Center.
+
+siteId
+number
+ID of the site to which the token is issued.
+
+instanceId
+number
+The instance ID of the app that the access token was created for. Subscribe to the Instance App Installed webhook to receive a notification including the new app instance ID whenever a version of your app is installed on a Wix site.
+
+Example shown:
+Request
+cURL
+curl -X POST ֿ
+ 'https://www.wixapis.com/oauth2/token-info' 
+ -d '{
+  "token": "OauthNG.JWS.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+}'
+Response
+JSON
+{
+  "active": "true",
+  "subjectType": "APP",
+  "subjectId": "a8098c1a-f86e-11da-bd1a-00112444be1e",
+  "exp": "1715096067",
+  "iat": "1715081667",
+  "clientId": "7f58c233-72b6-4e45-889c-56aca8dbb2ba",
+  "siteId": "65c5e710-5e64-4b54-a807-237a554d28a7",
+  "instanceId": "1ec48d1e-1919-4b9f-8e08-f7a242fdbf52"
+}
+Errors
+This method doesn't return any custom errors, but may return standard errors. Learn more about standard Wix errors.
