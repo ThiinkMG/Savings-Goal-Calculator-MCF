@@ -26,7 +26,7 @@ export const wixClient = createClient({
 
 // Generate Wix OAuth authorization URL
 export function generateWixAuthUrl(state: string, redirectUri: string): string {
-  const authUrl = new URL('https://www.wix.com/oauth/authorize');
+  const authUrl = new URL(`https://www.wix.com/oauth/authorize`);
   authUrl.searchParams.set('client_id', WIX_CLIENT_ID);
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('scope', 'offline_access');

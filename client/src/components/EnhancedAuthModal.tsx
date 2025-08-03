@@ -80,8 +80,8 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       const state = generateSecureState();
       setOauthState(state);
       
-      // Build real Wix OAuth URL
-      const redirectUri = `${window.location.origin}/auth/wix-callback`;
+      // Build real Wix OAuth URL - use the public callback page
+      const redirectUri = `${window.location.origin}/wix-callback.html`;
       
       // Request OAuth URL from our backend
       const authUrlResponse = await fetch('/api/auth/wix-auth-url', {
@@ -177,7 +177,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
         body: JSON.stringify({
           code: authData.code,
           state: authData.state,
-          redirectUri: `${window.location.origin}/auth/wix-callback`
+          redirectUri: `${window.location.origin}/wix-callback.html`
         })
       });
       
