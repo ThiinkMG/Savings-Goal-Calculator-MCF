@@ -80,12 +80,64 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       const state = generateSecureState();
       setOauthState(state);
       
-      // Build auth URL
+      // Build auth URL - For demo purposes, we'll simulate the OAuth flow
       const appCallbackUrl = `${window.location.origin}/auth/callback`;
-      const authUrl = `https://mycollegefinance.com/auth/app-login?` +
-        `state=${state}&` +
-        `redirect_uri=${encodeURIComponent(appCallbackUrl)}&` +
-        `app_name=savings_calculator`;
+      
+      // In a real implementation, this would point to your actual OAuth page
+      // For now, we'll create a demo flow
+      const authUrl = `data:text/html,${encodeURIComponent(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>MyCollegeFinance OAuth Demo</title>
+          <style>
+            body { font-family: system-ui; padding: 40px; text-align: center; background: #f8fafc; }
+            .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .logo { color: #2563eb; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+            button { background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; margin: 10px; }
+            button:hover { background: #1d4ed8; }
+            .demo-note { background: #fef3c7; padding: 12px; border-radius: 6px; margin: 20px 0; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="logo">My College Finance</div>
+            <h2>OAuth Authentication Demo</h2>
+            <div class="demo-note">
+              <strong>Demo Mode:</strong> This simulates connecting with your MyCollegeFinance.com account
+            </div>
+            <p>Choose how to proceed:</p>
+            <button onclick="simulateSuccess()">✓ Simulate Successful Login</button>
+            <button onclick="simulateCancel()">✗ Cancel Login</button>
+            <script>
+              function simulateSuccess() {
+                window.opener.postMessage({
+                  type: 'AUTH_SUCCESS',
+                  data: {
+                    code: 'demo-auth-code-' + Date.now(),
+                    state: '${state}',
+                    memberId: 'demo-member-' + Math.random().toString(36).substr(2, 9),
+                    email: 'demo@mycollegefinance.com',
+                    profile: {
+                      firstName: 'Demo',
+                      lastName: 'User',
+                      nickname: 'demouser'
+                    }
+                  }
+                }, '*');
+                window.close();
+              }
+              function simulateCancel() {
+                window.opener.postMessage({
+                  type: 'AUTH_CANCELLED'
+                }, '*');
+                window.close();
+              }
+            </script>
+          </div>
+        </body>
+        </html>
+      `)}`;
       
       // Open popup window
       const popup = window.open(
@@ -100,8 +152,11 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       
       // Listen for auth completion
       const handleAuthCallback = (event: MessageEvent) => {
-        // Verify origin for security
-        if (event.origin !== 'https://mycollegefinance.com') {
+        // For demo purposes, we accept messages from data URLs and the current origin
+        // In production, you would verify event.origin === 'https://mycollegefinance.com'
+        if (!event.origin.includes('mycollegefinance.com') && 
+            event.origin !== window.location.origin && 
+            event.origin !== 'null') {
           console.warn('Received message from unauthorized origin:', event.origin);
           return;
         }
@@ -567,6 +622,8 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
         </Button>
         <p className="text-xs text-center text-muted-foreground px-2">
           Connect with your MyCollegeFinance.com account for full access to courses and premium features
+          <br />
+          <span className="text-amber-600 font-medium">(Demo mode - simulates OAuth flow)</span>
         </p>
       </div>
       
