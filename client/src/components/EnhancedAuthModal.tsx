@@ -163,6 +163,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       const response = await fetch('/api/auth/wix-callback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Important for session cookies
         body: JSON.stringify({
           authCode: authData.code,
           state: authData.state,
@@ -180,6 +181,13 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
         
         // Update app state through login hook
         login(result.user);
+        
+        // Sync with Google Sheets if available
+        try {
+          await fetch('/api/sync-google-sheets', { method: 'POST' });
+        } catch (error) {
+          console.log('Google Sheets sync skipped:', error);
+        }
         
         toast({
           title: "Connected Successfully!",
@@ -548,17 +556,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   const renderEntryStep = () => (
     <div className="space-y-6">
       {/* Main Website OAuth Login */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <Button
           onClick={handleOAuthLogin}
           className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium text-base shadow-md hover:shadow-lg transition-all duration-200"
           disabled={isLoading}
+          data-testid="button-oauth-login"
         >
-          <BookOpen className="w-5 h-5 mr-2" />
           {isLoading ? "Connecting..." : "Sign In with My College Finance"}
         </Button>
-        <p className="text-xs text-center text-muted-foreground">
-          Connect with your MyCollegeFinance.com account for full access
+        <p className="text-xs text-center text-muted-foreground px-2">
+          Connect with your MyCollegeFinance.com account for full access to courses and premium features
         </p>
       </div>
       
@@ -567,29 +575,36 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or use app-only account</span>
+          <span className="bg-background px-3 text-muted-foreground">Or create app account</span>
         </div>
       </div>
       
       {/* App-Only Account Options */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="p-4 border border-border rounded-lg bg-muted/20">
-          <h4 className="font-medium text-sm mb-2">🚀 Quick App Account</h4>
-          <p className="text-xs text-muted-foreground mb-3">Calculator only, no course access</p>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">⚡</span>
+            <h4 className="font-medium text-sm">Quick Calculator Account</h4>
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Access the savings calculator without a website account
+          </p>
+          <div className="grid grid-cols-2 gap-3">
             <Button
               onClick={() => setStep('login')}
               variant="outline"
-              className="flex-1 h-10 text-sm"
+              className="h-10 text-sm"
+              data-testid="button-app-login"
             >
               Sign In
             </Button>
             <Button
               onClick={() => setStep('register')}
               variant="outline"
-              className="flex-1 h-10 text-sm"
+              className="h-10 text-sm"
+              data-testid="button-app-register"
             >
-              Sign Up
+              Create Account
             </Button>
           </div>
         </div>
@@ -995,21 +1010,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto" aria-describedby="auth-modal-description">
-        <DialogHeader className="text-center space-y-2 pb-4">
-          <DialogTitle className="text-lg sm:text-xl font-bold text-brand-blue flex items-center justify-center gap-2">
-            <BookOpen className="w-5 h-5" />
-            My College Finance Login
+      <DialogContent className="w-[95vw] max-w-lg mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto" aria-describedby="auth-modal-description">
+        <DialogHeader className="text-center space-y-3 pb-6">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-blue-600">
+            My College Finance
           </DialogTitle>
           <div id="auth-modal-description" className="sr-only">
             Authentication modal for creating an account or logging in
           </div>
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-            <BookOpen className="w-4 h-4" />
-            Sign in with your website account
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Use the same credentials from MyCollegeFinance.com
+          <p className="text-sm text-muted-foreground">
+            Connect your account for full access
           </p>
         </DialogHeader>
         
@@ -1018,14 +1028,14 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
           
           {/* Security badges */}
           <div className="mt-6 pt-4 border-t border-border">
-            <div className="flex flex-col gap-2 text-xs text-muted-foreground text-center">
-              <div className="flex items-center justify-center gap-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-muted-foreground">
+              <div className="flex items-center justify-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Secure connection to MyCollegeFinance</span>
+                <span>Secure Connection</span>
               </div>
-              <div className="flex items-center justify-center gap-1">
+              <div className="flex items-center justify-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Auto-sync your data across platforms</span>
+                <span>Auto Data Sync</span>
               </div>
             </div>
           </div>

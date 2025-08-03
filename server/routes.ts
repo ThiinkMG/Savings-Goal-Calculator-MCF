@@ -536,7 +536,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email,
           username: email.split('@')[0],
           fullName,
-          password: '', // OAuth users don't have passwords
+          password: 'oauth-no-password', // OAuth users don't have traditional passwords
           wixUserId: wixMemberId
         });
       } else if (!user.wixUserId) {
