@@ -35,6 +35,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   const [usernameStatus, setUsernameStatus] = useState<'checking' | 'available' | 'taken' | null>(null);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [oauthState, setOauthState] = useState<string | null>(null);
   
   const { toast } = useToast();
   const { login } = useAuth();
@@ -59,7 +60,161 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
 
   const handleClose = () => {
     resetForm();
+    setOauthState(null);
     onClose();
+  };
+
+  // Generate secure state parameter for OAuth
+  const generateSecureState = () => {
+    return Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  };
+
+  // OAuth popup login handler
+  const handleOAuthLogin = () => {
+    setIsLoading(true);
+    
+    try {
+      // Generate secure state parameter
+      const state = generateSecureState();
+      setOauthState(state);
+      
+      // Build auth URL
+      const appCallbackUrl = `${window.location.origin}/auth/callback`;
+      const authUrl = `https://mycollegefinance.com/auth/app-login?` +
+        `state=${state}&` +
+        `redirect_uri=${encodeURIComponent(appCallbackUrl)}&` +
+        `app_name=savings_calculator`;
+      
+      // Open popup window
+      const popup = window.open(
+        authUrl,
+        'mcf_auth',
+        'width=500,height=700,scrollbars=yes,resizable=yes,location=yes'
+      );
+      
+      if (!popup) {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+      
+      // Listen for auth completion
+      const handleAuthCallback = (event: MessageEvent) => {
+        // Verify origin for security
+        if (event.origin !== 'https://mycollegefinance.com') {
+          console.warn('Received message from unauthorized origin:', event.origin);
+          return;
+        }
+        
+        const { type, data } = event.data;
+        
+        switch (type) {
+          case 'AUTH_SUCCESS':
+            handleOAuthSuccess(data);
+            break;
+          case 'AUTH_ERROR':
+            handleOAuthError(data);
+            break;
+          case 'AUTH_CANCELLED':
+            handleOAuthCancelled();
+            break;
+        }
+        
+        // Clean up
+        window.removeEventListener('message', handleAuthCallback);
+        popup.close();
+      };
+      
+      window.addEventListener('message', handleAuthCallback, false);
+      
+      // Check if popup was closed manually
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          window.removeEventListener('message', handleAuthCallback);
+          setIsLoading(false);
+          toast({
+            title: "Login Cancelled",
+            description: "The login window was closed.",
+            variant: "destructive"
+          });
+        }
+      }, 1000);
+      
+    } catch (error) {
+      setIsLoading(false);
+      toast({
+        title: "Login Error",
+        description: error instanceof Error ? error.message : "Failed to open login window",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle successful OAuth authentication
+  const handleOAuthSuccess = async (authData: any) => {
+    try {
+      // Verify state parameter
+      if (authData.state !== oauthState) {
+        throw new Error('Invalid state parameter. Possible CSRF attack.');
+      }
+      
+      // Exchange auth code for app token
+      const response = await fetch('/api/auth/wix-callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          authCode: authData.code,
+          state: authData.state,
+          wixMemberId: authData.memberId,
+          email: authData.email,
+          profile: authData.profile
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Store app token
+        localStorage.setItem('auth_token', result.token);
+        
+        // Update app state through login hook
+        login(result.user);
+        
+        toast({
+          title: "Connected Successfully!",
+          description: "Your My College Finance account is now connected.",
+        });
+        
+        handleClose();
+      } else {
+        throw new Error(result.message || 'Authentication failed');
+      }
+    } catch (error) {
+      handleOAuthError({ message: error instanceof Error ? error.message : 'Authentication failed' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle OAuth errors
+  const handleOAuthError = (error: any) => {
+    setIsLoading(false);
+    toast({
+      title: "Authentication Failed",
+      description: error.message || "Failed to connect with My College Finance",
+      variant: "destructive"
+    });
+  };
+
+  // Handle OAuth cancellation
+  const handleOAuthCancelled = () => {
+    setIsLoading(false);
+    toast({
+      title: "Login Cancelled",
+      description: "Authentication was cancelled by user.",
+      variant: "destructive"
+    });
   };
 
   // Auto-detect identifier type and format
@@ -392,31 +547,52 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
 
   const renderEntryStep = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-3">
+      {/* Main Website OAuth Login */}
+      <div className="space-y-3">
         <Button
-          onClick={() => setStep('login')}
-          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base"
+          onClick={handleOAuthLogin}
+          className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium text-base shadow-md hover:shadow-lg transition-all duration-200"
+          disabled={isLoading}
         >
-          <BookOpen className="w-4 h-4 mr-2" />
-          Sign In with My College Finance
+          <BookOpen className="w-5 h-5 mr-2" />
+          {isLoading ? "Connecting..." : "Sign In with My College Finance"}
         </Button>
-        
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Don't have a website account?</span>
+        <p className="text-xs text-center text-muted-foreground">
+          Connect with your MyCollegeFinance.com account for full access
+        </p>
+      </div>
+      
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">Or use app-only account</span>
+        </div>
+      </div>
+      
+      {/* App-Only Account Options */}
+      <div className="space-y-3">
+        <div className="p-4 border border-border rounded-lg bg-muted/20">
+          <h4 className="font-medium text-sm mb-2">🚀 Quick App Account</h4>
+          <p className="text-xs text-muted-foreground mb-3">Calculator only, no course access</p>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setStep('login')}
+              variant="outline"
+              className="flex-1 h-10 text-sm"
+            >
+              Sign In
+            </Button>
+            <Button
+              onClick={() => setStep('register')}
+              variant="outline"
+              className="flex-1 h-10 text-sm"
+            >
+              Sign Up
+            </Button>
           </div>
         </div>
-        
-        <Button
-          onClick={() => setStep('register')}
-          variant="outline"
-          className="w-full h-12 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium text-base"
-        >
-          Create and M.C.F Account
-        </Button>
       </div>
     </div>
   );

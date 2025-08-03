@@ -510,6 +510,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // OAuth callback endpoint for Wix authentication
+  app.post('/api/auth/wix-callback', async (req, res) => {
+    try {
+      const { authCode, state, wixMemberId, email, profile } = req.body;
+      
+      // Verify auth code (in a real implementation, you'd verify with Wix)
+      if (!authCode) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid authorization code'
+        });
+      }
+      
+      // Check if user already exists with this email
+      let user = await storage.getUserByEmail?.(email);
+      
+      if (!user) {
+        // Create new user with Wix data
+        const fullName = profile?.firstName && profile?.lastName 
+          ? `${profile.firstName} ${profile.lastName}` 
+          : profile?.nickname || email.split('@')[0];
+          
+        user = await storage.createUser({
+          email,
+          username: email.split('@')[0],
+          fullName,
+          password: '', // OAuth users don't have passwords
+          wixUserId: wixMemberId
+        });
+      } else if (!user.wixUserId) {
+        // Link existing user to Wix account
+        // For now, we'll just mark them as connected
+        user.wixUserId = wixMemberId;
+      }
+      
+      // Set session
+      req.session.userId = user.id;
+      req.session.isGuest = false;
+      
+      res.json({
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          fullName: user.fullName,
+          wixUserId: user.wixUserId
+        },
+        token: 'oauth-session-token' // In a real app, generate a proper JWT
+      });
+      
+    } catch (error) {
+      console.error('OAuth callback error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Authentication failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // User security endpoints
   app.post("/api/user/verify-password", requireAuth, async (req, res) => {
     try {
