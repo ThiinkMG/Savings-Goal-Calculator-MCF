@@ -510,44 +510,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate Wix OAuth authorization URL
+  app.post('/api/auth/wix-auth-url', async (req, res) => {
+    try {
+      const { state, redirectUri } = req.body;
+      
+      if (!state || !redirectUri) {
+        return res.status(400).json({
+          success: false,
+          message: 'State and redirectUri are required'
+        });
+      }
+      
+      const { generateWixAuthUrl } = await import('./wixAuth.js');
+      const authUrl = generateWixAuthUrl(state, redirectUri);
+      
+      res.json({
+        success: true,
+        authUrl
+      });
+      
+    } catch (error) {
+      console.error('Auth URL generation error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate auth URL',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // OAuth callback endpoint for Wix authentication
   app.post('/api/auth/wix-callback', async (req, res) => {
     try {
-      const { authCode, state, wixMemberId, email, profile } = req.body;
+      const { code, state, redirectUri } = req.body;
       
-      // Verify auth code (in a real implementation, you'd verify with Wix)
-      if (!authCode) {
+      if (!code) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid authorization code'
+          message: 'Authorization code is required'
         });
+      }
+      
+      const { exchangeCodeForTokens, getMemberInfo } = await import('./wixAuth.js');
+      
+      // Exchange code for tokens
+      const tokenData = await exchangeCodeForTokens(code, redirectUri);
+      
+      if (!tokenData.access_token) {
+        throw new Error('No access token received from Wix');
+      }
+      
+      // Get member information
+      const memberInfo = await getMemberInfo(tokenData.access_token);
+      
+      if (!memberInfo.member) {
+        throw new Error('No member information available');
+      }
+      
+      const member = memberInfo.member;
+      const email = member.loginEmail || member.contactDetails?.emails?.[0]?.email;
+      
+      if (!email) {
+        throw new Error('No email address found for member');
       }
       
       // Check if user already exists with this email
       let user = await storage.getUserByEmail?.(email);
       
       if (!user) {
-        // Create new user with Wix data
-        const fullName = profile?.firstName && profile?.lastName 
-          ? `${profile.firstName} ${profile.lastName}` 
-          : profile?.nickname || email.split('@')[0];
-          
+        // Create new user with Wix member data
+        const fullName = member.profile?.nickname || 
+                         (member.contactDetails?.firstName && member.contactDetails?.lastName 
+                           ? `${member.contactDetails.firstName} ${member.contactDetails.lastName}` 
+                           : email.split('@')[0]);
+        
         user = await storage.createUser({
           email,
-          username: email.split('@')[0],
+          username: member.profile?.nickname || email.split('@')[0],
           fullName,
-          password: 'oauth-no-password', // OAuth users don't have traditional passwords
-          wixUserId: wixMemberId
+          password: 'wix-oauth-user', // OAuth users don't have traditional passwords
+          wixUserId: member._id
         });
       } else if (!user.wixUserId) {
         // Link existing user to Wix account
-        // For now, we'll just mark them as connected
-        user.wixUserId = wixMemberId;
+        user.wixUserId = member._id;
+      }
+      
+      // Store tokens securely (in production, encrypt these)
+      req.session.wixAccessToken = tokenData.access_token;
+      if (tokenData.refresh_token) {
+        req.session.wixRefreshToken = tokenData.refresh_token;
       }
       
       // Set session
       req.session.userId = user.id;
       req.session.isGuest = false;
+      req.session.authMethod = 'wix-oauth';
       
       res.json({
         success: true,
@@ -558,7 +617,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fullName: user.fullName,
           wixUserId: user.wixUserId
         },
-        token: 'oauth-session-token' // In a real app, generate a proper JWT
+        member: {
+          id: member._id,
+          email: email,
+          profile: member.profile,
+          contactDetails: member.contactDetails
+        }
       });
       
     } catch (error) {
