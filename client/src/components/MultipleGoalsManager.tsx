@@ -137,18 +137,21 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
 
   return (
     <Card className="animate-slide-in">
-      <CardContent className="p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <div className="p-2 bg-brand-blue/10 rounded-lg">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center justify-center sm:justify-start gap-2">
+            <div className="p-2 bg-brand-blue/10 rounded-lg flex-shrink-0">
               <List className="w-5 h-5 brand-blue" />
             </div>
-            Savings Tracker Dashboard
-          </h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center sm:text-left">
+              Savings Tracker Dashboard
+            </h3>
+          </div>
           
           <Button 
             onClick={onAddGoal}
-            className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto"
+            className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto sm:self-start"
+            size="lg"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Goal
@@ -156,13 +159,17 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
         </div>
         
         {goals.length === 0 ? (
-          <div className="text-center py-12">
-            <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h4 className="text-lg font-medium text-foreground mb-2">No Goals Yet</h4>
-            <p className="text-muted-foreground mb-4">
+          <div className="text-center py-8 sm:py-12 px-4">
+            <Target className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
+            <h4 className="text-lg sm:text-xl font-medium text-foreground mb-3">No Goals Yet</h4>
+            <p className="text-sm sm:text-base text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
               Start by creating your first savings goal to track your progress.
             </p>
-            <Button onClick={onAddGoal} className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200">
+            <Button 
+              onClick={onAddGoal} 
+              className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto"
+              size="lg"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Goal
             </Button>
@@ -179,7 +186,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
               return (
                 <div
                   key={goal.id}
-                  className="p-4 border border-border rounded-lg hover:shadow-md transition-shadow overflow-hidden max-w-full"
+                  className="p-3 sm:p-4 border border-border rounded-lg hover:shadow-md transition-shadow overflow-hidden max-w-full bg-background"
                 >
                   <div 
                     className="cursor-pointer"
@@ -200,50 +207,53 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                       <Progress value={progress} className="h-2" />
                     </div>
                     
-                    <div className="text-sm text-muted-foreground mb-3">
-                      <div className="flex items-center gap-1 mb-1">
-                        <TrendingUp className="w-3 h-3" />
-                        ${monthlyRequired}/month
+                    <div className="text-sm text-muted-foreground mb-3 space-y-2">
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3 flex-shrink-0" />
+                        <span className="font-medium">${monthlyRequired}/month required</span>
                       </div>
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
-                        <span>{monthsLeft} months left</span>
-                        <span className="text-xs break-words">
-                          Edited: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'} {goal.updatedAt ? new Date(goal.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm">{monthsLeft} months remaining</span>
+                        <span className="text-xs text-muted-foreground/70">
+                          Last updated: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'}
                         </span>
                       </div>
                     </div>
                   </div>
                   
                   {/* Action buttons */}
-                  <div className="flex gap-2 pt-3 border-t border-border">
+                  <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-border">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-xs h-8"
                       onClick={(e) => handleDownloadPDF(goal, e)}
                     >
                       <Download className="w-3 h-3 mr-1" />
-                      PDF
+                      <span className="hidden sm:inline">PDF</span>
+                      <span className="sm:hidden">Download PDF</span>
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-xs h-8"
                       onClick={(e) => handleShareGoal(goal, e)}
                     >
                       <Share2 className="w-3 h-3 mr-1" />
-                      Share
+                      <span className="hidden sm:inline">Share</span>
+                      <span className="sm:hidden">Share Goal</span>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="flex-1 text-xs hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
+                          className="flex-1 text-xs h-8 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Trash2 className="w-3 h-3 mr-1" />
-                          Delete
+                          <span className="hidden sm:inline">Delete</span>
+                          <span className="sm:hidden">Delete Goal</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
