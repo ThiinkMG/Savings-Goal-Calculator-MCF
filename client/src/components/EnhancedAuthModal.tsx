@@ -40,15 +40,35 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   const { toast } = useToast();
   const { login } = useAuth();
 
-  // Check for OAuth success on component mount
+  // Check for OAuth success/callback on component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('auth') === 'success') {
-      // Remove the auth parameter from URL
+    const authCode = urlParams.get('wix_auth_code');
+    const authState = urlParams.get('wix_auth_state');
+    const authError = urlParams.get('wix_auth_error');
+    
+    if (authCode && authState) {
+      // Handle OAuth callback
+      handleOAuthSuccess({ code: authCode, state: authState });
+      
+      // Clean up URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
+    } else if (authError) {
+      // Handle OAuth error
+      toast({
+        title: "Authentication Failed",
+        description: authError,
+        variant: "destructive"
+      });
       
-      // Refresh user data to show logged in state
+      // Clean up URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    } else if (urlParams.get('auth') === 'success') {
+      // Legacy auth success
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
       window.location.reload();
     }
   }, []);
@@ -136,9 +156,13 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   const handleOAuthSuccess = async (authData: any) => {
     try {
       // Verify state parameter
-      if (authData.state !== oauthState) {
+      const storedState = localStorage.getItem('oauth_state');
+      if (!storedState || authData.state !== storedState) {
         throw new Error('Invalid state parameter. Possible CSRF attack.');
       }
+      
+      // Clear the stored state
+      localStorage.removeItem('oauth_state');
       
       // Exchange auth code for app token
       const response = await fetch('/api/auth/wix-callback', {

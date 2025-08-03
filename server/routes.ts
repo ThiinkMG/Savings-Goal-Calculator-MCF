@@ -539,6 +539,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Test endpoint for manual OAuth token exchange
+  app.post('/api/auth/wix-exchange-token', async (req, res) => {
+    try {
+      const { code, client_secret } = req.body;
+      
+      if (!code || !client_secret) {
+        return res.status(400).json({
+          success: false,
+          message: 'Authorization code and client secret are required'
+        });
+      }
+      
+      const WIX_CLIENT_ID = process.env.WIX_CLIENT_ID || '2583909e-4c0c-429e-b4d3-8d58e7096828';
+      const tokenUrl = 'https://www.wixapis.com/oauth/access';
+      
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          grant_type: 'authorization_code',
+          client_id: WIX_CLIENT_ID,
+          client_secret: client_secret,
+          code: code,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error('Token exchange failed:', data);
+        return res.status(response.status).json({
+          success: false,
+          message: 'Token exchange failed',
+          error: data
+        });
+      }
+      
+      res.json({
+        success: true,
+        tokens: data
+      });
+      
+    } catch (error) {
+      console.error('Token exchange error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to exchange token',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
 
   // OAuth callback endpoint for Wix authentication
   app.post('/api/auth/wix-callback', async (req, res) => {

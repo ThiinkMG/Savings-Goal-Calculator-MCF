@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wix OAuth Token Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .step {
+            margin-bottom: 20px;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #007bff;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wix OAuth Token Generator</h1>
+        
+        <div class="section">
+            <h2>Step 1: Configuration</h2>
+            <div class="input-group">
+                <label for="clientId">Client ID (App ID):</label>
+                <input type="text" id="clientId" value="2583909e-4c0c-429e-b4d3-8d58e7096828" />
+            </div>
+            <div class="input-group">
+                <label for="clientSecret">Client Secret (App Secret Key):</label>
+                <input type="password" id="clientSecret" placeholder="Enter your app secret key" />
+            </div>
+            <div class="input-group">
+                <label for="redirectUri">Redirect URI:</label>
+                <input type="text" id="redirectUri" value="" readonly />
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Generate Authorization URL</h2>
+            <p>Click the button below to generate the Wix OAuth authorization URL:</p>
+            <button onclick="generateAuthUrl()">Generate Auth URL</button>
+            <div id="authUrlResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Get Authorization Code</h2>
+            <p>After clicking the auth URL above and authorizing, you'll be redirected back. The authorization code will appear here:</p>
+            <div class="input-group">
+                <label for="authCode">Authorization Code:</label>
+                <input type="text" id="authCode" placeholder="Paste the authorization code here" />
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 4: Exchange Code for Tokens</h2>
+            <p>Once you have the authorization code, click below to exchange it for access and refresh tokens:</p>
+            <button onclick="exchangeToken()">Exchange for Tokens</button>
+            <div id="tokenResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Instructions</h2>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Set your Client Secret</strong> - Enter your Wix App Secret Key in the field above
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Generate Auth URL</strong> - Click "Generate Auth URL" and open the link in a new tab
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Authorize</strong> - Log in to Wix and authorize the app
+            </div>
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Get Code</strong> - Copy the authorization code from the redirect URL
+            </div>
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Exchange</strong> - Paste the code and click "Exchange for Tokens"
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set redirect URI
+        const redirectUri = window.location.origin + '/wix-callback.html';
+        document.getElementById('redirectUri').value = redirectUri;
+
+        // Check for auth code in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('wix_auth_code');
+        if (code) {
+            document.getElementById('authCode').value = code;
+            document.getElementById('authCode').scrollIntoView();
+        }
+
+        function generateAuthUrl() {
+            const clientId = document.getElementById('clientId').value;
+            const state = Math.random().toString(36).substring(7);
+            
+            const authUrl = new URL('https://www.wix.com/oauth/authorize');
+            authUrl.searchParams.set('client_id', clientId);
+            authUrl.searchParams.set('response_type', 'code');
+            authUrl.searchParams.set('scope', 'offline_access');
+            authUrl.searchParams.set('state', state);
+            authUrl.searchParams.set('redirect_uri', redirectUri);
+            
+            const resultDiv = document.getElementById('authUrlResult');
+            resultDiv.innerHTML = `
+                <div class="result success">
+                    <strong>Authorization URL Generated!</strong><br><br>
+                    <a href="${authUrl.toString()}" target="_blank" style="color: #007bff; text-decoration: underline;">
+                        Click here to open in new tab
+                    </a><br><br>
+                    <strong>Full URL:</strong><br>
+                    ${authUrl.toString()}<br><br>
+                    <strong>State:</strong> ${state}
+                </div>
+            `;
+            
+            // Store state for verification
+            localStorage.setItem('oauth_state', state);
+        }
+
+        async function exchangeToken() {
+            const clientId = document.getElementById('clientId').value;
+            const clientSecret = document.getElementById('clientSecret').value;
+            const authCode = document.getElementById('authCode').value;
+            
+            if (!clientSecret) {
+                alert('Please enter your Client Secret (App Secret Key)');
+                return;
+            }
+            
+            if (!authCode) {
+                alert('Please enter the authorization code');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('tokenResult');
+            resultDiv.innerHTML = '<div class="result">Exchanging code for tokens...</div>';
+            
+            try {
+                const response = await fetch('https://www.wixapis.com/oauth/access', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        grant_type: 'authorization_code',
+                        client_id: clientId,
+                        client_secret: clientSecret,
+                        code: authCode
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>Success! Tokens received:</strong><br><br>
+                            <strong>Access Token:</strong><br>
+                            ${data.access_token}<br><br>
+                            <strong>Refresh Token:</strong><br>
+                            ${data.refresh_token || 'Not provided'}<br><br>
+                            <strong>Full Response:</strong><br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>Error:</strong><br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>Request Failed:</strong><br>
+                        ${error.message}<br><br>
+                        Note: This request might fail due to CORS. You may need to:<br>
+                        1. Use the server-side endpoint instead<br>
+                        2. Use a tool like Postman or curl<br>
+                        3. Configure CORS on your Wix app
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

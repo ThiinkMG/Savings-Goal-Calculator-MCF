@@ -2,11 +2,12 @@ import { createClient, OAuthStrategy } from '@wix/sdk';
 import { members } from '@wix/members';
 import { redirects } from '@wix/redirects';
 
-const WIX_CLIENT_ID = process.env.WIX_HEADLESS_CLIENT_ID;
-const WIX_SITE_ID = process.env.WIX_SITE_ID;
+const WIX_CLIENT_ID = process.env.WIX_CLIENT_ID || '2583909e-4c0c-429e-b4d3-8d58e7096828';
+const WIX_SITE_ID = process.env.WIX_SITE_ID || '';
 
-if (!WIX_CLIENT_ID || !WIX_SITE_ID) {
-  throw new Error('WIX_HEADLESS_CLIENT_ID and WIX_SITE_ID must be provided');
+// For OAuth flow, we only need CLIENT_ID
+if (!WIX_CLIENT_ID) {
+  throw new Error('WIX_CLIENT_ID must be provided');
 }
 
 // Create Wix client for member authentication
