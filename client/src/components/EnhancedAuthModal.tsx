@@ -109,6 +109,8 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       
       // Listen for auth completion
       const handleAuthCallback = (event: MessageEvent) => {
+        console.log('Received message from:', event.origin, 'Data:', event.data);
+        
         // Verify origin for security - accept from Wix OAuth and our own domain
         if (!event.origin.includes('wix.com') && 
             event.origin !== window.location.origin) {
@@ -137,19 +139,27 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
       
       window.addEventListener('message', handleAuthCallback, false);
       
-      // Check if popup was closed manually
+      // Check if popup was closed manually (with debugging)
       const checkClosed = setInterval(() => {
         if (popup.closed) {
           clearInterval(checkClosed);
           window.removeEventListener('message', handleAuthCallback);
           setIsLoading(false);
+          console.log('Popup was closed unexpectedly after redirect to Wix login');
           toast({
-            title: "Login Cancelled",
-            description: "The login window was closed.",
+            title: "Login Window Closed", 
+            description: "Please ensure popups are enabled and try signing in again. The Wix login page should stay open.",
             variant: "destructive"
           });
         }
-      }, 1000);
+      }, 2000); // Check every 2 seconds instead of 1
+
+      // Add a longer timeout for OAuth completion
+      setTimeout(() => {
+        if (!popup.closed) {
+          console.log('OAuth flow taking longer than expected, but popup is still open');
+        }
+      }, 5000);
       
     } catch (error) {
       setIsLoading(false);
