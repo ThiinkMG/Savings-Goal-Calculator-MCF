@@ -155,25 +155,25 @@ export default function HomePage() {
                   See our <span className="hover:underline">latest courses →</span>
                 </a>
               </div>
-              <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-                <span className="flex items-center gap-2">
-                  <div className="p-2 bg-brand-green/10 rounded-lg">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-sm text-muted-foreground max-w-2xl mx-auto">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="p-2 bg-brand-green/10 rounded-lg flex-shrink-0">
                     <GraduationCap className="w-4 h-4 brand-green" />
                   </div>
-                  Educational Focused
-                </span>
-                <span className="flex items-center gap-2">
-                  <div className="p-2 bg-brand-green/10 rounded-lg">
+                  <span className="text-center sm:text-left">Educational Focused</span>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="p-2 bg-brand-green/10 rounded-lg flex-shrink-0">
                     <TrendingUp className="w-4 h-4 brand-green" />
                   </div>
-                  Visual Progress Tracking
-                </span>
-                <span className="flex items-center gap-2">
-                  <div className="p-2 bg-brand-green/10 rounded-lg">
+                  <span className="text-center sm:text-left">Visual Progress Tracking</span>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="p-2 bg-brand-green/10 rounded-lg flex-shrink-0">
                     <Smartphone className="w-4 h-4 brand-green" />
                   </div>
-                  Mobile Optimized
-                </span>
+                  <span className="text-center sm:text-left">Mobile Optimized</span>
+                </div>
               </div>
             </section>
 
