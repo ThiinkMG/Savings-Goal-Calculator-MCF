@@ -232,44 +232,12 @@ export default function HomePage() {
 
       {/* Guest User Status */}
       {!isAuthenticated && isGuest && showGuestBanner && (
-        <div className="bg-blue-50 dark:bg-blue-950/30 border-b border-blue-200 dark:border-blue-800 py-4 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="flex items-center gap-3 flex-1">
-                <User className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-blue-800 dark:text-blue-200">
-                    You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
-                  </span>
-                  <span className="text-xs text-blue-600 dark:text-blue-300 font-medium">
-                    Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} • PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
-                <Button
-                  onClick={() => setShowEnhancedAuthModal(true)}
-                  size="sm"
-                  variant="outline"
-                  className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 flex-1 sm:flex-initial"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Create Account
-                </Button>
-                <Button
-                  onClick={logout}
-                  size="sm"
-                  variant="outline"
-                  disabled={isLoggingOut}
-                  className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 flex-1 sm:flex-initial"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  {isLoggingOut ? 'Ending...' : 'End Session'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <GuestBanner 
+          guestInfo={guestInfo}
+          onCreateAccount={() => setShowEnhancedAuthModal(true)}
+          onLogout={logout}
+          isLoggingOut={isLoggingOut}
+        />
       )}
 
       <main className="max-w-6xl mx-auto px-4 py-6 lg:py-8 overflow-hidden savings-calculator-container">
