@@ -21,6 +21,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", login);
   app.post("/api/auth/logout", logout);
   app.get("/api/auth/me", getCurrentUser);
+  
+  // Create guest session endpoint
+  app.post("/api/auth/continue-as-guest", async (req, res) => {
+    const now = Date.now();
+    const today = new Date(now).toDateString();
+    
+    req.session.isGuest = true;
+    req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
+    req.session.guestSessionStart = now;
+    req.session.guestDailyCount = 0;
+    req.session.guestPdfDownloads = 0;
+    req.session.guestLastResetDate = today;
+    req.session.guestGoals = [];
+    
+    res.json({ 
+      success: true, 
+      message: "Guest session created",
+      guestInfo: {
+        dailyCount: 0,
+        dailyLimit: 3,
+        pdfDownloads: 0,
+        pdfLimit: 1,
+        sessionStart: now,
+        lastResetDate: today
+      }
+    });
+  });
 
   // Enhanced authentication routes
   app.post("/api/auth/enhanced-register", async (req, res) => {

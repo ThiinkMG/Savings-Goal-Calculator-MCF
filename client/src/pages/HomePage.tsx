@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
 import { BrandHeader } from '@/components/BrandHeader';
 import { SavingsCalculator } from '@/components/SavingsCalculator';
@@ -100,28 +101,45 @@ export default function HomePage() {
   }, [isAuthenticated, isGuest, recurringPopupTimer]);
 
   // Handle when user explicitly chooses to continue as guest
-  const handleContinueAsGuest = () => {
-    setShowGuestBanner(true);
-    setShowGuestPopup(true);
-    setShowEnhancedAuthModal(false);
-    
-    // Auto-hide popup after 10 seconds
-    setTimeout(() => {
-      setShowGuestPopup(false);
-    }, 10000);
-
-    // Start the recurring popup timer
-    if (!recurringPopupTimer) {
-      const timer = setInterval(() => {
-        if (!isAuthenticated && isGuest) {
-          setShowGuestPopup(true);
-          setTimeout(() => {
-            setShowGuestPopup(false);
-          }, 10000);
-        }
-      }, 600000); // 10 minutes
+  const handleContinueAsGuest = async () => {
+    try {
+      // Create guest session on the server
+      const response = await fetch('/api/auth/continue-as-guest', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      setRecurringPopupTimer(timer);
+      if (response.ok) {
+        // Invalidate auth query to get fresh guest status
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
+        
+        setShowGuestBanner(true);
+        setShowGuestPopup(true);
+        setShowEnhancedAuthModal(false);
+        
+        // Auto-hide popup after 10 seconds
+        setTimeout(() => {
+          setShowGuestPopup(false);
+        }, 10000);
+
+        // Start the recurring popup timer
+        if (!recurringPopupTimer) {
+          const timer = setInterval(() => {
+            if (!isAuthenticated && isGuest) {
+              setShowGuestPopup(true);
+              setTimeout(() => {
+                setShowGuestPopup(false);
+              }, 10000);
+            }
+          }, 600000); // 10 minutes
+          
+          setRecurringPopupTimer(timer);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to create guest session:', error);
     }
   };
 
