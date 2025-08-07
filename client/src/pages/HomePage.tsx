@@ -25,7 +25,7 @@ export default function HomePage() {
 
   // Show guest popup when user becomes a guest and auto-hide after 10 seconds
   useEffect(() => {
-    if (isGuest && !isAuthenticated) {
+    if (isGuest && !isAuthenticated && showGuestBanner) {
       setShowGuestPopup(true);
       const timer = setTimeout(() => {
         setShowGuestPopup(false);
@@ -33,7 +33,7 @@ export default function HomePage() {
       
       return () => clearTimeout(timer);
     }
-  }, [isGuest, isAuthenticated]);
+  }, [isGuest, isAuthenticated, showGuestBanner]);
 
   // Reset guest banner when user logs in or logs out
   useEffect(() => {
@@ -45,7 +45,13 @@ export default function HomePage() {
   // Handle when user explicitly chooses to continue as guest
   const handleContinueAsGuest = () => {
     setShowGuestBanner(true);
+    setShowGuestPopup(true);
     setShowEnhancedAuthModal(false);
+    
+    // Auto-hide popup after 10 seconds
+    setTimeout(() => {
+      setShowGuestPopup(false);
+    }, 10000);
   };
 
   // Fetch existing goals
