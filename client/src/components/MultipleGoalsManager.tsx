@@ -147,43 +147,45 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     <Card className="animate-slide-in">
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col gap-4 mb-6">
-          <div className="flex items-center justify-center sm:justify-start gap-2">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex-shrink-0">
-              <List className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center justify-center sm:justify-start gap-3">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex-shrink-0">
+              <List className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center sm:text-left">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center sm:text-left">
               Savings Tracker Dashboard
             </h3>
           </div>
           
           <Button 
             onClick={onAddGoal}
-            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto sm:self-start font-medium shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto sm:self-start font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
             size="lg"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-5 h-5 mr-2" />
             Add Goal
           </Button>
         </div>
         
         {goals.length === 0 ? (
-          <div className="text-center py-8 sm:py-12 px-4">
-            <Target className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
-            <h4 className="text-lg sm:text-xl font-medium text-foreground mb-3">No Goals Yet</h4>
-            <p className="text-sm sm:text-base text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
+          <div className="text-center py-12 sm:py-16 px-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <Target className="w-12 h-12 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h4 className="text-xl sm:text-2xl font-bold text-foreground mb-4">No Goals Yet</h4>
+            <p className="text-base sm:text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
               Start by creating your first savings goal to track your progress.
             </p>
             <Button 
               onClick={onAddGoal} 
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto font-medium shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto font-semibold shadow-lg hover:shadow-xl transition-all duration-200 py-3 px-6"
               size="lg"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-5 h-5 mr-2" />
               Create Your First Goal
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {goals.map((goal) => {
               const progress = getProgressPercent(goal);
               const monthlyRequired = calculateMonthlyRequired(goal);
@@ -194,74 +196,75 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
               return (
                 <div
                   key={goal.id}
-                  className="p-3 sm:p-4 border border-border rounded-lg hover:shadow-md transition-shadow overflow-hidden max-w-full bg-background"
+                  className="p-4 sm:p-6 border border-border rounded-xl hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 overflow-hidden max-w-full bg-background"
                 >
                   <div 
                     className="cursor-pointer"
                     onClick={() => onEditGoal(goal.id)}
                   >
-                    <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
-                      <h4 className="font-medium text-foreground break-words max-w-full">
-                        {goal.name}
-                      </h4>
-                      {getStatusBadge(goal)}
-                    </div>
-                    
-                    <div className="mb-3">
-                      <div className="flex flex-col sm:flex-row justify-between text-sm text-muted-foreground mb-2 gap-1">
-                        <span className="break-words">{formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}</span>
-                        <span className="font-medium">{Math.round(progress)}%</span>
+                    <div className="flex flex-col gap-3 mb-4">
+                      <div className="flex justify-between items-start gap-3">
+                        <h4 className="font-bold text-lg text-foreground break-words max-w-full leading-tight">
+                          {goal.name}
+                        </h4>
+                        {getStatusBadge(goal)}
                       </div>
-                      <Progress value={progress} className="h-2" />
-                    </div>
-                    
-                    <div className="text-sm text-muted-foreground mb-3 space-y-2">
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3 flex-shrink-0" />
-                        <span className="font-medium">{formatLocaleCurrency(monthlyRequired)}/month required</span>
+                      
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                          <span className="break-words font-medium">{formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}</span>
+                          <span className="font-bold text-blue-600 dark:text-blue-400">{Math.round(progress)}%</span>
+                        </div>
+                        <Progress value={progress} className="h-3" />
                       </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm">{monthsLeft} months remaining</span>
-                        <span className="text-xs text-muted-foreground/70">
-                          Last updated: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'}
-                        </span>
+                      
+                      <div className="text-sm text-muted-foreground space-y-2">
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+                          <span className="font-semibold">{formatLocaleCurrency(monthlyRequired)}/month required</span>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-sm font-medium">{monthsLeft} months remaining</span>
+                          <span className="text-xs text-muted-foreground/70 block">
+                            Last updated: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Action buttons */}
-                  <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-border">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1 text-xs h-8 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={(e) => handleDownloadPDF(goal, e)}
-                    >
-                      <Download className="w-3 h-3 mr-1" />
-                      <span className="hidden sm:inline">PDF</span>
-                      <span className="sm:hidden">Download PDF</span>
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1 text-xs h-8 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={(e) => handleShareGoal(goal, e)}
-                    >
-                      <Share2 className="w-3 h-3 mr-1" />
-                      <span className="hidden sm:inline">Share</span>
-                      <span className="sm:hidden">Share Goal</span>
-                    </Button>
+                  <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-sm h-10 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+                        onClick={(e) => handleDownloadPDF(goal, e)}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download PDF
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-sm h-10 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+                        onClick={(e) => handleShareGoal(goal, e)}
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Share Goal
+                      </Button>
+                    </div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="flex-1 text-xs h-8 border-gray-300 dark:border-gray-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
+                          className="w-full text-sm h-10 border-red-300 dark:border-red-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400 font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Trash2 className="w-3 h-3 mr-1" />
-                          <span className="hidden sm:inline">Delete</span>
-                          <span className="sm:hidden">Delete Goal</span>
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Goal
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>

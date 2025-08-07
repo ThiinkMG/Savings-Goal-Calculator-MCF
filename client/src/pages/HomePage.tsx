@@ -252,16 +252,16 @@ export default function HomePage() {
           <>
             {/* Welcome Section */}
             <section className="text-center mb-12 animate-fade-in">
-              <h2 className="text-4xl font-black brand-blue mb-4">
+              <h2 className="text-2xl sm:text-4xl font-black brand-blue mb-4 sm:mb-6 leading-tight">
                 Savings Goal Calculator
               </h2>
-              <p className="text-xl text-muted-foreground mb-4 max-w-3xl mx-auto">
+              <p className="text-base sm:text-xl text-muted-foreground mb-4 sm:mb-6 max-w-3xl mx-auto px-2 leading-relaxed">
                 Take control of your financial future with our intelligent savings calculator. 
                 Set goals, track progress, and achieve your dreams.
               </p>
               
               {/* Plan Counter */}
-              <div className="mb-4 flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="mb-6 sm:mb-8 flex flex-col gap-3 items-center justify-center">
                 {isAuthenticated ? (
                   <>
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
@@ -279,17 +279,19 @@ export default function HomePage() {
                   </>
                 ) : isGuest ? (
                   <>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                        Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today
-                      </span>
-                    </div>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                        PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
-                      </span>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                      <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                        <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                          Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today
+                        </span>
+                      </div>
+                      <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                        <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                          PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
+                        </span>
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -312,24 +314,24 @@ export default function HomePage() {
                   See our <span className="hover:underline">latest courses →</span>
                 </a>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-sm text-muted-foreground max-w-2xl mx-auto">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="p-2 bg-brand-green/10 rounded-lg flex-shrink-0">
-                    <GraduationCap className="w-4 h-4 brand-green" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm max-w-3xl mx-auto">
+                <div className="flex flex-col items-center text-center gap-3 p-4 bg-white/5 dark:bg-white/5 rounded-xl border border-brand-green/20">
+                  <div className="p-3 bg-brand-green/20 rounded-xl flex-shrink-0">
+                    <GraduationCap className="w-6 h-6 text-brand-green" />
                   </div>
-                  <span className="text-center sm:text-left">Educational Focused</span>
+                  <span className="font-semibold text-muted-foreground">Educational Focused</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="p-2 bg-brand-green/10 rounded-lg flex-shrink-0">
-                    <TrendingUp className="w-4 h-4 brand-green" />
+                <div className="flex flex-col items-center text-center gap-3 p-4 bg-white/5 dark:bg-white/5 rounded-xl border border-brand-green/20">
+                  <div className="p-3 bg-brand-green/20 rounded-xl flex-shrink-0">
+                    <TrendingUp className="w-6 h-6 text-brand-green" />
                   </div>
-                  <span className="text-center sm:text-left">Visual Progress Tracking</span>
+                  <span className="font-semibold text-muted-foreground">Visual Progress Tracking</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="p-2 bg-brand-green/10 rounded-lg flex-shrink-0">
-                    <Smartphone className="w-4 h-4 brand-green" />
+                <div className="flex flex-col items-center text-center gap-3 p-4 bg-white/5 dark:bg-white/5 rounded-xl border border-brand-green/20">
+                  <div className="p-3 bg-brand-green/20 rounded-xl flex-shrink-0">
+                    <Smartphone className="w-6 h-6 text-brand-green" />
                   </div>
-                  <span className="text-center sm:text-left">Mobile Optimized</span>
+                  <span className="font-semibold text-muted-foreground">Mobile Optimized</span>
                 </div>
               </div>
             </section>
