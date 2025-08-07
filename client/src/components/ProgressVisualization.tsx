@@ -260,43 +260,43 @@ export function ProgressVisualization({
                 <div className="space-y-2">
                   {selectedTradeOffs.includes('coffee') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">☕</span>
+                      <span className="text-lg font-medium">☕</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$167/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('lunch') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">🍽️</span>
+                      <span className="text-lg font-medium">🍽️</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$325/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('streaming') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">📱</span>
+                      <span className="text-lg font-medium">📱</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$45/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('nightsout') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">🎉</span>
+                      <span className="text-lg font-medium">🎉</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$150/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('transport') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">🚗</span>
+                      <span className="text-lg font-medium">🚗</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$69/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('shopping') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">🛍️</span>
+                      <span className="text-lg font-medium">🛍️</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$45/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('selling') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
-                      <span className="text-sm font-medium">📈</span>
+                      <span className="text-lg font-medium">📈</span>
                       <span className="text-sm font-bold text-green-600 dark:text-green-400">+$150/month</span>
                     </div>
                   )}
