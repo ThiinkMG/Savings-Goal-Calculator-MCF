@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, ArrowLeft, Check, X, BookOpen } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Check, X, BookOpen, UserCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface EnhancedAuthModalProps {
@@ -39,6 +39,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   
   const { toast } = useToast();
   const { login } = useAuth();
+
+  // Handle continue as guest
+  const handleContinueAsGuest = () => {
+    // Simply close the modal - the app already supports guest sessions
+    handleClose();
+    toast({
+      title: "Welcome!",
+      description: "You're now using My College Finance as a guest. You can save multiple goals for this session.",
+    });
+  };
 
   // Check for OAuth success/callback on component mount
   useEffect(() => {
@@ -613,6 +623,36 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
               Create Account
             </Button>
           </div>
+        </div>
+        
+        {/* Continue as Guest Option */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-3 text-muted-foreground">Or</span>
+          </div>
+        </div>
+        
+        <div className="p-4 border border-border rounded-lg bg-green-50/50 dark:bg-green-950/20">
+          <div className="flex items-center gap-2 mb-2">
+            <UserCheck className="w-4 h-4 text-green-600 dark:text-green-400" />
+            <h4 className="font-medium text-sm text-green-800 dark:text-green-200">Continue as Guest</h4>
+          </div>
+          <p className="text-xs text-green-700 dark:text-green-300 mb-4 leading-relaxed">
+            Start using the savings calculator right away! You can save multiple goals for this session, 
+            but your data won't be permanently saved between visits.
+          </p>
+          <Button
+            onClick={handleContinueAsGuest}
+            variant="outline"
+            className="w-full h-10 text-sm border-green-300 text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-950/50"
+            data-testid="button-continue-guest"
+          >
+            <UserCheck className="w-4 h-4 mr-2" />
+            Continue as Guest
+          </Button>
         </div>
       </div>
     </div>
