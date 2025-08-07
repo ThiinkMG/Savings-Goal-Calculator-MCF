@@ -627,7 +627,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle>Privacy</CardTitle>
           <CardDescription>Review our privacy practices</CardDescription>
@@ -643,7 +643,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       </Card>
 
       {/* Additional spacing for better scrolling */}
-      <div className="h-8"></div>
+      <div className="h-24 pb-8"></div>
     </div>
   );
 
