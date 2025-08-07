@@ -12,6 +12,7 @@ import { type SavingsGoal, type GoalType, type InsertSavingsGoal } from '@shared
 import { calculateSavings, formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLocale } from '@/contexts/LocaleContext';
 import { useAuth } from '@/hooks/useAuth';
 import { GoalSelectionCard } from './GoalSelectionCard';
 import { ProgressVisualization } from './ProgressVisualization';
@@ -26,6 +27,7 @@ interface SavingsCalculatorProps {
 
 export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: SavingsCalculatorProps) {
   const { theme } = useTheme();
+  const { formatCurrency: formatLocaleCurrency } = useLocale();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user, isAuthenticated, isGuest } = useAuth();
@@ -395,7 +397,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return;
     }
 
-    const shareText = `🎯 My Savings Goal: ${goalName}\n💰 Target: ${formatCurrency(targetAmount)}\n📅 Deadline: ${new Date(targetDate).toLocaleDateString()}\n💪 Monthly Required: ${formatCurrency(calculations.monthlyRequired)}\n\nPlanned with My College Finance!`;
+    const shareText = `🎯 My Savings Goal: ${goalName}\n💰 Target: ${formatLocaleCurrency(targetAmount)}\n📅 Deadline: ${new Date(targetDate).toLocaleDateString()}\n💪 Monthly Required: ${formatLocaleCurrency(calculations.monthlyRequired)}\n\nPlanned with My College Finance!`;
 
     if (navigator.share) {
       try {

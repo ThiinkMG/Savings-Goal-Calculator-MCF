@@ -7,6 +7,7 @@ import { Plus, List, Target, TrendingUp, Download, Share2, Trash2 } from 'lucide
 import { type SavingsGoal } from '@shared/schema';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -17,27 +18,34 @@ interface MultipleGoalsManagerProps {
   onEditGoal: (goalId: string) => void;
 }
 
-const shareGoal = async (goal: SavingsGoal) => {
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: `My Savings Goal: ${goal.name}`,
-        text: `Check out my savings goal for ${goal.name}! Target: $${goal.targetAmount.toLocaleString()}, Current: $${(goal.currentSavings || 0).toLocaleString()}`,
-        url: window.location.href,
-      });
-    } catch (error) {
-      console.log('Error sharing:', error);
-    }
-  } else {
-    // Fallback for browsers that don't support Web Share API
-    navigator.clipboard.writeText(`My Savings Goal: ${goal.name} - Target: $${goal.targetAmount.toLocaleString()}, Current: $${(goal.currentSavings || 0).toLocaleString()}`);
-  }
-};
+// Moved shareGoal function inside component to access locale formatting
 
 export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleGoalsManagerProps) {
   const { theme } = useTheme();
+  const { formatCurrency: formatLocaleCurrency } = useLocale();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const shareGoal = async (goal: SavingsGoal) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `My Savings Goal: ${goal.name}`,
+          text: `Check out my savings goal for ${goal.name}! Target: ${formatLocaleCurrency(goal.targetAmount)}, Current: ${formatLocaleCurrency(goal.currentSavings || 0)}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(`My Savings Goal: ${goal.name} - Target: ${formatLocaleCurrency(goal.targetAmount)}, Current: ${formatLocaleCurrency(goal.currentSavings || 0)}`);
+      toast({
+        title: "Copied to clipboard",
+        description: "Your savings goal has been copied to clipboard"
+      });
+    }
+  };
 
   // Delete mutation
   const deleteGoalMutation = useMutation({

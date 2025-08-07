@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLocale, currencyOptions, languageOptions } from "@/contexts/LocaleContext";
 import { useToast } from "@/hooks/use-toast";
 import { EnhancedAuthModal } from "./EnhancedAuthModal";
 import { TutorialModal } from "./TutorialModal";
@@ -36,6 +37,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { settings: localeSettings, updateSettings: updateLocaleSettings } = useLocale();
   const { toast } = useToast();
 
   // Handle Escape key to close panel
@@ -62,12 +64,13 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
     browserNotifications: true
   });
 
-  const [languageSettings, setLanguageSettings] = useState({
-    language: 'en-US',
-    currency: 'USD',
-    dateFormat: 'MM/DD/YYYY',
-    numberFormat: 'US'
-  });
+  // Remove local state - will use context instead
+  // const [languageSettings, setLanguageSettings] = useState({
+  //   language: 'en-US',
+  //   currency: 'USD',
+  //   dateFormat: 'MM/DD/YYYY',
+  //   numberFormat: 'US'
+  // });
 
   const handleSecurityAction = (mode: 'password' | 'username' | 'phone' | 'email' | 'removePhone') => {
     if (!user) {
@@ -478,23 +481,36 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Currency</Label>
-            <Select value={languageSettings.currency} onValueChange={(value) => setLanguageSettings(prev => ({ ...prev, currency: value }))}>
+            <Label>Language</Label>
+            <Select value={localeSettings.language} onValueChange={(value) => updateLocaleSettings({ language: value })}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="CAD">CAD (C$)</SelectItem>
+                {languageOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Currency</Label>
+            <Select value={localeSettings.currency} onValueChange={(value) => updateLocaleSettings({ currency: value })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencyOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
             <Label>Date Format</Label>
-            <Select value={languageSettings.dateFormat} onValueChange={(value) => setLanguageSettings(prev => ({ ...prev, dateFormat: value }))}>
+            <Select value={localeSettings.dateFormat} onValueChange={(value) => updateLocaleSettings({ dateFormat: value })}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

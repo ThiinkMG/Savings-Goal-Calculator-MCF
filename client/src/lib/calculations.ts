@@ -53,6 +53,8 @@ export function calculateSavings(
   };
 }
 
+// Legacy formatCurrency - kept for backward compatibility
+// New apps should use useLocale().formatCurrency instead
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
