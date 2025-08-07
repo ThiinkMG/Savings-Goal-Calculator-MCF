@@ -332,20 +332,18 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       <Card>
         <CardHeader>
           <CardTitle>
-            {user ? 'Account Information' : isGuest ? 'Guest Session' : 'Sign In Options'}
+            {user ? 'Account Information' : 'Guest Session'}
           </CardTitle>
           <CardDescription>
             {user 
               ? 'Your current account details' 
-              : isGuest 
-                ? 'You\'re using My College Finance as a guest'
-                : 'Choose how you want to access My College Finance'
+              : 'You\'re using My College Finance as a guest'
             }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {user ? (
-            // Authenticated user - show account details
+            // Authenticated user - show account details, no blue button
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Username</span>
@@ -360,53 +358,41 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
                 <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
               </div>
             </div>
-          ) : isGuest ? (
-            // Guest mode active - show create account option
+          ) : (
+            // Not authenticated - show blue button with correct text based on guest state
             <div className="space-y-4">
               <div className="p-4 border border-border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <h4 className="font-medium text-sm text-blue-800 dark:text-blue-200">Guest Session Active</h4>
+                  <h4 className="font-medium text-sm text-blue-800 dark:text-blue-200">
+                    {isGuest ? 'Guest Session Active' : 'Quick Access'}
+                  </h4>
                 </div>
                 <p className="text-xs text-blue-700 dark:text-blue-300 mb-3 leading-relaxed">
-                  Your savings goals are stored temporarily for this session only. Create an account to save your progress permanently.
+                  {isGuest 
+                    ? 'Your savings goals are stored temporarily for this session only. Create an account to save your progress permanently.'
+                    : 'Start using the savings calculator right away! You can save multiple goals for this session.'
+                  }
                 </p>
                 <Button
                   onClick={() => {
-                    setShowAuthModal(true);
-                    onClose();
+                    if (isGuest) {
+                      // Guest wants to create account - show auth modal
+                      setShowAuthModal(true);
+                      onClose();
+                    } else {
+                      // Not guest, not signed in - continue as guest
+                      if (onContinueAsGuest) {
+                        onContinueAsGuest();
+                      }
+                      onClose();
+                    }
                   }}
                   size="sm"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <User className="w-4 h-4 mr-2" />
-                  Create Free Account
-                </Button>
-              </div>
-            </div>
-          ) : (
-            // Not signed in and not guest - show continue as guest option
-            <div className="space-y-4">
-              <div className="p-4 border border-border rounded-lg bg-green-50/50 dark:bg-green-950/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <User className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <h4 className="font-medium text-sm text-green-800 dark:text-green-200">Quick Access</h4>
-                </div>
-                <p className="text-xs text-green-700 dark:text-green-300 mb-3 leading-relaxed">
-                  Start using the savings calculator right away! You can save multiple goals for this session.
-                </p>
-                <Button
-                  onClick={() => {
-                    if (onContinueAsGuest) {
-                      onContinueAsGuest();
-                    }
-                    onClose();
-                  }}
-                  size="sm"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Continue as Guest
+                  {isGuest ? 'Create Free Account' : 'Continue as Guest'}
                 </Button>
               </div>
             </div>
