@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign } from 'lucide-react';
+import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign, Car, ShoppingBag, TrendingUp } from 'lucide-react';
 import { formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -482,8 +482,8 @@ export function WhatIfScenarios({
           <div className="space-y-3">
             <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg border-l-4 border-purple-500">
               <p className="text-sm text-purple-800 dark:text-purple-200">
-                <strong>What this means:</strong> Specific changes you could make to reach your goal faster. 
-                Each shows how much money you'd save and how much sooner you'd be done.
+                <strong>Smart Start:</strong> Begin with "Easy" changes like canceling subscriptions, then tackle daily habits. 
+                Most successful savers pick 2-3 changes and stick with them consistently.
               </p>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
@@ -492,13 +492,16 @@ export function WhatIfScenarios({
                 <span className="text-sm flex-1">
                   Make coffee at home <strong>{coffeePerWeek}</strong> times per week<br/>
                   <span className="text-xs text-muted-foreground">Coffee shop costs about $5.50 each time</span>
+                  <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-md mt-1 inline-block">
+                    Moderate
+                  </span>
                 </span>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
                   Save ${Math.round(coffeePerWeek * 5.50 * 4.33)}/month
                 </span>
-                <span className="text-xs text-muted-foreground block text-right">
+                <span className="text-xs text-muted-foreground block">
                   {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner
                 </span>
               </div>
@@ -509,43 +512,137 @@ export function WhatIfScenarios({
                 <span className="text-sm flex-1">
                   Pack lunch <strong>{lunchPerWeek}</strong> times per week<br/>
                   <span className="text-xs text-muted-foreground">Restaurant lunch costs about $15.00 each</span>
+                  <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-md mt-1 inline-block">
+                    Moderate
+                  </span>
                 </span>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
                   Save ${Math.round(lunchPerWeek * 15 * 4.33)}/month
                 </span>
-                <span className="text-xs text-muted-foreground block text-right">
+                <span className="text-xs text-muted-foreground block">
                   {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
-                <span className="text-xl">📱</span>
-                <span className="text-sm">
+                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-xl">📱</div>
+                <span className="text-sm flex-1">
                   Keep only <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5<br/>
                   <span className="text-xs text-muted-foreground">Most services cost about $15.00 per month</span>
+                  <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md mt-1 inline-block">
+                    Easy
+                  </span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
-                Save ${Math.round(streamingServices * 15)}/month = {calculateImpact(Math.round(streamingServices * 15)).daysSaved} days sooner
-              </span>
+              <div className="space-y-1 text-right">
+                <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                  Save ${Math.round(streamingServices * 15)}/month
+                </span>
+                <span className="text-xs text-muted-foreground block">
+                  {calculateImpact(Math.round(streamingServices * 15)).daysSaved} days sooner
+                </span>
+              </div>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
-                <span className="text-xl">🎉</span>
-                <span className="text-sm">
+                <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center text-xl">🎉</div>
+                <span className="text-sm flex-1">
                   Go out <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> times per month instead of 4<br/>
                   <span className="text-xs text-muted-foreground">Nights out typically cost about $50.00 each</span>
+                  <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md mt-1 inline-block">
+                    Hard
+                  </span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
-                Save ${Math.round(nightsOutPerMonth * 50)}/month = {calculateImpact(Math.round(nightsOutPerMonth * 50)).daysSaved} days sooner
-              </span>
+              <div className="space-y-1 text-right">
+                <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                  Save ${Math.round(nightsOutPerMonth * 50)}/month
+                </span>
+                <span className="text-xs text-muted-foreground block">
+                  {calculateImpact(Math.round(nightsOutPerMonth * 50)).daysSaved} days sooner
+                </span>
+              </div>
             </div>
-            <div className="mt-3 text-xs text-muted-foreground italic">
-              <strong>Tip:</strong> Start with the easiest changes (like canceling subscriptions) before tackling daily habits. Most successful savers pick 2-3 changes and stick with them.
+            {/* Additional Categories */}
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center">
+                  <Car className="w-5 h-5" />
+                </div>
+                <span className="text-sm flex-1">
+                  Walk or bike <strong>2</strong> days per week instead of driving<br/>
+                  <span className="text-xs text-muted-foreground">Gas + parking costs about $8.00 per trip</span>
+                  <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-md mt-1 inline-block">
+                    Moderate
+                  </span>
+                </span>
+              </div>
+              <div className="space-y-1 text-right">
+                <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                  Save ${Math.round(2 * 8 * 4.33)}/month
+                </span>
+                <span className="text-xs text-muted-foreground block">
+                  {calculateImpact(Math.round(2 * 8 * 4.33)).daysSaved} days sooner
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                  <ShoppingBag className="w-5 h-5" />
+                </div>
+                <span className="text-sm flex-1">
+                  Wait 24 hours before non-essential purchases over $25<br/>
+                  <span className="text-xs text-muted-foreground">Reduces impulse buying by about 60%</span>
+                  <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md mt-1 inline-block">
+                    Easy
+                  </span>
+                </span>
+              </div>
+              <div className="space-y-1 text-right">
+                <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                  Save ${Math.round(45)}/month
+                </span>
+                <span className="text-xs text-muted-foreground block">
+                  {calculateImpact(45).daysSaved} days sooner
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <span className="text-sm flex-1">
+                  Sell unused items (clothes, electronics, books)<br/>
+                  <span className="text-xs text-muted-foreground">One-time boost, average $150 per month for 3 months</span>
+                  <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md mt-1 inline-block">
+                    Easy
+                  </span>
+                </span>
+              </div>
+              <div className="space-y-1 text-right">
+                <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md font-medium">
+                  Earn $150/month
+                </span>
+                <span className="text-xs text-muted-foreground block">
+                  {calculateImpact(150).daysSaved} days sooner
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border">
+              <div className="text-sm font-medium mb-2">Success Strategy:</div>
+              <div className="space-y-1 text-xs text-muted-foreground">
+                <div>• <strong>Week 1-2:</strong> Start with "Easy" changes (subscriptions, 24-hour rule)</div>
+                <div>• <strong>Week 3-4:</strong> Add one "Moderate" habit (coffee or lunch)</div>
+                <div>• <strong>Month 2+:</strong> Consider "Hard" changes only if needed</div>
+              </div>
             </div>
           </div>
         </DropdownSection>
