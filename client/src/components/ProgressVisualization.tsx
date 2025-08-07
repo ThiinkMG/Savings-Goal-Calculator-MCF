@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Target, TrendingUp, Lightbulb, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Star, Target, TrendingUp, Lightbulb, AlertTriangle, CheckCircle, Clock, Award } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ProgressVisualizationProps {
@@ -10,6 +10,7 @@ interface ProgressVisualizationProps {
   monthsRemaining: number;
   progressPercent: number;
   monthlyCapacity: number;
+  selectedTradeOffs?: string[];
 }
 
 export function ProgressVisualization({
@@ -18,7 +19,8 @@ export function ProgressVisualization({
   monthlyRequired,
   monthsRemaining,
   progressPercent,
-  monthlyCapacity
+  monthlyCapacity,
+  selectedTradeOffs = []
 }: ProgressVisualizationProps) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
@@ -242,6 +244,77 @@ export function ProgressVisualization({
                 </div>
               </div>
             ))}
+            
+            {/* Saver Picks Section */}
+            {selectedTradeOffs.length > 0 && (
+              <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-lg border-l-4 border-green-500">
+                <div className="flex items-center gap-2 mb-3">
+                  <Award className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <h5 className="font-medium text-sm text-green-800 dark:text-green-200">Saver Picks</h5>
+                </div>
+                <div className="space-y-2">
+                  {selectedTradeOffs.includes('coffee') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">☕ Make coffee at home</span>
+                      <span className="text-xs font-medium text-green-600">+$167/month</span>
+                    </div>
+                  )}
+                  {selectedTradeOffs.includes('lunch') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">🍽️ Pack lunch</span>
+                      <span className="text-xs font-medium text-green-600">+$325/month</span>
+                    </div>
+                  )}
+                  {selectedTradeOffs.includes('streaming') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">📱 Reduce streaming services</span>
+                      <span className="text-xs font-medium text-green-600">+$45/month</span>
+                    </div>
+                  )}
+                  {selectedTradeOffs.includes('nightsout') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">🎉 Fewer nights out</span>
+                      <span className="text-xs font-medium text-green-600">+$150/month</span>
+                    </div>
+                  )}
+                  {selectedTradeOffs.includes('transport') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">🚗 Walk/bike more</span>
+                      <span className="text-xs font-medium text-green-600">+$69/month</span>
+                    </div>
+                  )}
+                  {selectedTradeOffs.includes('shopping') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">🛍️ 24-hour rule</span>
+                      <span className="text-xs font-medium text-green-600">+$45/month</span>
+                    </div>
+                  )}
+                  {selectedTradeOffs.includes('selling') && (
+                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                      <span className="text-xs">📈 Sell unused items</span>
+                      <span className="text-xs font-medium text-blue-600">+$150/month</span>
+                    </div>
+                  )}
+                  <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-xs text-green-800 dark:text-green-200">Total Extra Savings:</span>
+                      <span className="font-bold text-xs text-green-600 dark:text-green-400">
+                        +${selectedTradeOffs.reduce((total, id) => {
+                          const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
+                          return total + (amounts[id as keyof typeof amounts] || 0);
+                        }, 0)}/month
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      This could finish your goal {Math.round(selectedTradeOffs.reduce((total, id) => {
+                        const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
+                        return total + (amounts[id as keyof typeof amounts] || 0);
+                      }, 0) / monthlyRequired * 30)} days sooner!
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

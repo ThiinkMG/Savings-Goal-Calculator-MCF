@@ -67,6 +67,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
 
   // Calculation state
   const [calculations, setCalculations] = useState<CalculationResult | null>(null);
+  const [selectedTradeOffs, setSelectedTradeOffs] = useState<string[]>([]);
 
   // Manual entry functions
   const handleManualEntry = () => {
@@ -713,6 +714,8 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
             currentSavings={currentSavings}
             targetDate={targetDate}
             monthlyCapacity={monthlyCapacity[0]}
+            selectedTradeOffs={selectedTradeOffs}
+            onTradeOffChange={setSelectedTradeOffs}
           />
         )}
       </div>
@@ -727,6 +730,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
             monthsRemaining={calculations.monthsRemaining}
             progressPercent={calculations.progressPercent}
             monthlyCapacity={monthlyCapacity[0]}
+            selectedTradeOffs={selectedTradeOffs}
           />
         )}
 

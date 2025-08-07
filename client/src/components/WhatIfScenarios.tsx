@@ -17,6 +17,8 @@ interface WhatIfScenariosProps {
   currentSavings: number;
   targetDate: string;
   monthlyCapacity: number;
+  selectedTradeOffs?: string[];
+  onTradeOffChange?: (tradeOffs: string[]) => void;
 }
 
 interface DropdownSectionProps {
@@ -61,10 +63,12 @@ export function WhatIfScenarios({
   targetAmount, 
   currentSavings, 
   targetDate, 
-  monthlyCapacity 
+  monthlyCapacity,
+  selectedTradeOffs: propSelectedTradeOffs = [],
+  onTradeOffChange
 }: WhatIfScenariosProps) {
   const [openSection, setOpenSection] = useState<string | null>(null);
-  const [selectedTradeOffs, setSelectedTradeOffs] = useState<string[]>([]);
+  const [selectedTradeOffs, setSelectedTradeOffs] = useState<string[]>(propSelectedTradeOffs);
   
   // Auto-expand decision helper if there's an over-capacity issue (only on first render)
   useEffect(() => {
@@ -79,11 +83,12 @@ export function WhatIfScenarios({
   };
 
   const toggleTradeOff = (tradeOffId: string) => {
-    setSelectedTradeOffs(prev => 
-      prev.includes(tradeOffId) 
-        ? prev.filter(id => id !== tradeOffId)
-        : [...prev, tradeOffId]
-    );
+    const newTradeOffs = selectedTradeOffs.includes(tradeOffId) 
+      ? selectedTradeOffs.filter(id => id !== tradeOffId)
+      : [...selectedTradeOffs, tradeOffId];
+    
+    setSelectedTradeOffs(newTradeOffs);
+    onTradeOffChange?.(newTradeOffs);
   };
 
   // Ensure all calculations are reactive to prop changes
@@ -569,7 +574,7 @@ export function WhatIfScenarios({
             <div 
               className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedTradeOffs.includes('coffee') 
-                  ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-700' 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
                   : 'bg-background hover:bg-muted/50'
               }`}
               onClick={() => toggleTradeOff('coffee')}
@@ -592,14 +597,14 @@ export function WhatIfScenarios({
                   7 days sooner
                 </span>
                 {selectedTradeOffs.includes('coffee') && (
-                  <div className="text-xs font-medium text-amber-600 dark:text-amber-400">✓ Selected</div>
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
                 )}
               </div>
             </div>
             <div 
               className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedTradeOffs.includes('lunch') 
-                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-300 dark:border-blue-700' 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
                   : 'bg-background hover:bg-muted/50'
               }`}
               onClick={() => toggleTradeOff('lunch')}
@@ -622,14 +627,14 @@ export function WhatIfScenarios({
                   14 days sooner
                 </span>
                 {selectedTradeOffs.includes('lunch') && (
-                  <div className="text-xs font-medium text-blue-600 dark:text-blue-400">✓ Selected</div>
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
                 )}
               </div>
             </div>
             <div 
               className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedTradeOffs.includes('streaming') 
-                  ? 'bg-purple-50 dark:bg-purple-950/20 border-purple-300 dark:border-purple-700' 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
                   : 'bg-background hover:bg-muted/50'
               }`}
               onClick={() => toggleTradeOff('streaming')}
@@ -652,14 +657,14 @@ export function WhatIfScenarios({
                   2 days sooner
                 </span>
                 {selectedTradeOffs.includes('streaming') && (
-                  <div className="text-xs font-medium text-purple-600 dark:text-purple-400">✓ Selected</div>
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
                 )}
               </div>
             </div>
             <div 
               className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedTradeOffs.includes('nightsout') 
-                  ? 'bg-pink-50 dark:bg-pink-950/20 border-pink-300 dark:border-pink-700' 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
                   : 'bg-background hover:bg-muted/50'
               }`}
               onClick={() => toggleTradeOff('nightsout')}
@@ -682,7 +687,7 @@ export function WhatIfScenarios({
                   7 days sooner
                 </span>
                 {selectedTradeOffs.includes('nightsout') && (
-                  <div className="text-xs font-medium text-pink-600 dark:text-pink-400">✓ Selected</div>
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
                 )}
               </div>
             </div>
@@ -690,7 +695,7 @@ export function WhatIfScenarios({
             <div 
               className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedTradeOffs.includes('transport') 
-                  ? 'bg-teal-50 dark:bg-teal-950/20 border-teal-300 dark:border-teal-700' 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
                   : 'bg-background hover:bg-muted/50'
               }`}
               onClick={() => toggleTradeOff('transport')}
@@ -715,7 +720,7 @@ export function WhatIfScenarios({
                   3 days sooner
                 </span>
                 {selectedTradeOffs.includes('transport') && (
-                  <div className="text-xs font-medium text-teal-600 dark:text-teal-400">✓ Selected</div>
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
                 )}
               </div>
             </div>
@@ -723,7 +728,7 @@ export function WhatIfScenarios({
             <div 
               className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
                 selectedTradeOffs.includes('shopping') 
-                  ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-300 dark:border-orange-700' 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
                   : 'bg-background hover:bg-muted/50'
               }`}
               onClick={() => toggleTradeOff('shopping')}
@@ -748,7 +753,7 @@ export function WhatIfScenarios({
                   2 days sooner
                 </span>
                 {selectedTradeOffs.includes('shopping') && (
-                  <div className="text-xs font-medium text-orange-600 dark:text-orange-400">✓ Selected</div>
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
                 )}
               </div>
             </div>
