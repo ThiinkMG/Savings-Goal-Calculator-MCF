@@ -1,8 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, Target } from 'lucide-react';
+import { ChevronDown, ChevronUp, Target, Info } from 'lucide-react';
 import { formatCurrency, type CalculationResult } from '@/lib/calculations';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface WhatIfScenariosProps {
   calculations: CalculationResult;
@@ -213,30 +219,69 @@ export function WhatIfScenarios({
           
           {/* Quick Summary - Always Visible */}
           <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="p-3 bg-background rounded-lg border" title={feasibility.description}>
-              <div className="text-xs text-muted-foreground">How Realistic</div>
-              <div className={`text-sm font-semibold ${feasibility.color}`}>
-                {feasibility.score}
-              </div>
-            </div>
-            <div className="p-3 bg-background rounded-lg border" title="Based on similar goals, this percentage of people succeed">
-              <div className="text-xs text-muted-foreground">Chance of Success</div>
-              <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                {successRate}%
-              </div>
-            </div>
-            <div className="p-3 bg-background rounded-lg border" title="Amount you need to save every single day">
-              <div className="text-xs text-muted-foreground">Every Day</div>
-              <div className="text-sm font-semibold text-foreground">
-                {formatCurrency(dailyAmount)}
-              </div>
-            </div>
-            <div className="p-3 bg-background rounded-lg border" title="Amount you need to save each week">
-              <div className="text-xs text-muted-foreground">Every Week</div>
-              <div className="text-sm font-semibold text-foreground">
-                {formatCurrency(weeklyAmount)}
-              </div>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="p-3 bg-background rounded-lg border cursor-help">
+                    <div className="text-xs text-muted-foreground">How Realistic</div>
+                    <div className={`text-sm font-semibold ${feasibility.color}`}>
+                      {feasibility.score}
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm">{feasibility.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="p-3 bg-background rounded-lg border cursor-help">
+                    <div className="text-xs text-muted-foreground">Chance of Success</div>
+                    <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                      {successRate}%
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm">Based on similar goals, this percentage of people succeed</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="p-3 bg-background rounded-lg border cursor-help">
+                    <div className="text-xs text-muted-foreground">Every Day</div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {formatCurrency(dailyAmount)}
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm">Amount you need to save every single day</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="p-3 bg-background rounded-lg border cursor-help">
+                    <div className="text-xs text-muted-foreground">Every Week</div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {formatCurrency(weeklyAmount)}
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm">Amount you need to save each week</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           
           {/* Capacity Alert - Always Visible if Over Capacity */}
@@ -272,7 +317,16 @@ export function WhatIfScenarios({
             <div className="flex justify-between items-center p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-2">
                 <span className="font-medium">How Realistic:</span>
-                <span className="text-xs text-muted-foreground cursor-help" title="Based on typical spending patterns and income levels">ⓘ</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">Based on typical spending patterns and income levels after paying for necessities</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <span className={`font-semibold ${feasibility.color}`}>
                 {feasibility.score}
@@ -290,7 +344,16 @@ export function WhatIfScenarios({
             <div className="flex justify-between items-center p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Chance of Success:</span>
-                <span className="text-xs text-muted-foreground cursor-help" title="Based on data from people with similar savings goals and monthly amounts">ⓘ</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">Based on data from people with similar savings goals and monthly amounts</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <span className="font-semibold text-blue-600 dark:text-blue-400">
                 {successRate}% succeed
@@ -327,24 +390,53 @@ export function WhatIfScenarios({
               </p>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-3 bg-background rounded-lg border" title="Amount to save every single day">
-                <div className="text-sm text-muted-foreground">Every Day</div>
-                <div className="text-lg font-bold text-foreground">
-                  {formatCurrency(dailyAmount)}
-                </div>
-              </div>
-              <div className="text-center p-3 bg-background rounded-lg border" title="Amount to save every week">
-                <div className="text-sm text-muted-foreground">Every Week</div>
-                <div className="text-lg font-bold text-foreground">
-                  {formatCurrency(weeklyAmount)}
-                </div>
-              </div>
-              <div className="text-center p-3 bg-background rounded-lg border" title="If you worked 40 hours/week, this is how much per hour of work">
-                <div className="text-sm text-muted-foreground">Per Work Hour</div>
-                <div className="text-lg font-bold text-foreground">
-                  {formatCurrency(hourlyEquivalent)}
-                </div>
-              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="text-center p-3 bg-background rounded-lg border cursor-help">
+                      <div className="text-sm text-muted-foreground">Every Day</div>
+                      <div className="text-lg font-bold text-foreground">
+                        {formatCurrency(dailyAmount)}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">Amount to save every single day</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="text-center p-3 bg-background rounded-lg border cursor-help">
+                      <div className="text-sm text-muted-foreground">Every Week</div>
+                      <div className="text-lg font-bold text-foreground">
+                        {formatCurrency(weeklyAmount)}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">Amount to save every week</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="text-center p-3 bg-background rounded-lg border cursor-help">
+                      <div className="text-sm text-muted-foreground">Per Work Hour</div>
+                      <div className="text-lg font-bold text-foreground">
+                        {formatCurrency(hourlyEquivalent)}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm max-w-xs">If you worked 40 hours/week, this is how much per hour of work</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             
             <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
