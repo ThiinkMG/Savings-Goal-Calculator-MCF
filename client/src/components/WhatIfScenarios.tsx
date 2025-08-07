@@ -1031,7 +1031,7 @@ export function WhatIfScenarios({
         <DropdownSection
           id="decision-helper"
           icon="💡"
-          title="Decision Helper"
+          title="Choose Savings Boost"
           isOpen={openSection === "decision-helper"}
           onToggle={() => toggleSection("decision-helper")}
         >
