@@ -241,10 +241,9 @@ export function WhatIfScenarios({
               size="sm"
               className="flex items-center gap-2 text-sm"
               onClick={() => {
-                // Close all dropdown sections and force recalculation
+                // Simply close all sections to force them to recalculate with current values
                 setOpenSection(null);
-                // Force refresh of the page to get latest values from Goal Details
-                window.location.reload();
+                // The component will automatically recalculate based on current props
               }}
             >
               <RefreshCw className="w-4 h-4" />
