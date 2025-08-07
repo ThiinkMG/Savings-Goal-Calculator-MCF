@@ -19,6 +19,7 @@ export default function HomePage() {
   const [showEnhancedAuthModal, setShowEnhancedAuthModal] = useState(false);
   const [showWixModal, setShowWixModal] = useState(false);
   const [showGuestPopup, setShowGuestPopup] = useState(false);
+  const [showGuestBanner, setShowGuestBanner] = useState(false);
   
   const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
 
@@ -33,6 +34,19 @@ export default function HomePage() {
       return () => clearTimeout(timer);
     }
   }, [isGuest, isAuthenticated]);
+
+  // Reset guest banner when user logs in or logs out
+  useEffect(() => {
+    if (isAuthenticated || (!isGuest && !isAuthenticated)) {
+      setShowGuestBanner(false);
+    }
+  }, [isAuthenticated, isGuest]);
+
+  // Handle when user explicitly chooses to continue as guest
+  const handleContinueAsGuest = () => {
+    setShowGuestBanner(true);
+    setShowEnhancedAuthModal(false);
+  };
 
   // Fetch existing goals
   const { data: goals = [], isLoading } = useQuery<SavingsGoal[]>({
@@ -160,7 +174,7 @@ export default function HomePage() {
       )}
 
       {/* Guest User Status */}
-      {!isAuthenticated && isGuest && (
+      {!isAuthenticated && isGuest && showGuestBanner && (
         <div className="bg-blue-50 dark:bg-blue-950/30 border-b border-blue-200 dark:border-blue-800 py-4 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -398,6 +412,7 @@ export default function HomePage() {
           setShowEnhancedAuthModal(false);
           setShowWixModal(true);
         }}
+        onContinueAsGuest={handleContinueAsGuest}
       />
 
       <WixLoginModal

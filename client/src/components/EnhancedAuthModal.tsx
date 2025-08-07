@@ -12,11 +12,12 @@ interface EnhancedAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onWixLogin?: () => void;
+  onContinueAsGuest?: () => void;
 }
 
 type AuthStep = 'entry' | 'register' | 'login' | 'forgot-password' | 'forgot-username' | 'verify-code' | 'reset-password';
 
-export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthModalProps) {
+export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGuest }: EnhancedAuthModalProps) {
   const [step, setStep] = useState<AuthStep>('entry');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -41,9 +42,14 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
   const { login } = useAuth();
 
   // Handle continue as guest
-  const handleContinueAsGuest = () => {
-    // Simply close the modal - the app already supports guest sessions
-    handleClose();
+  const handleContinueAsGuestClick = () => {
+    // Call the parent's handler if provided
+    if (onContinueAsGuest) {
+      onContinueAsGuest();
+    } else {
+      // Fallback - just close the modal
+      handleClose();
+    }
     toast({
       title: "Welcome!",
       description: "You're now using My College Finance as a guest. You can save multiple goals for this session.",
@@ -645,7 +651,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin }: EnhancedAuthM
             but your data won't be permanently saved between visits.
           </p>
           <Button
-            onClick={handleContinueAsGuest}
+            onClick={handleContinueAsGuestClick}
             variant="outline"
             className="w-full h-10 text-sm border-green-300 text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-950/50"
             data-testid="button-continue-guest"
