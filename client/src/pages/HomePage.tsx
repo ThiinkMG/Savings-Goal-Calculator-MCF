@@ -20,6 +20,7 @@ export default function HomePage() {
   const [showWixModal, setShowWixModal] = useState(false);
   const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [showGuestBanner, setShowGuestBanner] = useState(false);
+  const [recurringPopupTimer, setRecurringPopupTimer] = useState<NodeJS.Timeout | null>(null);
   
   const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
 
@@ -35,12 +36,50 @@ export default function HomePage() {
     }
   }, [isGuest, isAuthenticated, showGuestBanner]);
 
+  // Recurring popup system for non-authenticated users
+  useEffect(() => {
+    // Clear any existing timer
+    if (recurringPopupTimer) {
+      clearInterval(recurringPopupTimer);
+      setRecurringPopupTimer(null);
+    }
+
+    // Only set up recurring popup for non-authenticated users
+    if (!isAuthenticated && isGuest) {
+      const timer = setInterval(() => {
+        // Only show if user is still not authenticated and is a guest
+        if (!isAuthenticated && isGuest) {
+          setShowGuestPopup(true);
+          // Auto-hide after 10 seconds
+          setTimeout(() => {
+            setShowGuestPopup(false);
+          }, 10000);
+        }
+      }, 600000); // 10 minutes = 600,000 milliseconds
+
+      setRecurringPopupTimer(timer);
+    }
+
+    // Cleanup on unmount or auth change
+    return () => {
+      if (recurringPopupTimer) {
+        clearInterval(recurringPopupTimer);
+      }
+    };
+  }, [isAuthenticated, isGuest]);
+
   // Reset guest banner when user logs in or logs out
   useEffect(() => {
     if (isAuthenticated || (!isGuest && !isAuthenticated)) {
       setShowGuestBanner(false);
+      setShowGuestPopup(false);
+      // Clear the recurring timer when user logs in
+      if (recurringPopupTimer) {
+        clearInterval(recurringPopupTimer);
+        setRecurringPopupTimer(null);
+      }
     }
-  }, [isAuthenticated, isGuest]);
+  }, [isAuthenticated, isGuest, recurringPopupTimer]);
 
   // Handle when user explicitly chooses to continue as guest
   const handleContinueAsGuest = () => {
@@ -52,6 +91,20 @@ export default function HomePage() {
     setTimeout(() => {
       setShowGuestPopup(false);
     }, 10000);
+
+    // Start the recurring popup timer
+    if (!recurringPopupTimer) {
+      const timer = setInterval(() => {
+        if (!isAuthenticated && isGuest) {
+          setShowGuestPopup(true);
+          setTimeout(() => {
+            setShowGuestPopup(false);
+          }, 10000);
+        }
+      }, 600000); // 10 minutes
+      
+      setRecurringPopupTimer(timer);
+    }
   };
 
   // Fetch existing goals

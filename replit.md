@@ -39,10 +39,12 @@ Preferred communication style: Simple, everyday language.
 - **Guest User Functionality**: ✅ **COMPLETE** - "Continue as Guest" option in authentication modal allows users to bypass login while maintaining temporary session storage for multiple savings goals. Features include:
   - Session-based goal storage that persists during browser session
   - Auto-dismissing welcome popup with 10-second timer and close button
+  - Recurring popup system that shows every 10 minutes for non-authenticated users
   - Clear guest status bar showing temporary nature of storage
   - Easy account creation pathway from guest mode
   - Appropriate success messages for guest goal saving
   - Goals appear immediately on dashboard after saving
+  - Popup system automatically stops when user logs in and resumes after logout
 
 ### System Design Choices
 - **Data Models**: Users (with Wix ID for integration), Savings Goals, and Verification Codes.
