@@ -115,7 +115,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     const monthsRemaining = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30));
     
     if (progress >= 100) {
-      return <Badge className="bg-brand-green text-white">Complete</Badge>;
+      return <Badge className="bg-green-600 dark:bg-green-500 text-white border border-green-700 dark:border-green-400">Complete</Badge>;
     }
     
     if (monthsRemaining <= 0) {
@@ -131,7 +131,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
       return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">At Risk</Badge>;
     }
     
-    return <Badge className="bg-brand-blue text-white">On Track</Badge>;
+    return <Badge className="bg-blue-600 dark:bg-blue-500 text-white border border-blue-700 dark:border-blue-400">On Track</Badge>;
   };
 
   const calculateMonthlyRequired = (goal: SavingsGoal) => {
@@ -148,8 +148,8 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex items-center justify-center sm:justify-start gap-2">
-            <div className="p-2 bg-brand-blue/10 rounded-lg flex-shrink-0">
-              <List className="w-5 h-5 brand-blue" />
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex-shrink-0">
+              <List className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center sm:text-left">
               Savings Tracker Dashboard
@@ -158,7 +158,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
           
           <Button 
             onClick={onAddGoal}
-            className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto sm:self-start"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto sm:self-start font-medium shadow-sm"
             size="lg"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -175,7 +175,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
             </p>
             <Button 
               onClick={onAddGoal} 
-              className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto"
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto font-medium shadow-sm"
               size="lg"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -234,7 +234,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-xs h-8"
+                      className="flex-1 text-xs h-8 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
                       onClick={(e) => handleDownloadPDF(goal, e)}
                     >
                       <Download className="w-3 h-3 mr-1" />
@@ -244,7 +244,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-xs h-8"
+                      className="flex-1 text-xs h-8 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
                       onClick={(e) => handleShareGoal(goal, e)}
                     >
                       <Share2 className="w-3 h-3 mr-1" />
@@ -256,7 +256,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         <Button
                           size="sm"
                           variant="outline"
-                          className="flex-1 text-xs h-8 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
+                          className="flex-1 text-xs h-8 border-gray-300 dark:border-gray-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Trash2 className="w-3 h-3 mr-1" />
