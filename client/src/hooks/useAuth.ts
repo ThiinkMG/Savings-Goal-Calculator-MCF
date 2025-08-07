@@ -10,9 +10,17 @@ export interface User {
   phoneNumber?: string;
 }
 
+export interface GuestInfo {
+  dailyCount: number;
+  dailyLimit: number;
+  sessionStart?: number;
+  lastResetDate?: string;
+}
+
 export interface AuthResponse {
   user: User | null;
   isGuest: boolean;
+  guestInfo?: GuestInfo;
 }
 
 export function useAuth() {
@@ -57,6 +65,7 @@ export function useAuth() {
     user: authData?.user || null,
     isGuest: authData?.isGuest || false,
     isAuthenticated: !!authData?.user,
+    guestInfo: authData?.guestInfo,
     isLoading,
     login: (user: User) => loginMutation.mutate(user),
     logout: () => logoutMutation.mutate(),

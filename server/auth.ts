@@ -10,6 +10,9 @@ declare module 'express-session' {
     userId?: string;
     isGuest?: boolean;
     guestGoals?: any[];
+    guestSessionStart?: number; // Timestamp when guest session began
+    guestDailyCount?: number; // Number of goals created today
+    guestLastResetDate?: string; // Date string to track daily resets
     wixAccessToken?: string;
     wixRefreshToken?: string;
     authMethod?: 'wix' | 'app';
@@ -36,8 +39,30 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
 
     // If no valid user session, create a guest session
     if (!req.session.isGuest) {
+      const now = Date.now();
+      const today = new Date(now).toDateString();
+      
       req.session.isGuest = true;
-      req.session.userId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
+      req.session.guestSessionStart = now;
+      req.session.guestDailyCount = 0;
+      req.session.guestLastResetDate = today;
+      req.session.guestGoals = [];
+    } else {
+      // Check if guest session needs to be reset (24 hours passed OR new day)
+      const now = Date.now();
+      const today = new Date(now).toDateString();
+      const sessionStart = req.session.guestSessionStart || now;
+      const lastResetDate = req.session.guestLastResetDate || today;
+      const hoursPassed = (now - sessionStart) / (1000 * 60 * 60);
+      
+      // Reset if 24 hours have passed OR if it's a new day
+      if (hoursPassed >= 24 || lastResetDate !== today) {
+        req.session.guestGoals = [];
+        req.session.guestDailyCount = 0;
+        req.session.guestSessionStart = now;
+        req.session.guestLastResetDate = today;
+      }
     }
 
     req.isGuest = true;
@@ -134,7 +159,15 @@ export async function logout(req: Request, res: Response) {
 // Get current user
 export async function getCurrentUser(req: AuthenticatedRequest, res: Response) {
   if (req.isGuest) {
-    return res.json({ user: null, isGuest: true });
+    // Include guest session info for guest users
+    const guestInfo = {
+      dailyCount: req.session.guestDailyCount || 0,
+      dailyLimit: 3,
+      sessionStart: req.session.guestSessionStart,
+      lastResetDate: req.session.guestLastResetDate
+    };
+    
+    return res.json({ user: null, isGuest: true, guestInfo });
   }
   
   if (req.user) {

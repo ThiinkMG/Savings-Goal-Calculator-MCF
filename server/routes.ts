@@ -274,10 +274,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not authenticated" });
       }
       
-      // For guest users, store goals in session temporarily
+      // For guest users, store goals in session temporarily with 3-plan daily limit
       if (req.isGuest || userId.startsWith('guest_')) {
         if (!req.session.guestGoals) {
           req.session.guestGoals = [];
+        }
+        
+        // Check daily limit for guests (3 plans per day)
+        const currentCount = req.session.guestDailyCount || 0;
+        if (currentCount >= 3) {
+          return res.status(429).json({ 
+            message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
+            isGuest: true,
+            dailyLimit: 3,
+            currentCount: currentCount
+          });
         }
         
         const guestGoal = {
@@ -289,6 +300,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         
         req.session.guestGoals.push(guestGoal);
+        req.session.guestDailyCount = currentCount + 1;
+        
         return res.status(201).json(guestGoal);
       }
       

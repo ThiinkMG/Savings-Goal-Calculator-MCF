@@ -22,7 +22,7 @@ export default function HomePage() {
   const [showGuestBanner, setShowGuestBanner] = useState(false);
   const [recurringPopupTimer, setRecurringPopupTimer] = useState<NodeJS.Timeout | null>(null);
   
-  const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
+  const { user, isGuest, isAuthenticated, guestInfo, logout, isLoggingOut } = useAuth();
 
   // Show guest popup when user becomes a guest and auto-hide after 10 seconds
   useEffect(() => {
@@ -239,9 +239,14 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center gap-3 flex-1">
                 <User className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                <span className="text-sm text-blue-800 dark:text-blue-200">
-                  You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
-                </span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm text-blue-800 dark:text-blue-200">
+                    You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
+                  </span>
+                  <span className="text-xs text-blue-600 dark:text-blue-300 font-medium">
+                    Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today • Data resets every 24 hours
+                  </span>
+                </div>
               </div>
               <Button
                 onClick={() => setShowEnhancedAuthModal(true)}
@@ -269,6 +274,33 @@ export default function HomePage() {
                 Take control of your financial future with our intelligent savings calculator. 
                 Set goals, track progress, and achieve your dreams.
               </p>
+              
+              {/* Plan Counter */}
+              <div className="mb-4">
+                {isAuthenticated ? (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                      Plans Unlimited
+                    </span>
+                  </div>
+                ) : isGuest ? (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today
+                    </span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-800 rounded-lg">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Sign in to create plans
+                    </span>
+                  </div>
+                )}
+              </div>
+              
               <div className="mb-6 text-center">
                 <a 
                   href="https://www.mycollegefinance.com/online-finance-courses" 

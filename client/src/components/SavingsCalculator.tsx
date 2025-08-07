@@ -134,23 +134,24 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     onError: (error: Error) => {
       console.log('Save goal error:', error.message);
       
-      // Check if the error message contains guest authentication indicators
-      if (error.message.includes("create an account") || error.message.includes("isGuest")) {
-        toast({
-          title: "Create Account to Save",
-          description: "Sign up to save your goals permanently",
-          variant: "default",
-        });
-        onAuthRequired?.();
-        return;
-      }
-      
       // Try to parse JSON error response (remove HTTP status prefix if present)
       try {
-        const cleanMessage = error.message.replace(/^\d+:\s*/, ''); // Remove "401: " prefix
+        const cleanMessage = error.message.replace(/^\d+:\s*/, ''); // Remove "429: " or "401: " prefix
         const errorData = JSON.parse(cleanMessage);
         console.log('Parsed error data:', errorData);
         
+        // Check for daily limit exceeded (429 status)
+        if (error.message.startsWith('429:') || errorData.dailyLimit) {
+          toast({
+            title: "Daily Limit Reached",
+            description: "You've reached your daily limit of 3 plans. Create an account for unlimited plans!",
+            variant: "destructive",
+          });
+          onAuthRequired?.();
+          return;
+        }
+        
+        // Check if the error is for guest authentication
         if (errorData.isGuest || (errorData.message && errorData.message.includes("create an account"))) {
           toast({
             title: "Create Account to Save",
@@ -161,7 +162,16 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
           return;
         }
       } catch (e) {
-        // JSON parsing failed, continue to generic error
+        // JSON parsing failed, check for text-based indicators
+        if (error.message.includes("Daily limit reached") || error.message.includes("create an account") || error.message.includes("isGuest")) {
+          toast({
+            title: "Create Account to Save",
+            description: "Sign up to save your goals permanently",
+            variant: "default",
+          });
+          onAuthRequired?.();
+          return;
+        }
       }
       
       toast({
