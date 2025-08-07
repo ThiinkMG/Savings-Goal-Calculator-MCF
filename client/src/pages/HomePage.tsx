@@ -77,31 +77,12 @@ export default function HomePage() {
       {isGuest && (
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white py-4 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
-              <div className="flex items-start gap-3 flex-1">
-                <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-white leading-relaxed">
-                  <span className="font-medium">You're using My College Finance as a guest.</span>
-                  <br className="block sm:hidden" />
-                  <span className="block sm:inline"> Your data won't be saved between sessions. </span>
-                  <button 
-                    onClick={() => setShowEnhancedAuthModal(true)}
-                    className="underline hover:no-underline text-white font-semibold"
-                  >
-                    Create an account
-                  </button>
-                  <span> to save your progress.</span>
-                </div>
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-white leading-relaxed">
+                <span className="font-medium">You're using My College Finance as a guest.</span>
+                <span className="block sm:inline"> Your goals are saved for this session only.</span>
               </div>
-              <Button
-                onClick={() => setShowEnhancedAuthModal(true)}
-                size="sm"
-                variant="secondary"
-                className="bg-white/90 hover:bg-white text-blue-700 dark:bg-white/95 dark:hover:bg-white dark:text-blue-800 border-white/50 font-medium shadow-sm hover:shadow-md transition-all duration-200 w-full sm:w-auto flex-shrink-0"
-              >
-                <User className="w-4 h-4 mr-2" />
-                Login & Save Progress
-              </Button>
             </div>
           </div>
         </div>
