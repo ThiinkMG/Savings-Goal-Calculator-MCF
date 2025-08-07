@@ -974,42 +974,17 @@ export function WhatIfScenarios({
               </div>
             </div>
 
-            {/* Dynamic Success Stories & Positive Reframing */}
+            {/* Positive Reframing & Dynamic Analytics */}
             <div className="mt-4 space-y-3">
-              <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-lg border-l-4 border-amber-500">
-                <div className="flex items-center gap-2 mb-3">
-                  <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                  <h4 className="font-semibold text-amber-800 dark:text-amber-200">Success Story</h4>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-amber-700 dark:text-amber-300">
-                    <strong>"Sarah, College Junior":</strong> Started with coffee at home + reduced streaming services.
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center justify-between text-xs bg-white dark:bg-gray-800/50 p-2 rounded">
-                      <span className="text-muted-foreground">Monthly Savings:</span>
-                      <span className="font-semibold text-green-600">+$212</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs bg-white dark:bg-gray-800/50 p-2 rounded">
-                      <span className="text-muted-foreground">Goal Completion:</span>
-                      <span className="font-semibold text-blue-600">3 months early</span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-amber-600 dark:text-amber-400 italic">
-                    "I didn't miss the expensive coffee after week 2. The momentum kept me going!"
-                  </p>
-                </div>
-              </div>
-
               {/* Positive Reframing Options */}
-              <div className="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 rounded-lg border-l-4 border-teal-500">
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-950/20 dark:to-sky-950/20 rounded-lg border-l-4 border-blue-500">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">🧠</span>
-                  <h4 className="font-semibold text-teal-800 dark:text-teal-200">Mindset Shifts That Work</h4>
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200">Mindset Shifts That Work</h4>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-start gap-2">
-                    <span className="text-teal-600 dark:text-teal-400 font-bold">Instead of:</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-bold">Instead of:</span>
                     <span className="text-gray-600 dark:text-gray-400">"I can't afford coffee out"</span>
                   </div>
                   <div className="flex items-start gap-2">
@@ -1017,7 +992,7 @@ export function WhatIfScenarios({
                     <span className="text-green-700 dark:text-green-300">"I'm investing in my future dreams"</span>
                   </div>
                   <div className="flex items-start gap-2 mt-3">
-                    <span className="text-teal-600 dark:text-teal-400 font-bold">Instead of:</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-bold">Instead of:</span>
                     <span className="text-gray-600 dark:text-gray-400">"I'm missing out on fun"</span>
                   </div>
                   <div className="flex items-start gap-2">
@@ -1028,10 +1003,10 @@ export function WhatIfScenarios({
               </div>
 
               {/* Dynamic Expense Categories Based on Lifestyle */}
-              <div className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20 rounded-lg border-l-4 border-emerald-500">
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-lg border-l-4 border-blue-500">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">📊</span>
-                  <h4 className="font-semibold text-emerald-800 dark:text-emerald-200">Your Spending Style</h4>
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200">Your Spending Style</h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="p-3 bg-white dark:bg-gray-800/50 rounded-lg">
@@ -1067,7 +1042,7 @@ export function WhatIfScenarios({
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-3 italic">
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-3 italic">
                   💡 Based on college student spending patterns and success rates
                 </p>
               </div>
