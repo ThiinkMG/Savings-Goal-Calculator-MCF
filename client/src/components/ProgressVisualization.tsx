@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, Target, TrendingUp, Lightbulb, AlertTriangle, CheckCircle, Clock, Award } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface ProgressVisualizationProps {
   targetAmount: number;
@@ -22,6 +23,7 @@ export function ProgressVisualization({
   monthlyCapacity,
   selectedTradeOffs = []
 }: ProgressVisualizationProps) {
+  const { formatCurrency: formatLocaleCurrency } = useLocale();
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
   useEffect(() => {
@@ -101,7 +103,7 @@ export function ProgressVisualization({
         type: 'warning',
         icon: <AlertTriangle className="w-4 h-4" />,
         title: 'Capacity Alert',
-        message: `Your monthly capacity ($${monthlyCapacity.toLocaleString()}) is below what's needed ($${monthlyRequired.toLocaleString()}).`,
+        message: `Your monthly capacity (${formatLocaleCurrency(monthlyCapacity)}) is below what's needed (${formatLocaleCurrency(monthlyRequired)}).`,
         bgColor: 'bg-orange-50 dark:bg-orange-950/20',
         textColor: 'text-orange-800 dark:text-orange-200',
         borderColor: 'border-orange-200 dark:border-orange-800'
@@ -177,7 +179,7 @@ export function ProgressVisualization({
           <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
             <span className="text-sm text-muted-foreground">Monthly Required</span>
             <span className="font-semibold brand-blue text-lg">
-              ${monthlyRequired.toLocaleString()}
+              {formatLocaleCurrency(monthlyRequired)}
             </span>
           </div>
           
@@ -190,7 +192,7 @@ export function ProgressVisualization({
             <span className={`font-semibold text-lg ${
               isCapacityInsufficient ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
             }`}>
-              ${monthlyCapacity.toLocaleString()}
+              {formatLocaleCurrency(monthlyCapacity)}
             </span>
           </div>
           
@@ -199,7 +201,7 @@ export function ProgressVisualization({
             <span className={`font-semibold text-lg ${
               projectedTotal >= targetAmount ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'
             }`}>
-              ${projectedTotal.toLocaleString()}
+              {formatLocaleCurrency(projectedTotal)}
             </span>
           </div>
           
@@ -213,7 +215,7 @@ export function ProgressVisualization({
           <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
             <span className="text-sm text-muted-foreground">Amount Remaining</span>
             <span className="font-semibold text-foreground">
-              ${amountRemaining.toLocaleString()}
+              {formatLocaleCurrency(amountRemaining)}
             </span>
           </div>
         </div>
@@ -266,53 +268,53 @@ export function ProgressVisualization({
                   {selectedTradeOffs.includes('coffee') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">☕</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$167/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(167)}/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('lunch') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">🍽️</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$325/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(325)}/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('streaming') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">📱</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$45/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(45)}/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('nightsout') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">🎉</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$150/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(150)}/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('transport') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">🚗</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$69/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(69)}/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('shopping') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">🛍️</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$45/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(45)}/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('selling') && (
                     <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
                       <span className="text-lg font-medium">📈</span>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$150/month</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+{formatLocaleCurrency(150)}/month</span>
                     </div>
                   )}
                   <div className="mt-4 pt-3 border-t-2 border-green-200 dark:border-green-800/50">
                     <div className="flex justify-between items-center p-3 bg-green-100 dark:bg-green-900/40 rounded-lg">
                       <span className="font-semibold text-sm text-green-800 dark:text-green-200">Total Extra Savings:</span>
                       <span className="font-bold text-lg text-green-600 dark:text-green-400">
-                        +${selectedTradeOffs.reduce((total, id) => {
+                        +{formatLocaleCurrency(selectedTradeOffs.reduce((total, id) => {
                           const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
                           return total + (amounts[id as keyof typeof amounts] || 0);
-                        }, 0)}/month
+                        }, 0))}/month
                       </span>
                     </div>
                     <div className="text-sm text-green-700 dark:text-green-300 mt-2 text-center font-medium">

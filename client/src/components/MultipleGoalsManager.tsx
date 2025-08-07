@@ -209,7 +209,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                     
                     <div className="mb-3">
                       <div className="flex flex-col sm:flex-row justify-between text-sm text-muted-foreground mb-2 gap-1">
-                        <span className="break-words">${(goal.currentSavings || 0).toLocaleString()} of ${goal.targetAmount.toLocaleString()}</span>
+                        <span className="break-words">{formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}</span>
                         <span className="font-medium">{Math.round(progress)}%</span>
                       </div>
                       <Progress value={progress} className="h-2" />
@@ -218,7 +218,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                     <div className="text-sm text-muted-foreground mb-3 space-y-2">
                       <div className="flex items-center gap-1">
                         <TrendingUp className="w-3 h-3 flex-shrink-0" />
-                        <span className="font-medium">${monthlyRequired}/month required</span>
+                        <span className="font-medium">{formatLocaleCurrency(monthlyRequired)}/month required</span>
                       </div>
                       <div className="flex flex-col gap-1">
                         <span className="text-sm">{monthsLeft} months remaining</span>
