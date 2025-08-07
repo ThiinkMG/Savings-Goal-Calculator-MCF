@@ -219,25 +219,28 @@ export function ProgressVisualization({
         </div>
 
         {/* Progress Insights */}
-        <div className="mt-8">
-          <h4 className="text-sm font-medium text-muted-foreground mb-3">
-            Progress Insights
-          </h4>
+        <div className="mt-8 p-4 md:p-6 bg-gradient-to-br from-slate-50 to-gray-50 dark:from-gray-900/50 dark:to-slate-900/50 border-2 border-gray-100 dark:border-gray-800 rounded-lg">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-8 bg-gradient-to-b from-brand-blue to-brand-green rounded-full"></div>
+            <h4 className="text-lg font-semibold text-foreground">
+              Progress Insights
+            </h4>
+          </div>
           <div className="space-y-3">
             {progressInsights.map((insight, index) => (
               <div
                 key={index}
-                className={`p-3 rounded-lg border ${insight.bgColor} ${insight.borderColor}`}
+                className={`p-4 rounded-xl border-l-4 ${insight.bgColor} ${insight.borderColor} shadow-sm hover:shadow-md transition-shadow`}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`${insight.textColor} mt-0.5`}>
+                  <div className={`${insight.textColor} mt-0.5 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50`}>
                     {insight.icon}
                   </div>
                   <div className="flex-1">
-                    <h5 className={`font-medium text-sm ${insight.textColor} mb-1`}>
+                    <h5 className={`font-semibold text-base ${insight.textColor} mb-2`}>
                       {insight.title}
                     </h5>
-                    <p className={`text-xs ${insight.textColor.replace('800', '700').replace('200', '300')}`}>
+                    <p className={`text-sm ${insight.textColor.replace('800', '700').replace('200', '300')} leading-relaxed`}>
                       {insight.message}
                     </p>
                   </div>
@@ -247,66 +250,68 @@ export function ProgressVisualization({
             
             {/* Saver Picks Section */}
             {selectedTradeOffs.length > 0 && (
-              <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-lg border-l-4 border-green-500">
-                <div className="flex items-center gap-2 mb-3">
-                  <Award className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <h5 className="font-medium text-sm text-green-800 dark:text-green-200">Saver Picks</h5>
+              <div className="p-4 md:p-5 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-xl border-l-4 border-green-500 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h5 className="font-semibold text-base text-green-800 dark:text-green-200">Saver Picks</h5>
                 </div>
                 <div className="space-y-2">
                   {selectedTradeOffs.includes('coffee') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">☕ Make coffee at home</span>
-                      <span className="text-xs font-medium text-green-600">+$167/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">☕ Make coffee at home</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$167/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('lunch') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">🍽️ Pack lunch</span>
-                      <span className="text-xs font-medium text-green-600">+$325/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">🍽️ Pack lunch</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$325/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('streaming') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">📱 Reduce streaming services</span>
-                      <span className="text-xs font-medium text-green-600">+$45/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">📱 Reduce streaming services</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$45/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('nightsout') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">🎉 Fewer nights out</span>
-                      <span className="text-xs font-medium text-green-600">+$150/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">🎉 Fewer nights out</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$150/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('transport') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">🚗 Walk/bike more</span>
-                      <span className="text-xs font-medium text-green-600">+$69/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">🚗 Walk/bike more</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$69/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('shopping') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">🛍️ 24-hour rule</span>
-                      <span className="text-xs font-medium text-green-600">+$45/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">🛍️ 24-hour rule</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$45/month</span>
                     </div>
                   )}
                   {selectedTradeOffs.includes('selling') && (
-                    <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
-                      <span className="text-xs">📈 Sell unused items</span>
-                      <span className="text-xs font-medium text-blue-600">+$150/month</span>
+                    <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-green-200 dark:border-green-800/50 shadow-sm">
+                      <span className="text-sm font-medium">📈 Sell unused items</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">+$150/month</span>
                     </div>
                   )}
-                  <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-xs text-green-800 dark:text-green-200">Total Extra Savings:</span>
-                      <span className="font-bold text-xs text-green-600 dark:text-green-400">
+                  <div className="mt-4 pt-3 border-t-2 border-green-200 dark:border-green-800/50">
+                    <div className="flex justify-between items-center p-3 bg-green-100 dark:bg-green-900/40 rounded-lg">
+                      <span className="font-semibold text-sm text-green-800 dark:text-green-200">Total Extra Savings:</span>
+                      <span className="font-bold text-lg text-green-600 dark:text-green-400">
                         +${selectedTradeOffs.reduce((total, id) => {
                           const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
                           return total + (amounts[id as keyof typeof amounts] || 0);
                         }, 0)}/month
                       </span>
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      This could finish your goal {Math.round(selectedTradeOffs.reduce((total, id) => {
+                    <div className="text-sm text-green-700 dark:text-green-300 mt-2 text-center font-medium">
+                      🎯 This could finish your goal {Math.round(selectedTradeOffs.reduce((total, id) => {
                         const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
                         return total + (amounts[id as keyof typeof amounts] || 0);
                       }, 0) / monthlyRequired * 30)} days sooner!

@@ -811,10 +811,27 @@ export function WhatIfScenarios({
           onToggle={() => toggleSection("timeline-impact")}
         >
           <div className="space-y-4">
-            <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border-l-4 border-green-500">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                <strong>The Power of Small Changes:</strong> Just $25 extra monthly (that's one coffee per week!) can finish your goal months earlier. 
-                Early extra savings have maximum impact due to compound time savings.
+            <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border-l-4 border-blue-500">
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h4 className="font-semibold text-blue-800 dark:text-blue-200">Alternative Strategies</h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="p-3 bg-white dark:bg-gray-800/50 rounded-md border">
+                  <h5 className="font-medium text-sm text-blue-700 dark:text-blue-300 mb-1">Reduce Goal</h5>
+                  <p className="text-xs text-muted-foreground">Lower target by 20% = ${Math.round(targetAmount * 0.2).toLocaleString()} less needed</p>
+                </div>
+                <div className="p-3 bg-white dark:bg-gray-800/50 rounded-md border">
+                  <h5 className="font-medium text-sm text-purple-700 dark:text-purple-300 mb-1">Extend Timeline</h5>
+                  <p className="text-xs text-muted-foreground">Add 6 months = ${Math.round((targetAmount - currentSavings) / (monthsRemaining + 6)).toLocaleString()}/month needed</p>
+                </div>
+                <div className="p-3 bg-white dark:bg-gray-800/50 rounded-md border">
+                  <h5 className="font-medium text-sm text-green-700 dark:text-green-300 mb-1">Hybrid Approach</h5>
+                  <p className="text-xs text-muted-foreground">Combine both strategies for balanced progress</p>
+                </div>
+              </div>
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                <strong>Smart Strategy:</strong> Start with easy changes, then tackle daily habits. Most successful savers implement 2-3 changes consistently.
               </p>
             </div>
             <div className="space-y-4">
@@ -900,6 +917,63 @@ export function WhatIfScenarios({
                 <div className="mt-2 text-xs text-muted-foreground">
                   ⚠️ Small decreases have big timeline impacts - stay consistent!
                 </div>
+              </div>
+            </div>
+            
+            {/* Implementation Roadmap */}
+            <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20 rounded-lg border-l-4 border-emerald-500">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <h4 className="font-semibold text-emerald-800 dark:text-emerald-200">Step-by-Step Implementation</h4>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-emerald-300 flex-shrink-0">1</div>
+                  <div>
+                    <h5 className="font-medium text-sm text-emerald-700 dark:text-emerald-300">Week 1-2: Quick Wins</h5>
+                    <p className="text-xs text-muted-foreground">Cancel unused subscriptions, implement 24-hour rule</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-emerald-300 flex-shrink-0">2</div>
+                  <div>
+                    <h5 className="font-medium text-sm text-emerald-700 dark:text-emerald-300">Week 3-4: Daily Habits</h5>
+                    <p className="text-xs text-muted-foreground">Choose one: home coffee OR packed lunches</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-emerald-300 flex-shrink-0">3</div>
+                  <div>
+                    <h5 className="font-medium text-sm text-emerald-700 dark:text-emerald-300">Month 2+: Advanced Changes</h5>
+                    <p className="text-xs text-muted-foreground">Add transportation or social spending adjustments only if needed</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Success Stories */}
+            <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-lg border-l-4 border-amber-500">
+              <div className="flex items-center gap-2 mb-3">
+                <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <h4 className="font-semibold text-amber-800 dark:text-amber-200">Success Story</h4>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-amber-700 dark:text-amber-300">
+                  <strong>"Sarah, College Junior":</strong> Started with coffee at home + reduced streaming services.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center justify-between text-xs bg-white dark:bg-gray-800/50 p-2 rounded">
+                    <span className="text-muted-foreground">Monthly Savings:</span>
+                    <span className="font-semibold text-green-600">+$212</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs bg-white dark:bg-gray-800/50 p-2 rounded">
+                    <span className="text-muted-foreground">Goal Completion:</span>
+                    <span className="font-semibold text-blue-600">3 months early</span>
+                  </div>
+                </div>
+                <p className="text-xs text-amber-600 dark:text-amber-400 italic">
+                  "I didn't miss the expensive coffee after week 2. The momentum kept me going!"
+                </p>
               </div>
             </div>
 
