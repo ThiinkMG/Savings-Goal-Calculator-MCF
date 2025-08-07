@@ -505,7 +505,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardContent>
       </Card>
     </div>
-    );
+  );
   };
 
   const renderAppearanceSettings = () => (
