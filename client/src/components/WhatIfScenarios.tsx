@@ -87,9 +87,21 @@ export function WhatIfScenarios({
 
     // Reality Check Calculations
     const getFeasibilityScore = () => {
-      if (monthlyRequired > 500) return { score: "Challenging", color: "text-red-600 dark:text-red-400" };
-      if (monthlyRequired > 300) return { score: "Moderate", color: "text-yellow-600 dark:text-yellow-400" };
-      return { score: "Achievable", color: "text-green-600 dark:text-green-400" };
+      if (monthlyRequired > 500) return { 
+        score: "Very Challenging", 
+        color: "text-red-600 dark:text-red-400",
+        description: "This amount is higher than most people can save"
+      };
+      if (monthlyRequired > 300) return { 
+        score: "Moderately Hard", 
+        color: "text-yellow-600 dark:text-yellow-400",
+        description: "Doable with some lifestyle changes"
+      };
+      return { 
+        score: "Realistic", 
+        color: "text-green-600 dark:text-green-400",
+        description: "Most people can manage this amount"
+      };
     };
 
     const getSuccessRate = () => {
@@ -201,26 +213,26 @@ export function WhatIfScenarios({
           
           {/* Quick Summary - Always Visible */}
           <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="p-3 bg-background rounded-lg border">
-              <div className="text-xs text-muted-foreground">Plan Feasibility</div>
+            <div className="p-3 bg-background rounded-lg border" title={feasibility.description}>
+              <div className="text-xs text-muted-foreground">How Realistic</div>
               <div className={`text-sm font-semibold ${feasibility.color}`}>
                 {feasibility.score}
               </div>
             </div>
-            <div className="p-3 bg-background rounded-lg border">
-              <div className="text-xs text-muted-foreground">Success Rate</div>
+            <div className="p-3 bg-background rounded-lg border" title="Based on similar goals, this percentage of people succeed">
+              <div className="text-xs text-muted-foreground">Chance of Success</div>
               <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                 {successRate}%
               </div>
             </div>
-            <div className="p-3 bg-background rounded-lg border">
-              <div className="text-xs text-muted-foreground">Per Day</div>
+            <div className="p-3 bg-background rounded-lg border" title="Amount you need to save every single day">
+              <div className="text-xs text-muted-foreground">Every Day</div>
               <div className="text-sm font-semibold text-foreground">
                 {formatCurrency(dailyAmount)}
               </div>
             </div>
-            <div className="p-3 bg-background rounded-lg border">
-              <div className="text-xs text-muted-foreground">Per Week</div>
+            <div className="p-3 bg-background rounded-lg border" title="Amount you need to save each week">
+              <div className="text-xs text-muted-foreground">Every Week</div>
               <div className="text-sm font-semibold text-foreground">
                 {formatCurrency(weeklyAmount)}
               </div>
@@ -231,11 +243,11 @@ export function WhatIfScenarios({
           {isOverCapacity && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
               <div className="flex items-center gap-2">
-                <span className="text-red-600 dark:text-red-400 font-semibold">⚠️ Reality Check Alert</span>
+                <span className="text-red-600 dark:text-red-400 font-semibold">⚠️ Budget Problem</span>
               </div>
               <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-                You need {formatCurrency(monthlyRequired)}/month but set capacity at {formatCurrency(monthlyCapacity)}/month.
-                Gap: {formatCurrency(capacityGap)}
+                Your goal needs {formatCurrency(monthlyRequired)}/month but you can only afford {formatCurrency(monthlyCapacity)}/month.
+                You're short: {formatCurrency(capacityGap)}
               </p>
             </div>
           )}
@@ -245,48 +257,55 @@ export function WhatIfScenarios({
         <DropdownSection
           id="reality-check"
           icon="🔍"
-          title="Reality Check Analysis"
+          title="How Realistic Is This Plan?"
           isOpen={openSection === "reality-check"}
           onToggle={() => toggleSection("reality-check")}
         >
           <div className="space-y-4">
             <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border-l-4 border-amber-500">
               <p className="text-sm text-amber-800 dark:text-amber-200">
-                <strong>How to interpret:</strong> This analysis rates your plan's difficulty and shows success rates for similar goals. 
-                Use this to adjust your timeline or savings amount if needed.
+                <strong>What this means:</strong> We rate how hard your plan is and show success rates from people with similar goals. 
+                If it looks tough, consider saving for longer or adjusting your target amount.
               </p>
             </div>
+            
             <div className="flex justify-between items-center p-3 bg-background rounded-lg border">
-              <span className="font-medium">Plan Feasibility:</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">How Realistic:</span>
+                <span className="text-xs text-muted-foreground cursor-help" title="Based on typical spending patterns and income levels">ⓘ</span>
+              </div>
               <span className={`font-semibold ${feasibility.color}`}>
                 {feasibility.score}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
               {monthlyRequired > 500 
-                ? "This requires saving more than most people's discretionary income. Consider extending timeline."
+                ? "This amount is more than most people have left over after bills and necessities. You might want a longer timeline."
                 : monthlyRequired > 300
-                ? "This is achievable with disciplined budgeting and some lifestyle adjustments."
-                : "This saving rate is realistic for most people with steady income."
+                ? "This is doable if you're willing to cut back on some spending and stick to a budget."
+                : "This amount should be manageable for most people with steady income."
               }
             </p>
 
             <div className="flex justify-between items-center p-3 bg-background rounded-lg border">
-              <span className="font-medium">Success Probability:</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Chance of Success:</span>
+                <span className="text-xs text-muted-foreground cursor-help" title="Based on data from people with similar savings goals and monthly amounts">ⓘ</span>
+              </div>
               <span className="font-semibold text-blue-600 dark:text-blue-400">
-                {successRate}% likely to succeed
+                {successRate}% succeed
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Based on similar savings goals, {successRate}% of people succeed with this monthly amount and timeline.
+              Out of 100 people trying to save {formatCurrency(monthlyRequired)} per month, about {successRate} of them reach their goal on time.
             </p>
 
             <div className="p-3 bg-background rounded-lg border">
-              <div className="font-medium mb-2">Stress Test:</div>
+              <div className="font-medium mb-2">What if you miss a month?</div>
               <div className="text-sm text-muted-foreground">
-                If you miss 1 month: <span className="font-semibold text-red-600 dark:text-red-400">
+                Life happens! If you skip saving for one month, you'd need <span className="font-semibold text-red-600 dark:text-red-400">
                   {formatCurrency(remaining / (monthsRemaining - 1))}
-                </span> per month for remaining time
+                </span> per month for the rest of your timeline
               </div>
             </div>
           </div>
@@ -296,32 +315,32 @@ export function WhatIfScenarios({
         <DropdownSection
           id="daily-breakdown"
           icon="📅"
-          title="Daily Reality Breakdown"
+          title="What This Means Every Day"
           isOpen={openSection === "daily-breakdown"}
           onToggle={() => toggleSection("daily-breakdown")}
         >
           <div className="space-y-4">
             <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>How to interpret:</strong> These amounts show what you need to save every day, week, and hour to reach your goal. 
-                Compare these to typical expenses to understand the real commitment required.
+                <strong>What this means:</strong> Your monthly goal broken down into smaller chunks. 
+                Compare these to what you spend on coffee, lunch, or snacks to see what you're committing to.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-3 bg-background rounded-lg border">
-                <div className="text-sm text-muted-foreground">Per Day</div>
+              <div className="text-center p-3 bg-background rounded-lg border" title="Amount to save every single day">
+                <div className="text-sm text-muted-foreground">Every Day</div>
                 <div className="text-lg font-bold text-foreground">
                   {formatCurrency(dailyAmount)}
                 </div>
               </div>
-              <div className="text-center p-3 bg-background rounded-lg border">
-                <div className="text-sm text-muted-foreground">Per Week</div>
+              <div className="text-center p-3 bg-background rounded-lg border" title="Amount to save every week">
+                <div className="text-sm text-muted-foreground">Every Week</div>
                 <div className="text-lg font-bold text-foreground">
                   {formatCurrency(weeklyAmount)}
                 </div>
               </div>
-              <div className="text-center p-3 bg-background rounded-lg border">
-                <div className="text-sm text-muted-foreground">Per Hour</div>
+              <div className="text-center p-3 bg-background rounded-lg border" title="If you worked 40 hours/week, this is how much per hour of work">
+                <div className="text-sm text-muted-foreground">Per Work Hour</div>
                 <div className="text-lg font-bold text-foreground">
                   {formatCurrency(hourlyEquivalent)}
                 </div>
@@ -330,12 +349,8 @@ export function WhatIfScenarios({
             
             <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                {dailyAmount > 15 
-                  ? `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
-                  : dailyAmount > 10
-                  ? `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
-                  : `${formatCurrency(dailyAmount)} every day. Lunch costs $12-18, coffee $5-7, snacks $3-5. What are you giving up?`
-                }
+                <strong>Put it in perspective:</strong> {formatCurrency(dailyAmount)} every day is about {dailyAmount > 15 ? "1 restaurant lunch" : dailyAmount > 10 ? "2 fancy coffees" : "1 coffee and a snack"}. 
+                Typical costs: lunch $12-18, coffee $5-7, snacks $3-5.
               </p>
             </div>
           </div>
@@ -345,67 +360,67 @@ export function WhatIfScenarios({
         <DropdownSection
           id="realistic-tradeoffs"
           icon="💰"
-          title="Realistic Trade-offs"
+          title="What Could You Change?"
           isOpen={openSection === "realistic-tradeoffs"}
           onToggle={() => toggleSection("realistic-tradeoffs")}
         >
           <div className="space-y-3">
             <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg border-l-4 border-purple-500">
               <p className="text-sm text-purple-800 dark:text-purple-200">
-                <strong>How to interpret:</strong> These show specific lifestyle changes you could make to reach your goal faster. 
-                Each option shows how much you'd save and how many days sooner you'd finish.
+                <strong>What this means:</strong> Specific changes you could make to reach your goal faster. 
+                Each shows how much money you'd save and how much sooner you'd be done.
               </p>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
                 <span className="text-xl">☕</span>
                 <span className="text-sm">
-                  Skip coffee shop <strong>{coffeePerWeek}</strong> times per week<br/>
-                  <span className="text-xs text-muted-foreground">Avg. cost: $5.50 per coffee</span>
+                  Make coffee at home <strong>{coffeePerWeek}</strong> times per week<br/>
+                  <span className="text-xs text-muted-foreground">Coffee shop costs about $5.50 each time</span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(coffeePerWeek * 5.50 * 4.33)} = {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner | {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).percentCloser}% faster<sup>1</sup>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
+                Save ${Math.round(coffeePerWeek * 5.50 * 4.33)}/month = {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
                 <span className="text-xl">🍽️</span>
                 <span className="text-sm">
-                  Skip lunch out <strong>{lunchPerWeek}</strong> times per week<br/>
-                  <span className="text-xs text-muted-foreground">Avg. cost: $15.00 per lunch</span>
+                  Pack lunch <strong>{lunchPerWeek}</strong> times per week<br/>
+                  <span className="text-xs text-muted-foreground">Restaurant lunch costs about $15.00 each</span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(lunchPerWeek * 15 * 4.33)} = {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner | {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).percentCloser}% faster<sup>1</sup>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
+                Save ${Math.round(lunchPerWeek * 15 * 4.33)}/month = {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
                 <span className="text-xl">📱</span>
                 <span className="text-sm">
-                  Choose <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5<br/>
-                  <span className="text-xs text-muted-foreground">Avg. cost: $15.00 per service</span>
+                  Keep only <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5<br/>
+                  <span className="text-xs text-muted-foreground">Most services cost about $15.00 per month</span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(streamingServices * 15)} = {calculateImpact(Math.round(streamingServices * 15)).daysSaved} days sooner | {calculateImpact(Math.round(streamingServices * 15)).percentCloser}% faster<sup>1</sup>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
+                Save ${Math.round(streamingServices * 15)}/month = {calculateImpact(Math.round(streamingServices * 15)).daysSaved} days sooner
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
                 <span className="text-xl">🎉</span>
                 <span className="text-sm">
-                  Limit nights out to <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> per month<br/>
-                  <span className="text-xs text-muted-foreground">Avg. cost: $50.00 per night</span>
+                  Go out <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> times per month instead of 4<br/>
+                  <span className="text-xs text-muted-foreground">Nights out typically cost about $50.00 each</span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                Save ${Math.round(nightsOutPerMonth * 50)} = {calculateImpact(Math.round(nightsOutPerMonth * 50)).daysSaved} days sooner | {calculateImpact(Math.round(nightsOutPerMonth * 50)).percentCloser}% faster<sup>1</sup>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
+                Save ${Math.round(nightsOutPerMonth * 50)}/month = {calculateImpact(Math.round(nightsOutPerMonth * 50)).daysSaved} days sooner
               </span>
             </div>
             <div className="mt-3 text-xs text-muted-foreground italic">
-              <sup>1</sup> Savings estimates based on average costs and assume consistent behavioral changes. Actual results vary by location, current spending habits, and personal preferences.
+              <strong>Tip:</strong> Start with the easiest changes (like canceling subscriptions) before tackling daily habits. Most successful savers pick 2-3 changes and stick with them.
             </div>
           </div>
         </DropdownSection>
