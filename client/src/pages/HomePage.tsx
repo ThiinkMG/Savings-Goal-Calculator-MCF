@@ -266,15 +266,27 @@ export default function HomePage() {
                   </span>
                 </div>
               </div>
-              <Button
-                onClick={() => setShowEnhancedAuthModal(true)}
-                size="sm"
-                variant="outline"
-                className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 w-full sm:w-auto flex-shrink-0"
-              >
-                <User className="w-4 h-4 mr-2" />
-                Create Account
-              </Button>
+              <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
+                <Button
+                  onClick={() => setShowEnhancedAuthModal(true)}
+                  size="sm"
+                  variant="outline"
+                  className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 flex-1 sm:flex-initial"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Create Account
+                </Button>
+                <Button
+                  onClick={logout}
+                  size="sm"
+                  variant="outline"
+                  disabled={isLoggingOut}
+                  className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 flex-1 sm:flex-initial"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {isLoggingOut ? 'Ending...' : 'End Session'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -328,24 +328,51 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
     <div className="h-full overflow-y-auto settings-content-scroll pr-2">
       <Card>
         <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-          <CardDescription>Your current account details</CardDescription>
+          <CardTitle>{user ? 'Account Information' : 'Guest Session'}</CardTitle>
+          <CardDescription>
+            {user ? 'Your current account details' : 'You\'re using My College Finance as a guest'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Username</span>
-              <span className="text-sm text-muted-foreground">{user?.username || 'Not set'}</span>
+          {user ? (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Username</span>
+                <span className="text-sm text-muted-foreground">{user?.username || 'Not set'}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Email</span>
+                <span className="text-sm text-muted-foreground">{user?.email || 'Not set'}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Phone</span>
+                <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Email</span>
-              <span className="text-sm text-muted-foreground">{user?.email || 'Not set'}</span>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 border border-border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <h4 className="font-medium text-sm text-blue-800 dark:text-blue-200">Guest Session Active</h4>
+                </div>
+                <p className="text-xs text-blue-700 dark:text-blue-300 mb-3 leading-relaxed">
+                  Your savings goals are stored temporarily for this session only. Create an account to save your progress permanently.
+                </p>
+                <Button
+                  onClick={() => {
+                    setShowAuthModal(true);
+                    onClose();
+                  }}
+                  size="sm"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Create Free Account
+                </Button>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Phone</span>
-              <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
-            </div>
-          </div>
+          )}
           <Separator />
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Login Methods</h4>
@@ -437,14 +464,15 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
                 logout(); 
                 onClose(); 
               } else {
-                setShowAuthModal(true);
-                onClose();
+                // For guest users, "logout" means clearing session and showing auth modal
+                logout(); // This will clear guest session and return to login flow
+                onClose(); 
               }
             }} 
             variant="outline" 
             className="w-full mt-4"
           >
-            {user ? 'Log Out' : 'Log In'}
+            Log Out
           </Button>
 
           {/* Additional spacing for better scrolling */}
