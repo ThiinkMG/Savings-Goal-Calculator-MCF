@@ -64,6 +64,7 @@ export function WhatIfScenarios({
   monthlyCapacity 
 }: WhatIfScenariosProps) {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [selectedTradeOffs, setSelectedTradeOffs] = useState<string[]>([]);
   
   // Auto-expand decision helper if there's an over-capacity issue (only on first render)
   useEffect(() => {
@@ -75,6 +76,14 @@ export function WhatIfScenarios({
 
   const toggleSection = (sectionId: string) => {
     setOpenSection(openSection === sectionId ? null : sectionId);
+  };
+
+  const toggleTradeOff = (tradeOffId: string) => {
+    setSelectedTradeOffs(prev => 
+      prev.includes(tradeOffId) 
+        ? prev.filter(id => id !== tradeOffId)
+        : [...prev, tradeOffId]
+    );
   };
 
   // Ensure all calculations are reactive to prop changes
@@ -218,6 +227,77 @@ export function WhatIfScenarios({
             Understand the real impact of your savings plan
           </p>
           
+          {/* Saver Picks - Show if any selections made */}
+          {selectedTradeOffs.length > 0 && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-lg border-l-4 border-green-500">
+              <div className="flex items-center gap-2 mb-3">
+                <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <h4 className="font-medium text-green-800 dark:text-green-200">Your Saver Picks</h4>
+              </div>
+              <div className="space-y-2">
+                {selectedTradeOffs.includes('coffee') && (
+                  <div className="flex justify-between items-center p-2 bg-amber-100 dark:bg-amber-900/30 rounded-md">
+                    <span className="text-sm">☕ Make coffee at home</span>
+                    <span className="text-xs font-medium text-green-600">+$167/month</span>
+                  </div>
+                )}
+                {selectedTradeOffs.includes('lunch') && (
+                  <div className="flex justify-between items-center p-2 bg-blue-100 dark:bg-blue-900/30 rounded-md">
+                    <span className="text-sm">🍽️ Pack lunch</span>
+                    <span className="text-xs font-medium text-green-600">+$325/month</span>
+                  </div>
+                )}
+                {selectedTradeOffs.includes('streaming') && (
+                  <div className="flex justify-between items-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded-md">
+                    <span className="text-sm">📱 Reduce streaming services</span>
+                    <span className="text-xs font-medium text-green-600">+$45/month</span>
+                  </div>
+                )}
+                {selectedTradeOffs.includes('nightsout') && (
+                  <div className="flex justify-between items-center p-2 bg-pink-100 dark:bg-pink-900/30 rounded-md">
+                    <span className="text-sm">🎉 Fewer nights out</span>
+                    <span className="text-xs font-medium text-green-600">+$150/month</span>
+                  </div>
+                )}
+                {selectedTradeOffs.includes('transport') && (
+                  <div className="flex justify-between items-center p-2 bg-teal-100 dark:bg-teal-900/30 rounded-md">
+                    <span className="text-sm">🚗 Walk/bike more</span>
+                    <span className="text-xs font-medium text-green-600">+$69/month</span>
+                  </div>
+                )}
+                {selectedTradeOffs.includes('shopping') && (
+                  <div className="flex justify-between items-center p-2 bg-orange-100 dark:bg-orange-900/30 rounded-md">
+                    <span className="text-sm">🛍️ 24-hour rule</span>
+                    <span className="text-xs font-medium text-green-600">+$45/month</span>
+                  </div>
+                )}
+                {selectedTradeOffs.includes('selling') && (
+                  <div className="flex justify-between items-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                    <span className="text-sm">📈 Sell unused items</span>
+                    <span className="text-xs font-medium text-blue-600">+$150/month</span>
+                  </div>
+                )}
+                <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-green-800 dark:text-green-200">Total Extra Savings:</span>
+                    <span className="font-bold text-green-600 dark:text-green-400">
+                      +${selectedTradeOffs.reduce((total, id) => {
+                        const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
+                        return total + (amounts[id as keyof typeof amounts] || 0);
+                      }, 0)}/month
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    This could finish your goal {Math.round(selectedTradeOffs.reduce((total, id) => {
+                      const amounts = { coffee: 167, lunch: 325, streaming: 45, nightsout: 150, transport: 69, shopping: 45, selling: 150 };
+                      return total + (amounts[id as keyof typeof amounts] || 0);
+                    }, 0) / monthlyRequired * 30)} days sooner!
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Quick Summary - Always Visible */}
           <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
             <TooltipProvider>
@@ -486,11 +566,18 @@ export function WhatIfScenarios({
                 Most successful savers pick 2-3 changes and stick with them consistently.
               </p>
             </div>
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('coffee') 
+                  ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('coffee')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center text-xl">☕</div>
                 <span className="text-sm flex-1">
-                  Make coffee at home <strong>{coffeePerWeek}</strong> times per week<br/>
+                  Make coffee at home <strong>7</strong> times per week<br/>
                   <span className="text-xs text-muted-foreground">Coffee shop costs about $5.50 each time</span>
                   <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-md mt-1 inline-block">
                     Moderate
@@ -499,18 +586,28 @@ export function WhatIfScenarios({
               </div>
               <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                  Save ${Math.round(coffeePerWeek * 5.50 * 4.33)}/month
+                  Save $167/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner
+                  7 days sooner
                 </span>
+                {selectedTradeOffs.includes('coffee') && (
+                  <div className="text-xs font-medium text-amber-600 dark:text-amber-400">✓ Selected</div>
+                )}
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('lunch') 
+                  ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-300 dark:border-blue-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('lunch')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-xl">🍽️</div>
                 <span className="text-sm flex-1">
-                  Pack lunch <strong>{lunchPerWeek}</strong> times per week<br/>
+                  Pack lunch <strong>5</strong> times per week<br/>
                   <span className="text-xs text-muted-foreground">Restaurant lunch costs about $15.00 each</span>
                   <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-md mt-1 inline-block">
                     Moderate
@@ -519,18 +616,28 @@ export function WhatIfScenarios({
               </div>
               <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                  Save ${Math.round(lunchPerWeek * 15 * 4.33)}/month
+                  Save $325/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner
+                  14 days sooner
                 </span>
+                {selectedTradeOffs.includes('lunch') && (
+                  <div className="text-xs font-medium text-blue-600 dark:text-blue-400">✓ Selected</div>
+                )}
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('streaming') 
+                  ? 'bg-purple-50 dark:bg-purple-950/20 border-purple-300 dark:border-purple-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('streaming')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-xl">📱</div>
                 <span className="text-sm flex-1">
-                  Keep only <strong>{Math.max(2, 5 - streamingServices)}</strong> streaming services instead of 5<br/>
+                  Keep only <strong>2</strong> streaming services instead of 5<br/>
                   <span className="text-xs text-muted-foreground">Most services cost about $15.00 per month</span>
                   <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md mt-1 inline-block">
                     Easy
@@ -539,18 +646,28 @@ export function WhatIfScenarios({
               </div>
               <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                  Save ${Math.round(streamingServices * 15)}/month
+                  Save $45/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(Math.round(streamingServices * 15)).daysSaved} days sooner
+                  2 days sooner
                 </span>
+                {selectedTradeOffs.includes('streaming') && (
+                  <div className="text-xs font-medium text-purple-600 dark:text-purple-400">✓ Selected</div>
+                )}
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('nightsout') 
+                  ? 'bg-pink-50 dark:bg-pink-950/20 border-pink-300 dark:border-pink-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('nightsout')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center text-xl">🎉</div>
                 <span className="text-sm flex-1">
-                  Go out <strong>{Math.max(1, 4 - nightsOutPerMonth)}</strong> times per month instead of 4<br/>
+                  Go out <strong>1</strong> times per month instead of 4<br/>
                   <span className="text-xs text-muted-foreground">Nights out typically cost about $50.00 each</span>
                   <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md mt-1 inline-block">
                     Hard
@@ -559,15 +676,25 @@ export function WhatIfScenarios({
               </div>
               <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                  Save ${Math.round(nightsOutPerMonth * 50)}/month
+                  Save $150/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(Math.round(nightsOutPerMonth * 50)).daysSaved} days sooner
+                  7 days sooner
                 </span>
+                {selectedTradeOffs.includes('nightsout') && (
+                  <div className="text-xs font-medium text-pink-600 dark:text-pink-400">✓ Selected</div>
+                )}
               </div>
             </div>
             {/* Additional Categories */}
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('transport') 
+                  ? 'bg-teal-50 dark:bg-teal-950/20 border-teal-300 dark:border-teal-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('transport')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center">
                   <Car className="w-5 h-5" />
@@ -582,15 +709,25 @@ export function WhatIfScenarios({
               </div>
               <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                  Save ${Math.round(2 * 8 * 4.33)}/month
+                  Save $69/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(Math.round(2 * 8 * 4.33)).daysSaved} days sooner
+                  3 days sooner
                 </span>
+                {selectedTradeOffs.includes('transport') && (
+                  <div className="text-xs font-medium text-teal-600 dark:text-teal-400">✓ Selected</div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('shopping') 
+                  ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-300 dark:border-orange-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('shopping')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
                   <ShoppingBag className="w-5 h-5" />
@@ -605,15 +742,25 @@ export function WhatIfScenarios({
               </div>
               <div className="space-y-1 text-right">
                 <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
-                  Save ${Math.round(45)}/month
+                  Save $45/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(45).daysSaved} days sooner
+                  2 days sooner
                 </span>
+                {selectedTradeOffs.includes('shopping') && (
+                  <div className="text-xs font-medium text-orange-600 dark:text-orange-400">✓ Selected</div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+            <div 
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedTradeOffs.includes('selling') 
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-300 dark:border-green-700' 
+                  : 'bg-background hover:bg-muted/50'
+              }`}
+              onClick={() => toggleTradeOff('selling')}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                   <TrendingUp className="w-5 h-5" />
@@ -631,8 +778,11 @@ export function WhatIfScenarios({
                   Earn $150/month
                 </span>
                 <span className="text-xs text-muted-foreground block">
-                  {calculateImpact(150).daysSaved} days sooner
+                  7 days sooner
                 </span>
+                {selectedTradeOffs.includes('selling') && (
+                  <div className="text-xs font-medium text-green-600 dark:text-green-400">✓ Selected</div>
+                )}
               </div>
             </div>
 
