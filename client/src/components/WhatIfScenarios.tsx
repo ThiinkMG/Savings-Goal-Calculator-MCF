@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp, Target } from 'lucide-react';
@@ -57,64 +57,120 @@ export function WhatIfScenarios({
     setOpenSection(openSection === sectionId ? null : sectionId);
   };
 
-  // Calculate helper values
-  const remaining = targetAmount - currentSavings;
-  const monthsRemaining = calculations.monthsRemaining;
-  const monthlyRequired = calculations.monthlyRequired;
+  // Ensure all calculations are reactive to prop changes
+  const memoizedCalculations = useMemo(() => {
+    console.log('WhatIfScenarios: Recalculating with new props', {
+      targetAmount,
+      currentSavings,
+      monthlyRequired: calculations.monthlyRequired,
+      monthsRemaining: calculations.monthsRemaining,
+      monthlyCapacity
+    });
 
-  // Reality Check Calculations
-  const getFeasibilityScore = () => {
-    if (monthlyRequired > 500) return { score: "Challenging", color: "text-red-600 dark:text-red-400" };
-    if (monthlyRequired > 300) return { score: "Moderate", color: "text-yellow-600 dark:text-yellow-400" };
-    return { score: "Achievable", color: "text-green-600 dark:text-green-400" };
-  };
+    // Calculate helper values
+    const remaining = targetAmount - currentSavings;
+    const monthsRemaining = calculations.monthsRemaining;
+    const monthlyRequired = calculations.monthlyRequired;
 
-  const getSuccessRate = () => {
-    if (monthlyRequired > 400) return 45;
-    if (monthlyRequired > 300) return 65;
-    if (monthlyRequired > 200) return 80;
-    return 85;
-  };
+    // Reality Check Calculations
+    const getFeasibilityScore = () => {
+      if (monthlyRequired > 500) return { score: "Challenging", color: "text-red-600 dark:text-red-400" };
+      if (monthlyRequired > 300) return { score: "Moderate", color: "text-yellow-600 dark:text-yellow-400" };
+      return { score: "Achievable", color: "text-green-600 dark:text-green-400" };
+    };
 
-  // Daily breakdown calculations
-  const dailyAmount = monthlyRequired / 30.44;
-  const weeklyAmount = monthlyRequired / 4.33;
-  const hourlyEquivalent = monthlyRequired / (40 * 4.33);
+    const getSuccessRate = () => {
+      if (monthlyRequired > 400) return 45;
+      if (monthlyRequired > 300) return 65;
+      if (monthlyRequired > 200) return 80;
+      return 85;
+    };
 
-  // Realistic opportunity cost calculations (weekly/monthly)
-  const coffeePerWeek = Math.min(Math.round((weeklyAmount) / 5.50), 7); // Weekly coffee skips (max 7 per week)
-  const lunchPerWeek = Math.min(Math.round((weeklyAmount) / 15), 5); // Weekly lunch skips (max 5 per week)
-  const streamingServices = Math.min(Math.round(monthlyRequired / 15), 3); // Number of streaming services to cancel (max 3)
-  const nightsOutPerMonth = Math.min(Math.round(monthlyRequired / 50), 3); // Nights out reduction per month (max 3)
+    // Daily breakdown calculations
+    const dailyAmount = monthlyRequired / 30.44;
+    const weeklyAmount = monthlyRequired / 4.33;
+    const hourlyEquivalent = monthlyRequired / (40 * 4.33);
 
-  // Calculate actual dates for timeline impact
-  const calculateNewDate = (adjustment: number) => {
-    const newMonthly = monthlyRequired + adjustment;
-    const newMonths = remaining / newMonthly;
-    const newDate = new Date();
-    newDate.setMonth(newDate.getMonth() + Math.floor(newMonths));
-    return newDate;
-  };
-  
-  const originalDate = new Date(targetDate);
-  const date25More = calculateNewDate(25);
-  const date50More = calculateNewDate(50);
-  const date25Less = calculateNewDate(-25);
-  
-  // Reality vs Capacity check
-  const capacityGap = monthlyRequired - monthlyCapacity;
-  const isOverCapacity = capacityGap > 0;
-  
-  // Helper function to calculate days and percentage closer to goal
-  const calculateImpact = (savingsAmount: number) => {
-    const monthsSaved = savingsAmount / monthlyRequired;
-    const daysSaved = Math.round(monthsSaved * 30.44);
-    const percentCloser = Math.round((savingsAmount / remaining) * 100);
-    return { daysSaved, percentCloser };
-  };
+    // Realistic opportunity cost calculations (weekly/monthly)
+    const coffeePerWeek = Math.min(Math.round((weeklyAmount) / 5.50), 7); // Weekly coffee skips (max 7 per week)
+    const lunchPerWeek = Math.min(Math.round((weeklyAmount) / 15), 5); // Weekly lunch skips (max 5 per week)
+    const streamingServices = Math.min(Math.round(monthlyRequired / 15), 3); // Number of streaming services to cancel (max 3)
+    const nightsOutPerMonth = Math.min(Math.round(monthlyRequired / 50), 3); // Nights out reduction per month (max 3)
 
-  const feasibility = getFeasibilityScore();
-  const successRate = getSuccessRate();
+    // Calculate actual dates for timeline impact
+    const calculateNewDate = (adjustment: number) => {
+      const newMonthly = monthlyRequired + adjustment;
+      const newMonths = remaining / newMonthly;
+      const newDate = new Date();
+      newDate.setMonth(newDate.getMonth() + Math.floor(newMonths));
+      return newDate;
+    };
+    
+    const originalDate = new Date(targetDate);
+    const date25More = calculateNewDate(25);
+    const date50More = calculateNewDate(50);
+    const date25Less = calculateNewDate(-25);
+    
+    // Reality vs Capacity check
+    const capacityGap = monthlyRequired - monthlyCapacity;
+    const isOverCapacity = capacityGap > 0;
+    
+    // Helper function to calculate days and percentage closer to goal
+    const calculateImpact = (savingsAmount: number) => {
+      const monthsSaved = savingsAmount / monthlyRequired;
+      const daysSaved = Math.round(monthsSaved * 30.44);
+      const percentCloser = Math.round((savingsAmount / remaining) * 100);
+      return { daysSaved, percentCloser };
+    };
+
+    const feasibility = getFeasibilityScore();
+    const successRate = getSuccessRate();
+
+    return {
+      remaining,
+      monthsRemaining,
+      monthlyRequired,
+      dailyAmount,
+      weeklyAmount,
+      hourlyEquivalent,
+      coffeePerWeek,
+      lunchPerWeek,
+      streamingServices,
+      nightsOutPerMonth,
+      originalDate,
+      date25More,
+      date50More,
+      date25Less,
+      capacityGap,
+      isOverCapacity,
+      calculateImpact,
+      feasibility,
+      successRate
+    };
+  }, [calculations, targetAmount, currentSavings, targetDate, monthlyCapacity]);
+
+  // Extract values from memoized calculations
+  const {
+    remaining,
+    monthsRemaining,
+    monthlyRequired,
+    dailyAmount,
+    weeklyAmount,
+    hourlyEquivalent,
+    coffeePerWeek,
+    lunchPerWeek,
+    streamingServices,
+    nightsOutPerMonth,
+    originalDate,
+    date25More,
+    date50More,
+    date25Less,
+    capacityGap,
+    isOverCapacity,
+    calculateImpact,
+    feasibility,
+    successRate
+  } = memoizedCalculations;
 
   return (
     <Card className="animate-slide-in">
