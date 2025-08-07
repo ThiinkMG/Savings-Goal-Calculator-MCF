@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign, Car, ShoppingBag, TrendingUp, Calendar, Clock, Award } from 'lucide-react';
+import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign, Car, ShoppingBag, TrendingUp, Calendar, Clock, Award, RefreshCw } from 'lucide-react';
 import { formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -19,6 +19,7 @@ interface WhatIfScenariosProps {
   monthlyCapacity: number;
   selectedTradeOffs?: string[];
   onTradeOffChange?: (tradeOffs: string[]) => void;
+  onRecalculate?: () => void;
 }
 
 interface DropdownSectionProps {
@@ -65,7 +66,8 @@ export function WhatIfScenarios({
   targetDate, 
   monthlyCapacity,
   selectedTradeOffs: propSelectedTradeOffs = [],
-  onTradeOffChange
+  onTradeOffChange,
+  onRecalculate
 }: WhatIfScenariosProps) {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [selectedTradeOffs, setSelectedTradeOffs] = useState<string[]>(propSelectedTradeOffs);
@@ -222,15 +224,33 @@ export function WhatIfScenarios({
     <Card className="animate-slide-in">
       <CardContent className="p-0">
         <div className="p-6 border-b border-border">
-          <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <div className="p-2 bg-brand-amber/10 rounded-lg">
-              <Target className="w-5 h-5 brand-amber" />
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                <div className="p-2 bg-brand-amber/10 rounded-lg">
+                  <Target className="w-5 h-5 brand-amber" />
+                </div>
+                Reality Check & Adjustments
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Understand the real impact of your savings plan
+              </p>
             </div>
-            Reality Check & Adjustments
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Understand the real impact of your savings plan
-          </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-sm"
+              onClick={() => {
+                // Close all dropdown sections and force recalculation
+                setOpenSection(null);
+                // Force refresh of the page to get latest values from Goal Details
+                window.location.reload();
+              }}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Recalculate
+            </Button>
+          </div>
           
           {/* Saver Picks - Show if any selections made */}
           {selectedTradeOffs.length > 0 && (
