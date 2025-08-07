@@ -650,7 +650,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                     <div className="text-center">
                       <span className="text-sm text-muted-foreground">
                         Current: <span className="font-medium brand-blue text-lg text-[#3bd927]">
-                          ${monthlyCapacity[0]}
+                          {formatLocaleCurrency(monthlyCapacity[0])}
                         </span> per month
                       </span>
                     </div>
@@ -671,10 +671,10 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                       />
                     </div>
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>$50</span>
+                      <span>{formatLocaleCurrency(50)}</span>
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-lg text-brand-green dark:text-brand-green">
-                          $
+                          {formatLocaleCurrency(0).replace('0', '').replace(',', '').trim()}
                         </span>
                         <input
                           type="number"
@@ -694,7 +694,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                           per month
                         </span>
                       </div>
-                      <span>$2000+</span>
+                      <span>{formatLocaleCurrency(2000)}+</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2 text-center">
                       Use slider for quick adjustments or edit the number directly for precise values
