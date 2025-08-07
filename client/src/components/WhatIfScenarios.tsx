@@ -560,7 +560,7 @@ export function WhatIfScenarios({
         <DropdownSection
           id="realistic-tradeoffs"
           icon="💰"
-          title="How Small Changes Add Up"
+          title="Choose Savings Boost"
           isOpen={openSection === "realistic-tradeoffs"}
           onToggle={() => toggleSection("realistic-tradeoffs")}
         >
@@ -1102,7 +1102,7 @@ export function WhatIfScenarios({
         <DropdownSection
           id="decision-helper"
           icon="💡"
-          title="Choose Savings Boost"
+          title="Savings Plan Alerts"
           isOpen={openSection === "decision-helper"}
           onToggle={() => toggleSection("decision-helper")}
         >
