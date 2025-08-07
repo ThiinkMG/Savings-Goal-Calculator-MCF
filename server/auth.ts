@@ -151,6 +151,12 @@ export async function login(req: Request, res: Response) {
 
 // Logout user
 export async function logout(req: Request, res: Response) {
+  // Clear guest session data before destroying
+  req.session.isGuest = false;
+  req.session.guestGoals = [];
+  req.session.guestDailyCount = 0;
+  req.session.guestPdfDownloads = 0;
+  
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: 'Failed to logout' });
