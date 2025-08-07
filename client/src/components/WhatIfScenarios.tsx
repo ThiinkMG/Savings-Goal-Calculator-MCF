@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign, Car, ShoppingBag, TrendingUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign, Car, ShoppingBag, TrendingUp, Calendar, Clock, Award } from 'lucide-react';
 import { formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -658,59 +658,141 @@ export function WhatIfScenarios({
           <div className="space-y-4">
             <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border-l-4 border-green-500">
               <p className="text-sm text-green-800 dark:text-green-200">
-                <strong>What this means:</strong> Even $25 more per month can move your finish date up significantly. 
-                See how small changes compound over time.
+                <strong>The Power of Small Changes:</strong> Just $25 extra monthly (that's one coffee per week!) can finish your goal months earlier. 
+                Early extra savings have maximum impact due to compound time savings.
               </p>
             </div>
-            <div className="space-y-3">
-              <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Save $25 more per month:</span>
-                  <span className="text-xs text-green-600 dark:text-green-400">
+            <div className="space-y-4">
+              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium">Save $25 more per month</span>
+                  </div>
+                  <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md">
                     {Math.abs(Math.round((date25More.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24)))} days sooner
                   </span>
                 </div>
-                <div className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  ✓ Finish by {date25More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    Finish by {date25More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </span>
                 </div>
-                <Progress value={75} className="h-1.5 mt-2" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                  <span>Progress Timeline</span>
+                  <span>75% faster</span>
+                </div>
+                <Progress value={75} className="h-2" />
+                <div className="mt-2 text-xs text-muted-foreground">
+                  💡 This equals skipping coffee 1x/week or packing lunch 1x/week
+                </div>
               </div>
               
-              <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Save $50 more per month:</span>
-                  <span className="text-xs text-green-600 dark:text-green-400">
+              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                      <Award className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium">Save $50 more per month</span>
+                  </div>
+                  <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md">
                     {Math.abs(Math.round((date50More.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24)))} days sooner
                   </span>
                 </div>
-                <div className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  ✓ Finish by {date50More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    Finish by {date50More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </span>
                 </div>
-                <Progress value={90} className="h-1.5 mt-2" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                  <span>Progress Timeline</span>
+                  <span>90% faster</span>
+                </div>
+                <Progress value={90} className="h-2" />
+                <div className="mt-2 text-xs text-muted-foreground">
+                  💡 This equals canceling 3 subscriptions or reducing nights out by 1
+                </div>
               </div>
               
-              <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Save $25 less per month:</span>
-                  <span className="text-xs text-red-600 dark:text-red-400">
+              <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-red-600" />
+                    </div>
+                    <span className="text-sm font-medium">Save $25 less per month</span>
+                  </div>
+                  <span className="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md">
                     {Math.abs(Math.round((date25Less.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24)))} days later
                   </span>
                 </div>
-                <div className="text-sm font-semibold text-red-600 dark:text-red-400">
-                  ⚠ Delayed to {date25Less.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+                    Delayed to {date25Less.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </span>
                 </div>
-                <Progress value={40} className="h-1.5 mt-2" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                  <span>Progress Timeline</span>
+                  <span>40% slower</span>
+                </div>
+                <Progress value={40} className="h-2" />
+                <div className="mt-2 text-xs text-muted-foreground">
+                  ⚠️ Small decreases have big timeline impacts - stay consistent!
+                </div>
               </div>
             </div>
 
-            <div className="p-3 bg-background rounded-lg border">
-              <div className="text-sm text-muted-foreground text-center mb-2">
-                Your current target: <strong>{originalDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
+            <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg border">
+              <div className="text-center mb-4">
+                <div className="text-sm text-muted-foreground">Your Current Goal Date</div>
+                <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  {originalDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs">
-                <span className="text-green-600 dark:text-green-400">← Sooner</span>
-                <Progress value={60} className="w-32 h-2" />
-                <span className="text-red-600 dark:text-red-400">Later →</span>
+              
+              {/* Visual Timeline */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="text-green-600 dark:text-green-400">Sooner with more savings</span>
+                  <span className="text-red-600 dark:text-red-400">Later with less savings</span>
+                </div>
+                <div className="relative">
+                  <Progress value={60} className="w-full h-3" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-1 h-6 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="text-center text-xs text-muted-foreground">
+                  Current Plan Position
+                </div>
+              </div>
+              
+              {/* Milestone Markers */}
+              <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                <div className="text-center p-2 bg-green-100 dark:bg-green-900/30 rounded-md">
+                  <div className="font-medium text-green-700 dark:text-green-300">25% Mark</div>
+                  <div className="text-green-600 dark:text-green-400">
+                    {new Date(new Date(targetDate).getTime() - (new Date(targetDate).getTime() - new Date().getTime()) * 0.75).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-blue-100 dark:bg-blue-900/30 rounded-md">
+                  <div className="font-medium text-blue-700 dark:text-blue-300">Halfway</div>
+                  <div className="text-blue-600 dark:text-blue-400">
+                    {new Date(new Date(targetDate).getTime() - (new Date(targetDate).getTime() - new Date().getTime()) * 0.5).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded-md">
+                  <div className="font-medium text-purple-700 dark:text-purple-300">75% Mark</div>
+                  <div className="text-purple-600 dark:text-purple-400">
+                    {new Date(new Date(targetDate).getTime() - (new Date(targetDate).getTime() - new Date().getTime()) * 0.25).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
