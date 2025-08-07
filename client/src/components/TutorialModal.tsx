@@ -14,7 +14,7 @@ interface TutorialModalProps {
 export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[85vh] p-0">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[85vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <BookOpen className="w-5 h-5 text-brand-blue" />
@@ -56,7 +56,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
                 Setting Up Your Goals
               </h3>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <h4 className="font-medium mb-2">Goal Types Available:</h4>
                     <div className="space-y-1 text-sm text-muted-foreground">

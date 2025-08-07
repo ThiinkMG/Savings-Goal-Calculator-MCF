@@ -716,7 +716,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       />
       {/* Settings Panel */}
       <div 
-        className={`absolute right-0 top-0 h-screen w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
+        className={`absolute right-0 top-0 h-screen w-full sm:w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         onClick={(e) => e.stopPropagation()}

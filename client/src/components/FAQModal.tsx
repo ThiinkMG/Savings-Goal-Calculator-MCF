@@ -13,7 +13,7 @@ interface FAQModalProps {
 export function FAQModal({ isOpen, onClose }: FAQModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[85vh] p-0">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[85vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <HelpCircle className="w-5 h-5 text-brand-blue" />

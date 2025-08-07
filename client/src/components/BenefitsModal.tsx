@@ -69,9 +69,9 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-2">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
             Welcome to My College Finance! 🎓
           </DialogTitle>
           <p className="text-center text-muted-foreground mb-6">

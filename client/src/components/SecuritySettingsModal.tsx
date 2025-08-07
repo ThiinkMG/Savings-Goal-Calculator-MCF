@@ -1037,7 +1037,7 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md" aria-describedby="security-modal-description">
+      <DialogContent className="w-[95vw] max-w-md p-4 sm:p-6" aria-describedby="security-modal-description">
         <DialogHeader>
           <DialogTitle>{getStepTitle()}</DialogTitle>
           <div id="security-modal-description" className="sr-only">
