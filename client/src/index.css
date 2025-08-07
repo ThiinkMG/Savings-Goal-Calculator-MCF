@@ -215,6 +215,33 @@
   }
 }
 
+/* Mobile Header Optimizations */
+@media (max-width: 475px) {
+  header .flex {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  header h1 {
+    font-size: 0.8rem;
+    line-height: 1.1;
+  }
+  
+  header p {
+    font-size: 0.65rem;
+    line-height: 1;
+  }
+  
+  .mobile-header-buttons {
+    gap: 0.375rem;
+  }
+  
+  .mobile-header-buttons button {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+  }
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
