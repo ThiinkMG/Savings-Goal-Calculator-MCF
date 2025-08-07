@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,6 +35,23 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
+
+  // Handle Escape key to close panel
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
 
   const [notificationSettings, setNotificationSettings] = useState({
     goalReminders: true,
@@ -661,19 +678,33 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     <div className={`fixed inset-0 z-50 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
       {/* Backdrop */}
       <div 
-        className={`absolute inset-0 transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={onClose}
+        aria-label="Close settings panel"
       />
       {/* Settings Panel */}
-      <div className={`absolute right-0 top-0 h-screen w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
-      }`}>
+      <div 
+        className={`absolute right-0 top-0 h-screen w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f]">
           <h2 className="text-lg font-semibold">Settings</h2>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
+            className="hover:bg-accent/50 transition-colors"
+            aria-label="Close settings"
+          >
             <X className="w-4 h-4" />
           </Button>
         </div>
