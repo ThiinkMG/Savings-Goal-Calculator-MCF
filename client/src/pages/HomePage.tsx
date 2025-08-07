@@ -96,6 +96,13 @@ export default function HomePage() {
         setRecurringPopupTimer(null);
       }
     }
+    
+    // Reset form states when user logs out
+    if (!isAuthenticated && !isGuest) {
+      setEditingGoalId(null);
+      setShowNewGoalForm(false);
+      setShowEnhancedAuthModal(false);
+    }
   }, [isAuthenticated, isGuest, recurringPopupTimer]);
 
   // Handle when user explicitly chooses to continue as guest

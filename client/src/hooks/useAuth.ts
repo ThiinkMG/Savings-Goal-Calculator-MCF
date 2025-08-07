@@ -45,6 +45,9 @@ export function useAuth() {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
+      
+      // Reset to home page
+      window.location.href = '/';
     },
     onError: (error: any) => {
       toast({
