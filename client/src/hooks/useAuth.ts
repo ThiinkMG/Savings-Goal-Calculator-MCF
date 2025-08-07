@@ -39,15 +39,19 @@ export function useAuth() {
       return await response.json();
     },
     onSuccess: () => {
+      // Clear all cached data immediately
+      queryClient.clear();
+      
+      // Show success message
       toast({
         title: 'Logged out',
         description: 'You have been successfully logged out.',
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       
-      // Reset to home page
-      window.location.href = '/';
+      // Force a complete page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     },
     onError: (error: any) => {
       toast({

@@ -486,8 +486,8 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
             onClick={() => { 
               if (user || isGuest) {
                 // For both authenticated users and guests, logout clears session
-                logout(); 
-                onClose(); 
+                onClose(); // Close modal first
+                logout(); // Then logout (which will reload the page)
               } else {
                 // For non-authenticated, non-guest users, show login modal
                 setShowAuthModal(true);
