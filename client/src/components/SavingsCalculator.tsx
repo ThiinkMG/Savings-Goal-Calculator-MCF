@@ -134,10 +134,19 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return response.json();
     },
     onSuccess: (savedGoal: SavingsGoal) => {
-      toast({
-        title: "Goal Saved Successfully!",
-        description: existingGoal ? "Your goal has been updated" : "Your new goal has been created",
-      });
+      // Show appropriate success message based on user type
+      if (isGuest) {
+        toast({
+          title: "Goal Saved for Session!",
+          description: "Your goal is saved temporarily. Create an account to save permanently.",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Goal Saved Successfully!",
+          description: existingGoal ? "Your goal has been updated" : "Your new goal has been created",
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       onSave?.(savedGoal);
     },
