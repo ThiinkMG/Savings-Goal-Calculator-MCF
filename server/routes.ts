@@ -232,9 +232,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not authenticated" });
       }
       
-      // Return empty array for guests since they can't have saved goals
+      // Return guest goals from session for guest users
       if (req.isGuest || userId.startsWith('guest_')) {
-        return res.json([]);
+        const guestGoals = req.session.guestGoals || [];
+        return res.json(guestGoals);
       }
       
       const goals = await storage.getSavingsGoalsByUser(userId);
@@ -273,12 +274,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not authenticated" });
       }
       
-      // Check if user is a guest - guests cannot save goals permanently
+      // For guest users, store goals in session temporarily
       if (req.isGuest || userId.startsWith('guest_')) {
-        return res.status(401).json({ 
-          message: "Please create an account to save your goals permanently",
-          isGuest: true 
-        });
+        if (!req.session.guestGoals) {
+          req.session.guestGoals = [];
+        }
+        
+        const guestGoal = {
+          id: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          ...req.body,
+          userId: userId,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        req.session.guestGoals.push(guestGoal);
+        return res.status(201).json(guestGoal);
       }
       
       const validatedData = insertSavingsGoalSchema.parse({

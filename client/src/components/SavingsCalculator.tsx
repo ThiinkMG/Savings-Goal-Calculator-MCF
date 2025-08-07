@@ -294,8 +294,8 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return;
     }
 
-    // Check if user is authenticated
-    if (!isAuthenticated || isGuest || !user?.id) {
+    // Check if user is authenticated - allow guests to save temporarily
+    if (!isAuthenticated && !isGuest) {
       toast({
         title: "Login Required",
         description: "Please sign in to save your goals",
@@ -306,7 +306,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
 
     const goalData: InsertSavingsGoal = {
-      userId: user.id,
+      userId: user?.id || 'guest', // Handle guest users
       name: goalName,
       goalType,
       targetAmount,

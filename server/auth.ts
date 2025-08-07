@@ -9,6 +9,10 @@ declare module 'express-session' {
   interface SessionData {
     userId?: string;
     isGuest?: boolean;
+    guestGoals?: any[];
+    wixAccessToken?: string;
+    wixRefreshToken?: string;
+    authMethod?: 'wix' | 'app';
   }
 }
 
