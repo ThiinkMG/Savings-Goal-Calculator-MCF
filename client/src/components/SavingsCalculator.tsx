@@ -7,7 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { Calculator, User, DollarSign, Calendar, Target, Download, Share2, Save, X, Edit3, Check, RefreshCw } from 'lucide-react';
+import { Calculator, User, DollarSign, Calendar, Target, Download, Share2, Save, X, Edit3, Check } from 'lucide-react';
 import { type SavingsGoal, type GoalType, type InsertSavingsGoal } from '@shared/schema';
 import { calculateSavings, formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
@@ -92,27 +92,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     setManualAmount('');
   };
 
-  const handleRecalculate = () => {
-    if (targetAmount > 0 && targetDate) {
-      const result = calculateSavings(
-        targetAmount,
-        currentSavings,
-        new Date(targetDate),
-        monthlyCapacity[0]
-      );
-      setCalculations(result);
-      
-      // Force refresh of scenarios data
-      queryClient.invalidateQueries({ 
-        queryKey: ['/api/calculate-scenarios', targetAmount, currentSavings, targetDate, monthlyCapacity[0]] 
-      });
-      
-      toast({
-        title: "Recalculated!",
-        description: "Your progress has been updated with the latest values",
-      });
-    }
-  };
+
 
   // Calculate scenarios
   const { data: scenarioData } = useQuery({
@@ -470,23 +450,13 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
         {/* Goal Details */}
         <Card className="animate-slide-in">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6">
               <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
                 <div className="p-2 bg-brand-blue/10 rounded-lg">
                   <Calculator className="w-5 h-5 brand-blue" />
                 </div>
                 Goal Details
               </h3>
-              <Button
-                onClick={handleRecalculate}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 hover:bg-brand-blue hover:text-white"
-                disabled={!targetAmount || !targetDate}
-              >
-                <RefreshCw className="w-4 h-4" />
-                Recalculate
-              </Button>
             </div>
             <div className="space-y-6">
               <div>
