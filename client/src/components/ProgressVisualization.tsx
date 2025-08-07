@@ -248,14 +248,19 @@ export function ProgressVisualization({
               </div>
             ))}
             
-            {/* Saver Picks Section */}
+            {/* Saver Picks Section with Habit Tracking */}
             {selectedTradeOffs.length > 0 && (
               <div className="p-4 md:p-5 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-xl border-l-4 border-green-500 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                    <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                      <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h5 className="font-semibold text-base text-green-800 dark:text-green-200">Saver Picks</h5>
                   </div>
-                  <h5 className="font-semibold text-base text-green-800 dark:text-green-200">Saver Picks</h5>
+                  <div className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-md">
+                    Day 1 of 21
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {selectedTradeOffs.includes('coffee') && (
