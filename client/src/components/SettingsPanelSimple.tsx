@@ -324,17 +324,28 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
     { id: 'help', label: 'Help', icon: HelpCircle }
   ];
 
-  const renderAccountSettings = () => (
+  const renderAccountSettings = () => {
+    const { user, isGuest } = useAuth();
+    
+    return (
     <div className="h-full overflow-y-auto settings-content-scroll pr-2">
       <Card>
         <CardHeader>
-          <CardTitle>{user ? 'Account Information' : 'Guest Session'}</CardTitle>
+          <CardTitle>
+            {user ? 'Account Information' : isGuest ? 'Guest Session' : 'Sign In Options'}
+          </CardTitle>
           <CardDescription>
-            {user ? 'Your current account details' : 'You\'re using My College Finance as a guest'}
+            {user 
+              ? 'Your current account details' 
+              : isGuest 
+                ? 'You\'re using My College Finance as a guest'
+                : 'Choose how you want to access My College Finance'
+            }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {user ? (
+            // Authenticated user - show account details
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Username</span>
@@ -349,7 +360,8 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
                 <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
               </div>
             </div>
-          ) : (
+          ) : isGuest ? (
+            // Guest mode active - show create account option
             <div className="space-y-4">
               <div className="p-4 border border-border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
                 <div className="flex items-center gap-2 mb-2">
@@ -369,6 +381,32 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
                 >
                   <User className="w-4 h-4 mr-2" />
                   Create Free Account
+                </Button>
+              </div>
+            </div>
+          ) : (
+            // Not signed in and not guest - show continue as guest option
+            <div className="space-y-4">
+              <div className="p-4 border border-border rounded-lg bg-green-50/50 dark:bg-green-950/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <h4 className="font-medium text-sm text-green-800 dark:text-green-200">Quick Access</h4>
+                </div>
+                <p className="text-xs text-green-700 dark:text-green-300 mb-3 leading-relaxed">
+                  Start using the savings calculator right away! You can save multiple goals for this session.
+                </p>
+                <Button
+                  onClick={() => {
+                    if (onContinueAsGuest) {
+                      onContinueAsGuest();
+                    }
+                    onClose();
+                  }}
+                  size="sm"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Continue as Guest
                 </Button>
               </div>
             </div>
@@ -460,19 +498,20 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
 
           <Button 
             onClick={() => { 
-              if (user) {
+              if (user || isGuest) {
+                // For both authenticated users and guests, logout clears session
                 logout(); 
                 onClose(); 
               } else {
-                // For guest users, "logout" means clearing session and showing auth modal
-                logout(); // This will clear guest session and return to login flow
-                onClose(); 
+                // For non-authenticated, non-guest users, show login modal
+                setShowAuthModal(true);
+                onClose();
               }
             }} 
             variant="outline" 
             className="w-full mt-4"
           >
-            Log Out
+            {(user || isGuest) ? 'Log Out' : 'Log In'}
           </Button>
 
           {/* Additional spacing for better scrolling */}
@@ -480,7 +519,8 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardContent>
       </Card>
     </div>
-  );
+    );
+  };
 
   const renderAppearanceSettings = () => (
     <div className="space-y-6">
