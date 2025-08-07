@@ -334,7 +334,7 @@ export function WhatIfScenarios({
                     </div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top" className="max-w-xs">
                   <p className="text-sm">{feasibility.description}</p>
                 </TooltipContent>
               </Tooltip>
@@ -353,7 +353,7 @@ export function WhatIfScenarios({
                     </div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top" className="max-w-xs">
                   <p className="text-sm">Based on similar goals, this percentage of people succeed</p>
                 </TooltipContent>
               </Tooltip>
@@ -369,7 +369,7 @@ export function WhatIfScenarios({
                     </div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top" className="max-w-xs">
                   <p className="text-sm">Amount you need to save every single day</p>
                 </TooltipContent>
               </Tooltip>
@@ -385,7 +385,7 @@ export function WhatIfScenarios({
                     </div>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top" className="max-w-xs">
                   <p className="text-sm">Amount you need to save each week</p>
                 </TooltipContent>
               </Tooltip>
