@@ -133,6 +133,31 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* Guest User Status */}
+      {!isAuthenticated && isGuest && (
+        <div className="bg-blue-50 dark:bg-blue-950/30 border-b border-blue-200 dark:border-blue-800 py-4 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <User className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <span className="text-sm text-blue-800 dark:text-blue-200">
+                  You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
+                </span>
+              </div>
+              <Button
+                onClick={() => setShowEnhancedAuthModal(true)}
+                size="sm"
+                variant="outline"
+                className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 w-full sm:w-auto flex-shrink-0"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Create Account
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="max-w-6xl mx-auto px-4 py-6 lg:py-8 overflow-hidden savings-calculator-container">
         {!showCalculator && (
           <>
