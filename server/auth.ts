@@ -12,6 +12,7 @@ declare module 'express-session' {
     guestGoals?: any[];
     guestSessionStart?: number; // Timestamp when guest session began
     guestDailyCount?: number; // Number of goals created today
+    guestPdfDownloads?: number; // Number of PDF downloads today
     guestLastResetDate?: string; // Date string to track daily resets
     wixAccessToken?: string;
     wixRefreshToken?: string;
@@ -46,6 +47,7 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
       req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
       req.session.guestSessionStart = now;
       req.session.guestDailyCount = 0;
+      req.session.guestPdfDownloads = 0;
       req.session.guestLastResetDate = today;
       req.session.guestGoals = [];
     } else {
@@ -60,6 +62,7 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
       if (hoursPassed >= 24 || lastResetDate !== today) {
         req.session.guestGoals = [];
         req.session.guestDailyCount = 0;
+        req.session.guestPdfDownloads = 0;
         req.session.guestSessionStart = now;
         req.session.guestLastResetDate = today;
       }
@@ -163,6 +166,8 @@ export async function getCurrentUser(req: AuthenticatedRequest, res: Response) {
     const guestInfo = {
       dailyCount: req.session.guestDailyCount || 0,
       dailyLimit: 3,
+      pdfDownloads: req.session.guestPdfDownloads || 0,
+      pdfLimit: 1,
       sessionStart: req.session.guestSessionStart,
       lastResetDate: req.session.guestLastResetDate
     };

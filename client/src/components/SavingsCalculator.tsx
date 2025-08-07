@@ -328,6 +328,25 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
 
     try {
+      // Check PDF download limits for guests
+      const trackResponse = await apiRequest('POST', '/api/track-pdf-download');
+      
+      if (!trackResponse.ok) {
+        const errorData = await trackResponse.json();
+        
+        if (trackResponse.status === 429 && errorData.pdfLimit) {
+          toast({
+            title: "Daily Download Limit Reached",
+            description: "You've reached your daily limit of 1 PDF download. Create an account for unlimited downloads!",
+            variant: "destructive",
+          });
+          onAuthRequired?.();
+          return;
+        }
+        
+        throw new Error('PDF download not allowed');
+      }
+
       const goalData: SavingsGoal = {
         id: existingGoal?.id || 'temp-id',
         userId: existingGoal?.userId || user?.id || '',
@@ -353,6 +372,9 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
         title: "PDF Downloaded Successfully!",
         description: "Check your downloads folder for the savings plan report",
       });
+
+      // Refresh auth data to get updated PDF download count
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
     } catch (error) {
       console.error('PDF generation error:', error);
       toast({

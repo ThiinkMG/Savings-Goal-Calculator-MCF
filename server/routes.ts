@@ -418,6 +418,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PDF download tracking endpoint
+  app.post("/api/track-pdf-download", requireAuth, (req: AuthenticatedRequest, res) => {
+    try {
+      // Check if user is a guest and has reached PDF download limit
+      if (req.isGuest) {
+        const currentCount = req.session.guestPdfDownloads || 0;
+        
+        if (currentCount >= 1) {
+          return res.status(429).json({
+            message: "Daily PDF download limit reached. Guest users can download 1 PDF per day. Create an account for unlimited downloads.",
+            isGuest: true,
+            pdfLimit: 1,
+            currentCount: currentCount
+          });
+        }
+        
+        // Increment PDF download counter
+        req.session.guestPdfDownloads = currentCount + 1;
+        
+        return res.json({
+          success: true,
+          downloadsRemaining: 0, // 1 - (currentCount + 1) = 0
+          message: "PDF download tracked successfully"
+        });
+      }
+      
+      // For authenticated users, no limits
+      res.json({
+        success: true,
+        unlimited: true,
+        message: "PDF download allowed"
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to track PDF download" });
+    }
+  });
+
   // Admin route for testing monthly report (development only)
   app.post("/api/admin/test-monthly-report", async (req, res) => {
     try {

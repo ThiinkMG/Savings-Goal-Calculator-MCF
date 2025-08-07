@@ -13,6 +13,8 @@ export interface User {
 export interface GuestInfo {
   dailyCount: number;
   dailyLimit: number;
+  pdfDownloads: number;
+  pdfLimit: number;
   sessionStart?: number;
   lastResetDate?: string;
 }

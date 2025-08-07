@@ -244,7 +244,7 @@ export default function HomePage() {
                     You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
                   </span>
                   <span className="text-xs text-blue-600 dark:text-blue-300 font-medium">
-                    Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today • Data resets every 24 hours
+                    Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} • PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
                   </span>
                 </div>
               </div>
@@ -276,21 +276,37 @@ export default function HomePage() {
               </p>
               
               {/* Plan Counter */}
-              <div className="mb-4">
+              <div className="mb-4 flex flex-col sm:flex-row gap-3 justify-center">
                 {isAuthenticated ? (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                      Plans Unlimited
-                    </span>
-                  </div>
+                  <>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                        Plans Unlimited
+                      </span>
+                    </div>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                        PDF Downloads Unlimited
+                      </span>
+                    </div>
+                  </>
                 ) : isGuest ? (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                      Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today
-                    </span>
-                  </div>
+                  <>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today
+                      </span>
+                    </div>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
+                      </span>
+                    </div>
+                  </>
                 ) : (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-800 rounded-lg">
                     <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
