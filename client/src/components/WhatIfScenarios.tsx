@@ -944,30 +944,30 @@ export function WhatIfScenarios({
             </div>
             
             {/* Implementation Roadmap */}
-            <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20 rounded-lg border-l-4 border-emerald-500">
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-950/20 dark:to-sky-950/20 rounded-lg border-l-4 border-blue-500">
               <div className="flex items-center gap-2 mb-3">
-                <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                <h4 className="font-semibold text-emerald-800 dark:text-emerald-200">Step-by-Step Implementation</h4>
+                <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h4 className="font-semibold text-blue-800 dark:text-blue-200">Step-by-Step Implementation</h4>
               </div>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-emerald-300 flex-shrink-0">1</div>
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300 flex-shrink-0">1</div>
                   <div>
-                    <h5 className="font-medium text-sm text-emerald-700 dark:text-emerald-300">Week 1-2: Quick Wins</h5>
+                    <h5 className="font-medium text-sm text-blue-700 dark:text-blue-300">Week 1-2: Quick Wins</h5>
                     <p className="text-xs text-muted-foreground">Cancel unused subscriptions, implement 24-hour rule</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-emerald-300 flex-shrink-0">2</div>
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300 flex-shrink-0">2</div>
                   <div>
-                    <h5 className="font-medium text-sm text-emerald-700 dark:text-emerald-300">Week 3-4: Daily Habits</h5>
+                    <h5 className="font-medium text-sm text-blue-700 dark:text-blue-300">Week 3-4: Daily Habits</h5>
                     <p className="text-xs text-muted-foreground">Choose one: home coffee OR packed lunches</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-emerald-300 flex-shrink-0">3</div>
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300 flex-shrink-0">3</div>
                   <div>
-                    <h5 className="font-medium text-sm text-emerald-700 dark:text-emerald-300">Month 2+: Advanced Changes</h5>
+                    <h5 className="font-medium text-sm text-blue-700 dark:text-blue-300">Month 2+: Advanced Changes</h5>
                     <p className="text-xs text-muted-foreground">Add transportation or social spending adjustments only if needed</p>
                   </div>
                 </div>
