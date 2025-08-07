@@ -46,10 +46,11 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
     // Call the parent's handler if provided
     if (onContinueAsGuest) {
       onContinueAsGuest();
-    } else {
-      // Fallback - just close the modal
-      handleClose();
     }
+    
+    // Always close the modal after guest selection
+    handleClose();
+    
     toast({
       title: "Welcome!",
       description: "You're now using My College Finance as a guest. You can save multiple goals for this session.",
