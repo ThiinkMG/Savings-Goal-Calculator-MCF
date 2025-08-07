@@ -284,13 +284,9 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return;
     }
 
-    // Check if user is authenticated - allow guests to save temporarily
+    // Check if user is authenticated - if not signed in and hasn't chosen "Continue as Guest", open login modal
     if (!isAuthenticated && !isGuest) {
-      toast({
-        title: "Login Required",
-        description: "Please sign in to save your goals",
-        variant: "default",
-      });
+      // User is neither signed in nor has activated guest mode - open login modal
       onAuthRequired?.();
       return;
     }

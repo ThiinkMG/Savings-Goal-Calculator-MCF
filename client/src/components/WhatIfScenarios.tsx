@@ -1062,7 +1062,7 @@ export function WhatIfScenarios({
                   </div>
                 </div>
                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-3 italic">
-                  💡 Based on college student spending patterns and success rates
+                  💡 Based on avg. person & college student spending patterns and success rates
                 </p>
               </div>
             </div>
