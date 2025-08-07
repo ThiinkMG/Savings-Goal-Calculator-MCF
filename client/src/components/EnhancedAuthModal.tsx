@@ -43,10 +43,14 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
 
   // Handle continue as guest
   const handleContinueAsGuestClick = () => {
+    console.log('EnhancedAuthModal: handleContinueAsGuestClick called');
+    console.log('EnhancedAuthModal: onContinueAsGuest prop:', onContinueAsGuest);
     // Call the parent's handler if provided
     if (onContinueAsGuest) {
+      console.log('EnhancedAuthModal: calling onContinueAsGuest prop');
       onContinueAsGuest();
     } else {
+      console.log('EnhancedAuthModal: no onContinueAsGuest prop, using fallback');
       // Fallback - just close the modal
       handleClose();
     }
