@@ -650,7 +650,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>Community</CardTitle>
           <CardDescription>Connect with other users</CardDescription>
@@ -663,7 +663,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       </Card>
 
       {/* Additional spacing for better scrolling */}
-      <div className="h-16 pb-4"></div>
+      <div className="h-20 pb-6"></div>
     </div>
   );
 
