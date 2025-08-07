@@ -22,12 +22,18 @@ interface DropdownSectionProps {
 }
 
 function DropdownSection({ id, icon, title, children, isOpen, onToggle }: DropdownSectionProps) {
+  const handleClick = () => {
+    console.log(`Dropdown ${id} clicked, current state:`, isOpen);
+    onToggle();
+  };
+
   return (
     <div className="border-b border-border last:border-b-0">
       <Button
         variant="ghost"
         className="w-full p-4 flex items-center justify-between hover:bg-muted/50 rounded-none"
-        onClick={onToggle}
+        onClick={handleClick}
+        data-testid={`dropdown-${id}`}
       >
         <div className="flex items-center gap-3">
           <div className="text-lg">{icon}</div>
@@ -62,6 +68,7 @@ export function WhatIfScenarios({
   }, [calculations.monthlyRequired, monthlyCapacity, openSection]);
 
   const toggleSection = (sectionId: string) => {
+    console.log(`toggleSection called with:`, sectionId, `current openSection:`, openSection);
     setOpenSection(openSection === sectionId ? null : sectionId);
   };
 
