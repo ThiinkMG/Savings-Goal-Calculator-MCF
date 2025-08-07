@@ -9,6 +9,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { EnhancedAuthModal } from '@/components/EnhancedAuthModal';
 import { type SavingsGoal } from '@shared/schema';
 import { useAuth } from '@/hooks/useAuth';
+import { BenefitsModal } from '@/components/BenefitsModal';
 import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield, X } from 'lucide-react';
 import logoPath from '@assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png';
 
@@ -21,8 +22,25 @@ export default function HomePage() {
   const [showGuestPopup, setShowGuestPopup] = useState(false);
   const [showGuestBanner, setShowGuestBanner] = useState(false);
   const [recurringPopupTimer, setRecurringPopupTimer] = useState<NodeJS.Timeout | null>(null);
+  const [showBenefitsModal, setShowBenefitsModal] = useState(false);
   
   const { user, isGuest, isAuthenticated, guestInfo, logout, isLoggingOut } = useAuth();
+
+  // Daily benefits modal logic - show once per day
+  useEffect(() => {
+    const lastShownDate = localStorage.getItem('benefitsModalLastShown');
+    const today = new Date().toDateString();
+    
+    if (lastShownDate !== today) {
+      // Show after a 3 second delay for better user experience
+      const timer = setTimeout(() => {
+        setShowBenefitsModal(true);
+        localStorage.setItem('benefitsModalLastShown', today);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Show guest popup when user becomes a guest and auto-hide after 10 seconds
   useEffect(() => {
@@ -527,6 +545,15 @@ export default function HomePage() {
         onClose={() => setShowWixModal(false)}
         onSuccess={(user) => {
           setShowWixModal(false);
+        }}
+      />
+
+      <BenefitsModal
+        isOpen={showBenefitsModal}
+        onClose={() => setShowBenefitsModal(false)}
+        onCreateAccount={() => {
+          setShowBenefitsModal(false);
+          setShowEnhancedAuthModal(true);
         }}
       />
     </div>

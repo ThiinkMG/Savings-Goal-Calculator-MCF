@@ -36,7 +36,7 @@ Preferred communication style: Simple, everyday language.
 - **UI Improvements & Reality Check Enhancement**: ✅ **COMPLETE (6-Step Enhancement Plan)** - Enhanced "Savings Tracker Dashboard" with individual goal management, prominent "Create New Savings Goal" button, redesigned footer with My College Finance logo, updated header, auto-populating goal names based on category selection, improved input validation with user feedback, fixed Ctrl+A behavior for input fields, enhanced monthly capacity slider with precise amount controls, improved "Save as Goal" button with visual state indicators, enhanced date picker accessibility, better toast notifications, consistent color schemes for light/dark modes, always-visible Reality Check summary cards that update in real-time, behavioral psychology features with 21-day habit formation plans, dynamic expense categories based on lifestyle patterns, positive reframing options, personalized habit tracking with "Day 1 of 21" progress indicators, and dynamic success rate analytics for different spending categories.
 - **Mobile Optimization**: Comprehensive mobile-first responsive design with optimized touch targets, stacked layouts, full-width buttons, improved spacing and padding, enhanced authentication modal with larger input fields (h-12), better visual hierarchy, security indicators, and improved feature badge layouts that stack vertically on mobile.
 - **OAuth Integration System**: ✅ **UPDATED** - Wix OAuth authentication configured with Client ID `2583909e-4c0c-429e-b4d3-8d58e7096828` (January 2025), featuring redirect-based authentication, state parameter validation, secure callback handling at `/wix-callback.html`, automatic member account linking/creation, manual token exchange utilities at `/wix-oauth-test.html`, and session management for Wix website member authentication. Requires Client Secret for token exchange.
-- **Guest User Functionality**: ✅ **COMPLETE** - "Continue as Guest" option in authentication modal allows users to bypass login while maintaining temporary session storage for multiple savings goals. Features include:
+- **Guest User Functionality**: ✅ **COMPLETE with Enhanced Restrictions** - "Continue as Guest" option in authentication modal allows users to bypass login while maintaining temporary session storage for multiple savings goals. Features include:
   - Session-based goal storage that persists during browser session
   - Auto-dismissing welcome popup with 10-second timer and close button
   - Recurring popup system that shows every 10 minutes for non-authenticated users
@@ -45,6 +45,8 @@ Preferred communication style: Simple, everyday language.
   - Appropriate success messages for guest goal saving
   - Goals appear immediately on dashboard after saving
   - Popup system automatically stops when user logs in and resumes after logout
+  - **Daily Limitations**: Guest users limited to 3 goals per day and 1 PDF download per day with automatic 24-hour resets
+  - **Benefits Modal**: Daily popup explaining app benefits and guest vs account feature comparison with manual access via settings menu
 
 ### System Design Choices
 - **Data Models**: Users (with Wix ID for integration), Savings Goals, and Verification Codes.

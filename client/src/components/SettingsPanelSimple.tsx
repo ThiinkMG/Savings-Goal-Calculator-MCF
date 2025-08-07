@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle } from "lucide-react";
+import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
@@ -19,11 +19,12 @@ interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
   onContinueAsGuest?: () => void;
+  onShowBenefits?: () => void;
 }
 
 type SettingsTab = 'account' | 'appearance' | 'data' | 'help';
 
-export function SettingsPanel({ isOpen, onClose, onContinueAsGuest }: SettingsPanelProps) {
+export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefits }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -618,6 +619,10 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest }: SettingsPa
           <CardDescription>Find answers and get support</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
+          <Button variant="outline" className="w-full" onClick={onShowBenefits}>
+            <Sparkles className="w-4 h-4 mr-2" />
+            Benefits
+          </Button>
           <Button variant="outline" className="w-full" onClick={() => setShowTutorialModal(true)}>
             <BookOpen className="w-4 h-4 mr-2" />
             Tutorial

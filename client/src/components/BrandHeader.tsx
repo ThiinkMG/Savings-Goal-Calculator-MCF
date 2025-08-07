@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Logo } from './Logo';
 import { SettingsPanel } from './SettingsPanelSimple';
+import { BenefitsModal } from './BenefitsModal';
 import { useState } from 'react';
 
 interface BrandHeaderProps {
@@ -12,6 +13,7 @@ interface BrandHeaderProps {
 export function BrandHeader({ onContinueAsGuest }: BrandHeaderProps = {}) {
   const { theme, toggleTheme } = useTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showBenefitsModal, setShowBenefitsModal] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-sm bg-background/80 border-b border-border">
@@ -58,6 +60,13 @@ export function BrandHeader({ onContinueAsGuest }: BrandHeaderProps = {}) {
         isOpen={isSettingsOpen} 
         onClose={() => setIsSettingsOpen(false)}
         onContinueAsGuest={onContinueAsGuest}
+        onShowBenefits={() => setShowBenefitsModal(true)}
+      />
+      
+      <BenefitsModal
+        isOpen={showBenefitsModal}
+        onClose={() => setShowBenefitsModal(false)}
+        onCreateAccount={onContinueAsGuest}
       />
     </header>
   );
