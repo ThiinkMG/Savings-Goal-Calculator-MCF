@@ -77,12 +77,31 @@ export default function HomePage() {
       {isGuest && (
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white py-4 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-start gap-3">
-              <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-white leading-relaxed">
-                <span className="font-medium">You're using My College Finance as a guest.</span>
-                <span className="block sm:inline"> Your goals are saved for this session only.</span>
+            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+              <div className="flex items-start gap-3 flex-1">
+                <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-white leading-relaxed">
+                  <span className="font-medium">You're using My College Finance as a guest.</span>
+                  <br className="block sm:hidden" />
+                  <span className="block sm:inline"> Your data won't be saved between sessions. </span>
+                  <button 
+                    onClick={() => setShowEnhancedAuthModal(true)}
+                    className="underline hover:no-underline text-white font-semibold"
+                  >
+                    Create an account
+                  </button>
+                  <span> to save your progress.</span>
+                </div>
               </div>
+              <Button
+                onClick={() => setShowEnhancedAuthModal(true)}
+                size="sm"
+                variant="secondary"
+                className="bg-white/90 hover:bg-white text-blue-700 dark:bg-white/95 dark:hover:bg-white dark:text-blue-800 border-white/50 font-medium shadow-sm hover:shadow-md transition-all duration-200 w-full sm:w-auto flex-shrink-0"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Login & Save Progress
+              </Button>
             </div>
           </div>
         </div>
@@ -118,11 +137,22 @@ export default function HomePage() {
       {!isAuthenticated && isGuest && (
         <div className="bg-blue-50 dark:bg-blue-950/30 border-b border-blue-200 dark:border-blue-800 py-4 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-3">
-              <User className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-              <span className="text-sm text-blue-800 dark:text-blue-200">
-                You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
-              </span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <User className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <span className="text-sm text-blue-800 dark:text-blue-200">
+                  You're using <strong>My College Finance as a guest</strong>. Your goals are saved for this session only.
+                </span>
+              </div>
+              <Button
+                onClick={() => setShowEnhancedAuthModal(true)}
+                size="sm"
+                variant="outline"
+                className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-950/50 w-full sm:w-auto flex-shrink-0"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Create Account
+              </Button>
             </div>
           </div>
         </div>
