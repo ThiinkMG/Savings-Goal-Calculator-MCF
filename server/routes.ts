@@ -20,7 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/register", register);
   app.post("/api/auth/login", login);
   app.post("/api/auth/logout", logout);
-  app.get("/api/auth/me", requireAuth, getCurrentUser);
+  app.get("/api/auth/me", getCurrentUser);
 
   // Enhanced authentication routes
   app.post("/api/auth/enhanced-register", async (req, res) => {

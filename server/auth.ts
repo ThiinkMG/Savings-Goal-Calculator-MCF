@@ -166,8 +166,18 @@ export async function logout(req: Request, res: Response) {
 }
 
 // Get current user
-export async function getCurrentUser(req: AuthenticatedRequest, res: Response) {
-  if (req.isGuest) {
+export async function getCurrentUser(req: Request, res: Response) {
+  // Check if there's a real user session
+  if (req.session.userId && !req.session.userId.startsWith('guest_')) {
+    const user = await storage.getUser(req.session.userId);
+    if (user) {
+      const { password: _, ...userWithoutPassword } = user;
+      return res.json({ user: userWithoutPassword, isGuest: false });
+    }
+  }
+  
+  // Check if there's an actual guest session
+  if (req.session.isGuest === true && req.session.userId?.startsWith('guest_')) {
     // Include guest session info for guest users
     const guestInfo = {
       dailyCount: req.session.guestDailyCount || 0,
@@ -181,10 +191,6 @@ export async function getCurrentUser(req: AuthenticatedRequest, res: Response) {
     return res.json({ user: null, isGuest: true, guestInfo });
   }
   
-  if (req.user) {
-    const { password: _, ...userWithoutPassword } = req.user;
-    return res.json({ user: userWithoutPassword, isGuest: false });
-  }
-  
+  // No user and no guest session - truly not logged in
   res.json({ user: null, isGuest: false });
 }
