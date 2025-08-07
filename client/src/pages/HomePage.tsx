@@ -44,8 +44,6 @@ export default function HomePage() {
 
   // Handle when user explicitly chooses to continue as guest
   const handleContinueAsGuest = () => {
-    console.log('handleContinueAsGuest called');
-    console.log('Current state - isGuest:', isGuest, 'isAuthenticated:', isAuthenticated);
     setShowGuestBanner(true);
     setShowGuestPopup(true);
     setShowEnhancedAuthModal(false);
@@ -104,12 +102,9 @@ export default function HomePage() {
     );
   }
 
-  // Debug guest states
-  console.log('HomePage render - showGuestBanner:', showGuestBanner, 'showGuestPopup:', showGuestPopup, 'isGuest:', isGuest, 'isAuthenticated:', isAuthenticated);
-
   return (
     <div className="min-h-screen bg-background">
-      <BrandHeader />
+      <BrandHeader onContinueAsGuest={handleContinueAsGuest} />
       
       {/* Guest User Welcome Popup */}
       {isGuest && showGuestPopup && (

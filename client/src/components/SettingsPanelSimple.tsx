@@ -18,11 +18,12 @@ import JSZip from 'jszip';
 interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  onContinueAsGuest?: () => void;
 }
 
 type SettingsTab = 'account' | 'appearance' | 'data' | 'help';
 
-export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
+export function SettingsPanel({ isOpen, onClose, onContinueAsGuest }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -740,7 +741,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       {/* Enhanced Auth Modal */}
       <EnhancedAuthModal 
         isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
+        onClose={() => setShowAuthModal(false)}
+        onContinueAsGuest={onContinueAsGuest}
       />
       
       {/* Tutorial Modal */}

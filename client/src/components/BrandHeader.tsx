@@ -5,7 +5,11 @@ import { Logo } from './Logo';
 import { SettingsPanel } from './SettingsPanelSimple';
 import { useState } from 'react';
 
-export function BrandHeader() {
+interface BrandHeaderProps {
+  onContinueAsGuest?: () => void;
+}
+
+export function BrandHeader({ onContinueAsGuest }: BrandHeaderProps = {}) {
   const { theme, toggleTheme } = useTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -52,7 +56,8 @@ export function BrandHeader() {
       </div>
       <SettingsPanel 
         isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
+        onClose={() => setIsSettingsOpen(false)}
+        onContinueAsGuest={onContinueAsGuest}
       />
     </header>
   );
