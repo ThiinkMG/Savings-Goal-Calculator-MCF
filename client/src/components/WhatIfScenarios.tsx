@@ -52,6 +52,14 @@ export function WhatIfScenarios({
   monthlyCapacity 
 }: WhatIfScenariosProps) {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  
+  // Auto-expand decision helper if there's an over-capacity issue
+  useEffect(() => {
+    const isOverCapacity = calculations.monthlyRequired > monthlyCapacity;
+    if (isOverCapacity && openSection !== "decision-helper") {
+      setOpenSection("decision-helper");
+    }
+  }, [calculations.monthlyRequired, monthlyCapacity, openSection]);
 
   const toggleSection = (sectionId: string) => {
     setOpenSection(openSection === sectionId ? null : sectionId);
@@ -185,6 +193,47 @@ export function WhatIfScenarios({
           <p className="text-sm text-muted-foreground mt-1">
             Understand the real impact of your savings plan
           </p>
+          
+          {/* Quick Summary - Always Visible */}
+          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="p-3 bg-background rounded-lg border">
+              <div className="text-xs text-muted-foreground">Plan Feasibility</div>
+              <div className={`text-sm font-semibold ${feasibility.color}`}>
+                {feasibility.score}
+              </div>
+            </div>
+            <div className="p-3 bg-background rounded-lg border">
+              <div className="text-xs text-muted-foreground">Success Rate</div>
+              <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                {successRate}%
+              </div>
+            </div>
+            <div className="p-3 bg-background rounded-lg border">
+              <div className="text-xs text-muted-foreground">Per Day</div>
+              <div className="text-sm font-semibold text-foreground">
+                {formatCurrency(dailyAmount)}
+              </div>
+            </div>
+            <div className="p-3 bg-background rounded-lg border">
+              <div className="text-xs text-muted-foreground">Per Week</div>
+              <div className="text-sm font-semibold text-foreground">
+                {formatCurrency(weeklyAmount)}
+              </div>
+            </div>
+          </div>
+          
+          {/* Capacity Alert - Always Visible if Over Capacity */}
+          {isOverCapacity && (
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
+              <div className="flex items-center gap-2">
+                <span className="text-red-600 dark:text-red-400 font-semibold">⚠️ Reality Check Alert</span>
+              </div>
+              <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                You need {formatCurrency(monthlyRequired)}/month but set capacity at {formatCurrency(monthlyCapacity)}/month.
+                Gap: {formatCurrency(capacityGap)}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Reality Check Analysis */}
