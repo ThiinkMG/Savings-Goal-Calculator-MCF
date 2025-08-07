@@ -12,6 +12,7 @@ import { type SavingsGoal, type GoalType, type InsertSavingsGoal } from '@shared
 import { calculateSavings, formatCurrency, type CalculationResult } from '@/lib/calculations';
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/hooks/useAuth';
 import { GoalSelectionCard } from './GoalSelectionCard';
 import { ProgressVisualization } from './ProgressVisualization';
 import { EducationalTips } from './EducationalTips';
@@ -27,6 +28,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
   const { theme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user, isAuthenticated, isGuest } = useAuth();
 
   // Default goal names for each category
   const defaultGoalNames = {
@@ -292,16 +294,30 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return;
     }
 
+    // Check if user is authenticated
+    if (!isAuthenticated || isGuest || !user?.id) {
+      toast({
+        title: "Login Required",
+        description: "Please sign in to save your goals",
+        variant: "default",
+      });
+      onAuthRequired?.();
+      return;
+    }
+
     const goalData: InsertSavingsGoal = {
-      userId: '', // Empty string for guest users
+      userId: user.id,
       name: goalName,
       goalType,
       targetAmount,
       currentSavings,
       targetDate: new Date(targetDate),
       monthlyCapacity: monthlyCapacity[0],
+      status: 'active',
+      isActive: true,
     };
 
+    console.log('Saving goal with data:', goalData);
     saveGoalMutation.mutate(goalData);
   };
 
@@ -318,13 +334,14 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     try {
       const goalData: SavingsGoal = {
         id: existingGoal?.id || 'temp-id',
-        userId: existingGoal?.userId || '',
+        userId: existingGoal?.userId || user?.id || '',
         name: goalName,
         goalType,
         targetAmount,
         currentSavings,
         targetDate: new Date(targetDate),
         monthlyCapacity: monthlyCapacity[0],
+        status: existingGoal?.status || 'active',
         isActive: true,
         createdAt: existingGoal?.createdAt || new Date(),
         updatedAt: new Date(),
