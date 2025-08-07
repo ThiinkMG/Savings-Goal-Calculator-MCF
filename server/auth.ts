@@ -28,30 +28,20 @@ export interface AuthenticatedRequest extends Request {
 // Middleware to check if user is authenticated or create guest session
 export async function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    // Check if user has a session
-    if (req.session.userId) {
+    // Check if user has a valid user session
+    if (req.session.userId && !req.session.userId.startsWith('guest_')) {
       // Get user from database
       const user = await storage.getUser(req.session.userId);
       if (user) {
         req.user = user;
+        req.isGuest = false;
         return next();
       }
     }
 
-    // If no valid user session, create a guest session
-    if (!req.session.isGuest) {
-      const now = Date.now();
-      const today = new Date(now).toDateString();
-      
-      req.session.isGuest = true;
-      req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
-      req.session.guestSessionStart = now;
-      req.session.guestDailyCount = 0;
-      req.session.guestPdfDownloads = 0;
-      req.session.guestLastResetDate = today;
-      req.session.guestGoals = [];
-    } else {
-      // Check if guest session needs to be reset (24 hours passed OR new day)
+    // Handle guest sessions (existing or new)
+    if (req.session.isGuest && req.session.userId && req.session.userId.startsWith('guest_')) {
+      // Existing guest session - check if it needs to be reset
       const now = Date.now();
       const today = new Date(now).toDateString();
       const sessionStart = req.session.guestSessionStart || now;
@@ -66,11 +56,17 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
         req.session.guestSessionStart = now;
         req.session.guestLastResetDate = today;
       }
+      
+      req.isGuest = true;
+      req.user = null;
+      return next();
     }
 
-    req.isGuest = true;
-    req.user = null;
-    next();
+    // No valid session found - require explicit guest session creation
+    return res.status(401).json({ 
+      message: "Authentication required. Please log in or continue as guest.",
+      requireAuth: true
+    });
   } catch (error) {
     console.error('Auth middleware error:', error);
     res.status(500).json({ message: 'Authentication error' });

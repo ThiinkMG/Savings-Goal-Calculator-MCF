@@ -130,7 +130,11 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
           description: existingGoal ? "Your goal has been updated" : "Your new goal has been created",
         });
       }
+      
+      // Force refresh of goals data
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
+      queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
+      
       onSave?.(savedGoal);
     },
     onError: (error: Error) => {

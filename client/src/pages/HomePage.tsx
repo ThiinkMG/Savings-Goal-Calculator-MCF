@@ -169,6 +169,9 @@ export default function HomePage() {
   const handleGoalSaved = () => {
     setShowNewGoalForm(false);
     setEditingGoalId(null);
+    // Force refresh goals data to ensure it shows up
+    queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
+    queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
   };
 
   if (isLoading) {
