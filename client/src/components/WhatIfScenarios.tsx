@@ -23,7 +23,6 @@ interface DropdownSectionProps {
 
 function DropdownSection({ id, icon, title, children, isOpen, onToggle }: DropdownSectionProps) {
   const handleClick = () => {
-    console.log(`Dropdown ${id} clicked, current state:`, isOpen);
     onToggle();
   };
 
@@ -59,16 +58,15 @@ export function WhatIfScenarios({
 }: WhatIfScenariosProps) {
   const [openSection, setOpenSection] = useState<string | null>(null);
   
-  // Auto-expand decision helper if there's an over-capacity issue
+  // Auto-expand decision helper if there's an over-capacity issue (only on first render)
   useEffect(() => {
     const isOverCapacity = calculations.monthlyRequired > monthlyCapacity;
-    if (isOverCapacity && openSection !== "decision-helper") {
+    if (isOverCapacity && openSection === null) {
       setOpenSection("decision-helper");
     }
-  }, [calculations.monthlyRequired, monthlyCapacity, openSection]);
+  }, [calculations.monthlyRequired, monthlyCapacity]);
 
   const toggleSection = (sectionId: string) => {
-    console.log(`toggleSection called with:`, sectionId, `current openSection:`, openSection);
     setOpenSection(openSection === sectionId ? null : sectionId);
   };
 
