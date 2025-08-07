@@ -434,6 +434,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest }: SettingsPa
                 onClose(); 
               } else {
                 setShowAuthModal(true);
+                onClose();
               }
             }} 
             variant="outline" 
