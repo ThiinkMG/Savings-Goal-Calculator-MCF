@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { BrandHeader } from '@/components/BrandHeader';
@@ -9,7 +9,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { EnhancedAuthModal } from '@/components/EnhancedAuthModal';
 import { type SavingsGoal } from '@shared/schema';
 import { useAuth } from '@/hooks/useAuth';
-import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield } from 'lucide-react';
+import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield, X } from 'lucide-react';
 import logoPath from '@assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png';
 
 export default function HomePage() {
@@ -18,8 +18,21 @@ export default function HomePage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showEnhancedAuthModal, setShowEnhancedAuthModal] = useState(false);
   const [showWixModal, setShowWixModal] = useState(false);
+  const [showGuestPopup, setShowGuestPopup] = useState(false);
   
   const { user, isGuest, isAuthenticated, logout, isLoggingOut } = useAuth();
+
+  // Show guest popup when user becomes a guest and auto-hide after 10 seconds
+  useEffect(() => {
+    if (isGuest && !isAuthenticated) {
+      setShowGuestPopup(true);
+      const timer = setTimeout(() => {
+        setShowGuestPopup(false);
+      }, 10000); // 10 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isGuest, isAuthenticated]);
 
   // Fetch existing goals
   const { data: goals = [], isLoading } = useQuery<SavingsGoal[]>({
@@ -73,35 +86,48 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <BrandHeader />
       
-      {/* Authentication Banner for Guest Users */}
-      {isGuest && (
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white py-4 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
-              <div className="flex items-start gap-3 flex-1">
-                <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+      {/* Guest User Welcome Popup */}
+      {isGuest && showGuestPopup && (
+        <div className="fixed top-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white rounded-lg shadow-2xl max-w-md w-full mx-4 sm:mx-0 animate-slide-in-right">
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
                 <div className="text-sm text-white leading-relaxed">
                   <span className="font-medium">You're using My College Finance as a guest.</span>
-                  <br className="block sm:hidden" />
-                  <span className="block sm:inline"> Your data won't be saved between sessions. </span>
+                  <br />
+                  <span>Your data won't be saved between sessions. </span>
                   <button 
-                    onClick={() => setShowEnhancedAuthModal(true)}
+                    onClick={() => {
+                      setShowGuestPopup(false);
+                      setShowEnhancedAuthModal(true);
+                    }}
                     className="underline hover:no-underline text-white font-semibold"
                   >
                     Create an account
                   </button>
                   <span> to save your progress.</span>
                 </div>
+                <Button
+                  onClick={() => {
+                    setShowGuestPopup(false);
+                    setShowEnhancedAuthModal(true);
+                  }}
+                  size="sm"
+                  variant="secondary"
+                  className="bg-white/90 hover:bg-white text-blue-700 dark:bg-white/95 dark:hover:bg-white dark:text-blue-800 border-white/50 font-medium shadow-sm hover:shadow-md transition-all duration-200 mt-3"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Login & Save Progress
+                </Button>
               </div>
-              <Button
-                onClick={() => setShowEnhancedAuthModal(true)}
-                size="sm"
-                variant="secondary"
-                className="bg-white/90 hover:bg-white text-blue-700 dark:bg-white/95 dark:hover:bg-white dark:text-blue-800 border-white/50 font-medium shadow-sm hover:shadow-md transition-all duration-200 w-full sm:w-auto flex-shrink-0"
+              <button
+                onClick={() => setShowGuestPopup(false)}
+                className="text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+                data-testid="close-guest-popup"
               >
-                <User className="w-4 h-4 mr-2" />
-                Login & Save Progress
-              </Button>
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>

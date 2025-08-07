@@ -38,6 +38,7 @@ Preferred communication style: Simple, everyday language.
 - **OAuth Integration System**: ✅ **UPDATED** - Wix OAuth authentication configured with Client ID `2583909e-4c0c-429e-b4d3-8d58e7096828` (January 2025), featuring redirect-based authentication, state parameter validation, secure callback handling at `/wix-callback.html`, automatic member account linking/creation, manual token exchange utilities at `/wix-oauth-test.html`, and session management for Wix website member authentication. Requires Client Secret for token exchange.
 - **Guest User Functionality**: ✅ **COMPLETE** - "Continue as Guest" option in authentication modal allows users to bypass login while maintaining temporary session storage for multiple savings goals. Features include:
   - Session-based goal storage that persists during browser session
+  - Auto-dismissing welcome popup with 10-second timer and close button
   - Clear guest status bar showing temporary nature of storage
   - Easy account creation pathway from guest mode
   - Appropriate success messages for guest goal saving
