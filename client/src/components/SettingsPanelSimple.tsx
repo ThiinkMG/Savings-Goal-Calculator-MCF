@@ -70,8 +70,9 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest }: SettingsPa
 
   const handleSecurityAction = (mode: 'password' | 'username' | 'phone' | 'email' | 'removePhone') => {
     if (!user) {
-      // Guest user - show auth modal
+      // Guest user - show auth modal and close settings panel
       setShowAuthModal(true);
+      onClose();
       return;
     }
     
