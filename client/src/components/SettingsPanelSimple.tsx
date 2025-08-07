@@ -35,7 +35,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   const [securityMode, setSecurityMode] = useState<'password' | 'username' | 'phone' | 'email'>('password');
   const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
-  const { user, logout } = useAuth();
+  const { user, logout, isGuest } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const { toast } = useToast();
@@ -325,8 +325,6 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   ];
 
   const renderAccountSettings = () => {
-    const { user, isGuest } = useAuth();
-    
     return (
     <div className="h-full overflow-y-auto settings-content-scroll pr-2">
       <Card>
