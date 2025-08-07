@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronUp, Target, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, Target, Info, Coffee, Utensils, DollarSign } from 'lucide-react';
 import { formatCurrency, type CalculationResult } from '@/lib/calculations';
+import { Progress } from '@/components/ui/progress';
 import {
   Tooltip,
   TooltipContent,
@@ -239,9 +240,12 @@ export function WhatIfScenarios({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="p-3 bg-background rounded-lg border cursor-help">
-                    <div className="text-xs text-muted-foreground">Chance of Success</div>
-                    <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                      {successRate}%
+                    <div className="text-xs text-muted-foreground mb-1">Chance of Success</div>
+                    <div className="space-y-1">
+                      <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {successRate}%
+                      </div>
+                      <Progress value={successRate} className="h-1.5" />
                     </div>
                   </div>
                 </TooltipTrigger>
@@ -341,23 +345,29 @@ export function WhatIfScenarios({
               }
             </p>
 
-            <div className="flex justify-between items-center p-3 bg-background rounded-lg border">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Chance of Success:</span>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="w-3 h-3 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-sm max-w-xs">Based on data from people with similar savings goals and monthly amounts</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+            <div className="p-3 bg-background rounded-lg border">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">Chance of Success:</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm max-w-xs">Based on data from people with similar savings goals and monthly amounts</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  {successRate}%
+                </span>
               </div>
-              <span className="font-semibold text-blue-600 dark:text-blue-400">
-                {successRate}% succeed
-              </span>
+              <Progress value={successRate} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-1">
+                {successRate >= 70 ? "High chance of success" : successRate >= 50 ? "Moderate chance" : "Challenging but possible"}
+              </p>
             </div>
             <p className="text-sm text-muted-foreground">
               Out of 100 people trying to save {formatCurrency(monthlyRequired)} per month, about {successRate} of them reach their goal on time.
@@ -440,10 +450,23 @@ export function WhatIfScenarios({
             </div>
             
             <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-l-4 border-blue-500">
-              <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong>Put it in perspective:</strong> {formatCurrency(dailyAmount)} every day is about {dailyAmount > 15 ? "1 restaurant lunch" : dailyAmount > 10 ? "2 fancy coffees" : "1 coffee and a snack"}. 
-                Typical costs: lunch $12-18, coffee $5-7, snacks $3-5.
+              <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+                <strong>Put it in perspective:</strong> {formatCurrency(dailyAmount)} every day equals:
               </p>
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-md border">
+                  <Coffee className="w-4 h-4" />
+                  <span className="text-xs font-medium">{Math.round(dailyAmount / 5.5)} coffees</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-md border">
+                  <Utensils className="w-4 h-4" />
+                  <span className="text-xs font-medium">{(dailyAmount / 15).toFixed(1)} lunches</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-md border">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-xs font-medium">{Math.round(dailyAmount / 3)} snacks</span>
+                </div>
+              </div>
             </div>
           </div>
         </DropdownSection>
@@ -465,27 +488,37 @@ export function WhatIfScenarios({
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
-                <span className="text-xl">☕</span>
-                <span className="text-sm">
+                <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center text-xl">☕</div>
+                <span className="text-sm flex-1">
                   Make coffee at home <strong>{coffeePerWeek}</strong> times per week<br/>
                   <span className="text-xs text-muted-foreground">Coffee shop costs about $5.50 each time</span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
-                Save ${Math.round(coffeePerWeek * 5.50 * 4.33)}/month = {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner
-              </span>
+              <div className="space-y-1">
+                <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                  Save ${Math.round(coffeePerWeek * 5.50 * 4.33)}/month
+                </span>
+                <span className="text-xs text-muted-foreground block text-right">
+                  {calculateImpact(Math.round(coffeePerWeek * 5.50 * 4.33)).daysSaved} days sooner
+                </span>
+              </div>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
-                <span className="text-xl">🍽️</span>
-                <span className="text-sm">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-xl">🍽️</div>
+                <span className="text-sm flex-1">
                   Pack lunch <strong>{lunchPerWeek}</strong> times per week<br/>
                   <span className="text-xs text-muted-foreground">Restaurant lunch costs about $15.00 each</span>
                 </span>
               </div>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium" title="Monthly savings and time saved">
-                Save ${Math.round(lunchPerWeek * 15 * 4.33)}/month = {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner
-              </span>
+              <div className="space-y-1">
+                <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md font-medium">
+                  Save ${Math.round(lunchPerWeek * 15 * 4.33)}/month
+                </span>
+                <span className="text-xs text-muted-foreground block text-right">
+                  {calculateImpact(Math.round(lunchPerWeek * 15 * 4.33)).daysSaved} days sooner
+                </span>
+              </div>
             </div>
             <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
               <div className="flex items-center gap-3">
@@ -520,44 +553,67 @@ export function WhatIfScenarios({
         {/* Real Timeline Impact */}
         <DropdownSection
           id="timeline-impact"
-          icon="📅"
-          title="Real Timeline Impact"
+          icon="📊"
+          title="How Small Changes Add Up"
           isOpen={openSection === "timeline-impact"}
           onToggle={() => toggleSection("timeline-impact")}
         >
           <div className="space-y-4">
             <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border-l-4 border-green-500">
               <p className="text-sm text-green-800 dark:text-green-200">
-                <strong>How to interpret:</strong> These show exact dates when you'd reach your goal by saving more or less each month. 
-                Use these to see how small changes affect your timeline.
+                <strong>What this means:</strong> Even $25 more per month can move your finish date up significantly. 
+                See how small changes compound over time.
               </p>
             </div>
             <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
-                <span className="text-sm font-medium">Save $25 more per month:</span>
-                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  Reach goal by {date25More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </span>
+              <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Save $25 more per month:</span>
+                  <span className="text-xs text-green-600 dark:text-green-400">
+                    {Math.abs(Math.round((date25More.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24)))} days sooner
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  ✓ Finish by {date25More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
+                <Progress value={75} className="h-1.5 mt-2" />
               </div>
               
-              <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
-                <span className="text-sm font-medium">Save $50 more per month:</span>
-                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  Reach goal by {date50More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </span>
+              <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Save $50 more per month:</span>
+                  <span className="text-xs text-green-600 dark:text-green-400">
+                    {Math.abs(Math.round((date50More.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24)))} days sooner
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  ✓ Finish by {date50More.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
+                <Progress value={90} className="h-1.5 mt-2" />
               </div>
               
-              <div className="flex justify-between items-center p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border">
-                <span className="text-sm font-medium">Save $25 less per month:</span>
-                <span className="text-sm font-semibold text-red-600 dark:text-red-400">
-                  Reach goal by {date25Less.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </span>
+              <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Save $25 less per month:</span>
+                  <span className="text-xs text-red-600 dark:text-red-400">
+                    {Math.abs(Math.round((date25Less.getTime() - originalDate.getTime()) / (1000 * 60 * 60 * 24)))} days later
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-red-600 dark:text-red-400">
+                  ⚠ Delayed to {date25Less.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
+                <Progress value={40} className="h-1.5 mt-2" />
               </div>
             </div>
 
             <div className="p-3 bg-background rounded-lg border">
-              <div className="text-sm text-muted-foreground text-center">
-                Original target: <strong>{originalDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
+              <div className="text-sm text-muted-foreground text-center mb-2">
+                Your current target: <strong>{originalDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <span className="text-green-600 dark:text-green-400">← Sooner</span>
+                <Progress value={60} className="w-32 h-2" />
+                <span className="text-red-600 dark:text-red-400">Later →</span>
               </div>
             </div>
           </div>
