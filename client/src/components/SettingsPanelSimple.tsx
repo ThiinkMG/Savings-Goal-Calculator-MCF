@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useLocale, currencyOptions, languageOptions } from "@/contexts/LocaleContext";
+
 import { useToast } from "@/hooks/use-toast";
 import { EnhancedAuthModal } from "./EnhancedAuthModal";
 import { TutorialModal } from "./TutorialModal";
@@ -37,7 +37,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { settings: localeSettings, updateSettings: updateLocaleSettings } = useLocale();
+
   const { toast } = useToast();
 
   // Handle Escape key to close panel
@@ -474,55 +474,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Language & Region</CardTitle>
-          <CardDescription>Customize your regional preferences</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Language</Label>
-            <Select value={localeSettings.language} onValueChange={(value) => updateLocaleSettings({ language: value })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {languageOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
-          <div className="space-y-2">
-            <Label>Currency</Label>
-            <Select value={localeSettings.currency} onValueChange={(value) => updateLocaleSettings({ currency: value })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {currencyOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Date Format</Label>
-            <Select value={localeSettings.dateFormat} onValueChange={(value) => updateLocaleSettings({ dateFormat: value })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="MM/DD/YYYY">MM/DD/YYYY (US)</SelectItem>
-                <SelectItem value="DD/MM/YYYY">DD/MM/YYYY (UK)</SelectItem>
-                <SelectItem value="YYYY-MM-DD">YYYY-MM-DD (ISO)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 
