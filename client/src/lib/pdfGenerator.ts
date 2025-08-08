@@ -11,6 +11,58 @@ export async function generateSavingsPlanPDF(
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
+  
+  // Enhanced calculation function with What-If scenarios
+  const calculateWhatIfScenarios = (targetAmount: number, currentSavings: number, targetDate: Date, monthlyRequired: number) => {
+    const remaining = targetAmount - currentSavings;
+    const today = new Date();
+    const monthsRemaining = Math.max(1, Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+    
+    const dailyAmount = monthlyRequired / 30.44;
+    const weeklyAmount = monthlyRequired / 4.33;
+    
+    // What-if scenarios
+    const save25More = {
+      amount: monthlyRequired + 25,
+      monthsSaved: Math.max(0, monthsRemaining - Math.ceil(remaining / (monthlyRequired + 25)))
+    };
+    
+    const save50More = {
+      amount: monthlyRequired + 50,
+      monthsSaved: Math.max(0, monthsRemaining - Math.ceil(remaining / (monthlyRequired + 50)))
+    };
+    
+    const save100More = {
+      amount: monthlyRequired + 100,
+      monthsSaved: Math.max(0, monthsRemaining - Math.ceil(remaining / (monthlyRequired + 100)))
+    };
+    
+    // Feasibility and success rate
+    const getFeasibilityScore = () => {
+      if (monthlyRequired > 500) return { score: "Very Challenging", color: [220, 38, 38], rate: 45 };
+      if (monthlyRequired > 300) return { score: "Moderately Hard", color: [217, 119, 6], rate: 65 };
+      return { score: "Realistic", color: [5, 150, 105], rate: 85 };
+    };
+    
+    // Opportunity cost calculations
+    const coffeePerWeek = Math.min(Math.round((weeklyAmount) / 5.50), 7);
+    const lunchPerWeek = Math.min(Math.round((weeklyAmount) / 15), 5);
+    const streamingServices = Math.min(Math.round(monthlyRequired / 15), 3);
+    
+    const feasibility = getFeasibilityScore();
+    
+    return {
+      dailyAmount,
+      weeklyAmount,
+      save25More,
+      save50More,
+      save100More,
+      feasibility,
+      coffeePerWeek,
+      lunchPerWeek,
+      streamingServices
+    };
+  };
 
   // My College Finance Brand Color Palette - Space Dust Theme
   const colors = {
@@ -172,6 +224,14 @@ export async function generateSavingsPlanPDF(
     goal.currentSavings ?? 0,
     goal.targetDate ? new Date(goal.targetDate) : new Date(),
     goal.monthlyCapacity ?? 300
+  );
+  
+  // Enhanced What-If Scenarios calculations
+  const whatIfData = calculateWhatIfScenarios(
+    goal.targetAmount ?? 0,
+    goal.currentSavings ?? 0,
+    goal.targetDate ? new Date(goal.targetDate) : new Date(),
+    calculations.monthlyRequired
   );
 
   // Section positioning
@@ -355,159 +415,180 @@ export async function generateSavingsPlanPDF(
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(userInfo.name ?? 'User', timelineX + 45, progressSectionY + 86);
 
-  // Reality Check Analysis section - enhanced design
-  const realityCheckY = progressSectionY + sectionHeight + 20;
-  const realityCheckHeight = 130;
-  drawCard(cardsStartX, realityCheckY, totalCardsWidth, realityCheckHeight, 3);
+  // Enhanced What-If Scenarios section (replaces old Reality Check)
+  const whatIfSectionY = progressSectionY + sectionHeight + 20;
+  const whatIfSectionHeight = 280; // Increased height for more content
+  drawCard(cardsStartX, whatIfSectionY, totalCardsWidth, whatIfSectionHeight, 3);
 
-  // Calculate Reality Check data
+  // Use enhanced What-If data
   const goalRemaining = (goal.targetAmount ?? 0) - (goal.currentSavings ?? 0);
   const monthlyRequired = calculations.monthlyRequired;
   const monthsRemaining = calculations.monthsRemaining;
-  
-  const getFeasibilityScore = () => {
-    if (monthlyRequired > 500) return { score: "Challenging", color: [220, 38, 38] };
-    if (monthlyRequired > 300) return { score: "Moderate", color: [217, 119, 6] };
-    return { score: "Achievable", color: [5, 150, 105] };
-  };
-  
-  const getSuccessRate = () => {
-    if (monthlyRequired > 400) return 45;
-    if (monthlyRequired > 300) return 65;
-    if (monthlyRequired > 200) return 80;
-    return 85;
-  };
-  
-  const dailyAmount = monthlyRequired / 30.44;
-  const weeklyAmount = monthlyRequired / 4.33;
-  const coffeeEquivalent = Math.round(monthlyRequired / 5.50);
-  
-  const calculateAdjustment = (adjustment: number) => {
-    const newMonthly = monthlyRequired + adjustment;
-    const newMonths = goalRemaining / newMonthly;
-    const monthsDifference = monthsRemaining - newMonths;
-    return monthsDifference;
-  };
-  
-  const feasibility = getFeasibilityScore();
-  const successRate = getSuccessRate();
+  const feasibility = whatIfData.feasibility;
+  const successRate = feasibility.rate;
 
-  // Header
+  // Header - What-If Scenarios
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  pdf.rect(cardsStartX, realityCheckY, totalCardsWidth, 20, 'F');
+  pdf.rect(cardsStartX, whatIfSectionY, totalCardsWidth, 25, 'F');
 
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(12);
+  pdf.setFontSize(14);
   pdf.setTextColor(255, 255, 255);
-  pdf.text('Reality Check Analysis', cardsStartX + 15, realityCheckY + 13);
+  pdf.text('What-If Scenarios & Progress Analysis', cardsStartX + 15, whatIfSectionY + 16);
 
-  // Reality Check cards
-  const realityCardWidth = (totalCardsWidth - 45) / 2;
-
+  // Feasibility and Success Rate Cards
+  const summaryCardWidth = (totalCardsWidth - 60) / 3;
+  let currentY = whatIfSectionY + 35;
+  
   // Plan Feasibility Card
   pdf.setFillColor(248, 250, 252);
-  pdf.rect(cardsStartX + 15, realityCheckY + 25, realityCardWidth, 25, 'F');
-  pdf.setDrawColor(16, 185, 129);
+  pdf.rect(cardsStartX + 15, currentY, summaryCardWidth, 30, 'F');
+  pdf.setDrawColor(feasibility.color[0], feasibility.color[1], feasibility.color[2]);
   pdf.setLineWidth(2);
-  pdf.line(cardsStartX + 15, realityCheckY + 25, cardsStartX + 15, realityCheckY + 50);
+  pdf.line(cardsStartX + 15, currentY, cardsStartX + 15, currentY + 30);
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Plan Feasibility', cardsStartX + 20, realityCheckY + 33);
+  pdf.text('Plan Difficulty', cardsStartX + 20, currentY + 10);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
   pdf.setTextColor(feasibility.color[0], feasibility.color[1], feasibility.color[2]);
-  pdf.text(feasibility.score, cardsStartX + 20, realityCheckY + 43);
+  pdf.text(feasibility.score, cardsStartX + 20, currentY + 22);
 
-  // Success Probability Card
+  // Success Rate Card
   pdf.setFillColor(248, 250, 252);
-  pdf.rect(cardsStartX + 30 + realityCardWidth, realityCheckY + 25, realityCardWidth, 25, 'F');
+  pdf.rect(cardsStartX + 30 + summaryCardWidth, currentY, summaryCardWidth, 30, 'F');
   pdf.setDrawColor(59, 130, 246);
   pdf.setLineWidth(2);
-  pdf.line(cardsStartX + 30 + realityCardWidth, realityCheckY + 25, cardsStartX + 30 + realityCardWidth, realityCheckY + 50);
+  pdf.line(cardsStartX + 30 + summaryCardWidth, currentY, cardsStartX + 30 + summaryCardWidth, currentY + 30);
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Success Probability', cardsStartX + 35 + realityCardWidth, realityCheckY + 33);
+  pdf.text('Success Rate', cardsStartX + 35 + summaryCardWidth, currentY + 10);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
   pdf.setTextColor(59, 130, 246);
-  pdf.text(`${successRate}% likely to succeed`, cardsStartX + 35 + realityCardWidth, realityCheckY + 43);
-
-  // Daily Reality Breakdown
-  const dailyBreakdownY = realityCheckY + 60;
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Daily Reality Breakdown', cardsStartX + 15, dailyBreakdownY);
-
-  const breakdownCardWidth = (totalCardsWidth - 60) / 3;
+  pdf.text(`${successRate}%`, cardsStartX + 35 + summaryCardWidth, currentY + 22);
   
-  // Per Day
-  pdf.setFillColor(241, 245, 249);
-  pdf.rect(cardsStartX + 15, dailyBreakdownY + 10, breakdownCardWidth, 20, 'F');
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7);
-  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Per Day', cardsStartX + 18, dailyBreakdownY + 18);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(formatCurrency(dailyAmount), cardsStartX + 18, dailyBreakdownY + 25);
-
-  // Per Week
-  pdf.setFillColor(241, 245, 249);
-  pdf.rect(cardsStartX + 25 + breakdownCardWidth, dailyBreakdownY + 10, breakdownCardWidth, 20, 'F');
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7);
-  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Per Week', cardsStartX + 28 + breakdownCardWidth, dailyBreakdownY + 18);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(formatCurrency(weeklyAmount), cardsStartX + 28 + breakdownCardWidth, dailyBreakdownY + 25);
-
-  // Coffee Equivalent
-  pdf.setFillColor(241, 245, 249);
-  pdf.rect(cardsStartX + 35 + (breakdownCardWidth * 2), dailyBreakdownY + 10, breakdownCardWidth, 20, 'F');
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7);
-  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  pdf.text('Coffee Equivalent', cardsStartX + 38 + (breakdownCardWidth * 2), dailyBreakdownY + 18);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text(`${coffeeEquivalent} cups/month`, cardsStartX + 38 + (breakdownCardWidth * 2), dailyBreakdownY + 25);
-
-  // Precision Adjustments
-  const adjustmentsY = dailyBreakdownY + 40;
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Precision Adjustments', cardsStartX + 15, adjustmentsY);
-
+  // Daily Breakdown Card
   pdf.setFillColor(248, 250, 252);
-  pdf.rect(cardsStartX + 15, adjustmentsY + 10, totalCardsWidth - 30, 25, 'F');
+  pdf.rect(cardsStartX + 45 + (summaryCardWidth * 2), currentY, summaryCardWidth, 30, 'F');
+  pdf.setDrawColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.setLineWidth(2);
+  pdf.line(cardsStartX + 45 + (summaryCardWidth * 2), currentY, cardsStartX + 45 + (summaryCardWidth * 2), currentY + 30);
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Per Day', cardsStartX + 50 + (summaryCardWidth * 2), currentY + 10);
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(formatCurrency(whatIfData.dailyAmount), cardsStartX + 50 + (summaryCardWidth * 2), currentY + 22);
+
+  // What-If Scenario Analysis
+  currentY += 45;
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(11);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('What If You Save More Each Month?', cardsStartX + 15, currentY);
   
+  currentY += 15;
+  const scenarioCardWidth = (totalCardsWidth - 75) / 3;
+  
+  // Save $25 More Scenario
+  pdf.setFillColor(220, 252, 231);
+  pdf.rect(cardsStartX + 15, currentY, scenarioCardWidth, 35, 'F');
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Save $25 More', cardsStartX + 20, currentY + 10);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.text(`${formatCurrency(whatIfData.save25More.amount)}/mo`, cardsStartX + 20, currentY + 20);
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(`${whatIfData.save25More.monthsSaved} months earlier`, cardsStartX + 20, currentY + 30);
   
-  pdf.text('Save $25 more per month:', cardsStartX + 20, adjustmentsY + 20);
-  pdf.setTextColor(5, 150, 105);
-  pdf.text(`${calculateAdjustment(25).toFixed(1)} months earlier`, cardsStartX + 110, adjustmentsY + 20);
-  
+  // Save $50 More Scenario
+  pdf.setFillColor(219, 234, 254);
+  pdf.rect(cardsStartX + 30 + scenarioCardWidth, currentY, scenarioCardWidth, 35, 'F');
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Save $50 More', cardsStartX + 35 + scenarioCardWidth, currentY + 10);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(59, 130, 246);
+  pdf.text(`${formatCurrency(whatIfData.save50More.amount)}/mo`, cardsStartX + 35 + scenarioCardWidth, currentY + 20);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
   pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-  pdf.text('Save $50 more per month:', cardsStartX + 20, adjustmentsY + 30);
-  pdf.setTextColor(5, 150, 105);
-  pdf.text(`${calculateAdjustment(50).toFixed(1)} months earlier`, cardsStartX + 110, adjustmentsY + 30);
+  pdf.text(`${whatIfData.save50More.monthsSaved} months earlier`, cardsStartX + 35 + scenarioCardWidth, currentY + 30);
+  
+  // Save $100 More Scenario
+  pdf.setFillColor(254, 240, 138);
+  pdf.rect(cardsStartX + 45 + (scenarioCardWidth * 2), currentY, scenarioCardWidth, 35, 'F');
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  pdf.text('Save $100 More', cardsStartX + 50 + (scenarioCardWidth * 2), currentY + 10);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+  pdf.text(`${formatCurrency(whatIfData.save100More.amount)}/mo`, cardsStartX + 50 + (scenarioCardWidth * 2), currentY + 20);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(`${whatIfData.save100More.monthsSaved} months earlier`, cardsStartX + 50 + (scenarioCardWidth * 2), currentY + 30);
+
+  // Smart Ways to Save More - Opportunity Cost Analysis
+  currentY += 50;
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(11);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('Smart Ways to Reach Your Goal', cardsStartX + 15, currentY);
+
+  currentY += 15;
+  pdf.setFillColor(248, 250, 252);
+  pdf.rect(cardsStartX + 15, currentY, totalCardsWidth - 30, 50, 'F');
+  
+  // Coffee savings
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('☕ Make coffee at home:', cardsStartX + 20, currentY + 12);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(colors.success[0], colors.success[1], colors.success[2]);
+  pdf.text(`Skip ${whatIfData.coffeePerWeek} coffees/week → Save ~$110/month`, cardsStartX + 20, currentY + 22);
+  
+  // Lunch savings
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text('🍽️ Pack lunch instead:', cardsStartX + 20, currentY + 32);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  pdf.text(`Pack ${whatIfData.lunchPerWeek} lunches/week → Save ~$180/month`, cardsStartX + 20, currentY + 42);
+  
+  // Streaming savings
+  if (whatIfData.streamingServices > 0) {
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+    pdf.text('📱 Cancel streaming services:', cardsStartX + 20, currentY + 52);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(colors.warning[0], colors.warning[1], colors.warning[2]);
+    pdf.text(`Cancel ${whatIfData.streamingServices} services → Save ~$45/month`, cardsStartX + 20, currentY + 62);
+  }
 
   // Progress Insights Section
-  const insightsY = adjustmentsY + 50;
+  const insightsY = currentY + 75;
   
   // Progress Insights Header
   pdf.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
@@ -775,10 +856,10 @@ export async function generateSavingsPlanPDF(
   const footerRightWidth = pdf.getTextWidth(footerRight);
   pdf.text(footerRight, pageWidth - 20 - footerRightWidth, footerY + 15);
 
-  // Enhanced filename with user name and goal type
+  // Comprehensive What-If Scenarios filename with user name and goal type
   const userName = userInfo.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'user';
   const goalType = goal.goalType?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'savings';
   const goalNameFile = goal.name?.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').toLowerCase() ?? 'goal';
-  const fileName = `${userName}_${goalType}_${goalNameFile}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const fileName = `${userName}_${goalType}_${goalNameFile}_what_if_scenarios_${new Date().toISOString().split('T')[0]}.pdf`;
   pdf.save(fileName);
 }
