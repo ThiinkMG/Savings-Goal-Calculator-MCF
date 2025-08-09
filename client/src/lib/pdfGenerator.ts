@@ -215,7 +215,7 @@ export async function generateSavingsPlanPDF(
     }
 
     // Dynamic text color: white on dark rows, black on light rows
-    const textColor = isDarkRow ? [255, 255, 255] : c.black;
+    const textColor: [number, number, number] = isDarkRow ? [255, 255, 255] : c.black;
     setFont('normal', 10, textColor);
     
     let cx = x;

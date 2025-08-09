@@ -56,7 +56,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
     
     toast({
       title: "Welcome!",
-      description: "You're now using My College Finance as a guest. You can save multiple goals for this session.",
+      description: "You're signed in guest mode. You can save multiple goals for this session.",
     });
   };
 
