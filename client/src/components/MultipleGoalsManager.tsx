@@ -247,7 +247,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
               return (
                 <div
                   key={goal.id}
-                  className="group relative p-4 sm:p-5 lg:p-6 border border-border/50 rounded-xl sm:rounded-2xl hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300/50 dark:hover:border-blue-600/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-background to-background/80 backdrop-blur-sm min-h-[320px] sm:min-h-[340px] flex flex-col"
+                  className="group relative p-4 sm:p-5 lg:p-6 border border-gray-300/60 dark:border-border/50 rounded-xl sm:rounded-2xl hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-400/70 dark:hover:border-blue-600/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-white/95 to-gray-50/80 dark:from-background dark:to-background/80 backdrop-blur-sm min-h-[320px] sm:min-h-[340px] flex flex-col"
                 >
                   {/* Hover glow effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-700/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl sm:rounded-2xl"></div>
@@ -276,7 +276,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                           </span>
                         </div>
                         <div className="relative">
-                          <Progress value={progress} className="h-2 sm:h-3 bg-gray-200 dark:bg-gray-700" />
+                          <Progress value={progress} className="h-2 sm:h-3 bg-gray-300/80 dark:bg-gray-700" />
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-blue-700/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
                       </div>
@@ -291,12 +291,12 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                           </span>
                         </div>
 
-                        <div className="space-y-1 sm:space-y-2 p-2 sm:p-3 rounded-lg sm:rounded-xl bg-muted/30">
+                        <div className="space-y-1 sm:space-y-2 p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gray-100/60 dark:bg-muted/30 border border-gray-200/50 dark:border-transparent">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs sm:text-sm font-medium text-foreground">Time remaining</span>
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-foreground">Time remaining</span>
                             <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">{monthsLeft} months</span>
                           </div>
-                          <span className="text-xs text-muted-foreground block">
+                          <span className="text-xs text-gray-600 dark:text-muted-foreground block">
                             Last updated: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'}
                           </span>
                         </div>
@@ -305,12 +305,12 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                   </div>
 
                   {/* Enhanced Action buttons - Improved mobile layout */}
-                  <div className="relative z-10 flex flex-col gap-2 sm:gap-3 pt-4 sm:pt-6 border-t border-border/50 mt-auto">
+                  <div className="relative z-10 flex flex-col gap-2 sm:gap-3 pt-4 sm:pt-6 border-t border-gray-300/60 dark:border-border/50 mt-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                       <Button
                         size="sm"
                         variant="outline"
-                        className="group relative text-xs sm:text-sm h-9 sm:h-11 border-border/60 hover:border-blue-300/60 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 font-medium transition-all duration-200 overflow-hidden"
+                        className="group relative text-xs sm:text-sm h-9 sm:h-11 border-gray-300/80 dark:border-border/60 hover:border-blue-400/80 dark:hover:border-blue-300/60 hover:bg-blue-50/80 dark:hover:bg-blue-900/20 font-medium transition-all duration-200 overflow-hidden bg-white/80 dark:bg-transparent"
                         onClick={(e) => handleDownloadPDF(goal, e)}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
@@ -320,7 +320,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                       <Button
                         size="sm"
                         variant="outline"
-                        className="group relative text-xs sm:text-sm h-9 sm:h-11 border-border/60 hover:border-blue-300/60 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 font-medium transition-all duration-200 overflow-hidden"
+                        className="group relative text-xs sm:text-sm h-9 sm:h-11 border-gray-300/80 dark:border-border/60 hover:border-blue-400/80 dark:hover:border-blue-300/60 hover:bg-blue-50/80 dark:hover:bg-blue-900/20 font-medium transition-all duration-200 overflow-hidden bg-white/80 dark:bg-transparent"
                         onClick={(e) => handleShareGoal(goal, e)}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
@@ -333,7 +333,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         <Button
                           size="sm"
                           variant="outline"
-                          className="group relative w-full text-xs sm:text-sm h-9 sm:h-11 border-red-200/60 dark:border-red-800/60 hover:border-red-300/60 hover:bg-red-50/50 dark:hover:bg-red-900/20 font-medium transition-all duration-200 overflow-hidden"
+                          className="group relative w-full text-xs sm:text-sm h-9 sm:h-11 border-red-300/80 dark:border-red-800/60 hover:border-red-400/80 dark:hover:border-red-300/60 hover:bg-red-50/80 dark:hover:bg-red-900/20 font-medium transition-all duration-200 overflow-hidden bg-white/80 dark:bg-transparent"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>

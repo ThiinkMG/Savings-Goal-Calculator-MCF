@@ -352,9 +352,9 @@ export default function HomePage() {
                     </div>
                   </>
                 ) : (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-800 rounded-lg">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100/80 dark:bg-gray-950/20 border border-gray-300/60 dark:border-gray-800 rounded-lg">
+                    <div className="w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
                       Sign in to create plans
                     </span>
                   </div>
@@ -372,23 +372,23 @@ export default function HomePage() {
                 </a>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm max-w-3xl mx-auto">
-                <div className="flex flex-col items-center text-center gap-3 p-4 bg-white/5 dark:bg-white/5 rounded-xl border border-brand-green/20">
+                <div className="flex flex-col items-center text-center gap-3 p-4 bg-gray-50/80 dark:bg-white/5 rounded-xl border border-brand-green/30 dark:border-brand-green/20">
                   <div className="p-3 bg-brand-green/20 rounded-xl flex-shrink-0">
                     <GraduationCap className="w-6 h-6 text-brand-green" />
                   </div>
-                  <span className="font-semibold text-muted-foreground">Educational Focused</span>
+                  <span className="font-semibold text-gray-700 dark:text-muted-foreground">Educational Focused</span>
                 </div>
-                <div className="flex flex-col items-center text-center gap-3 p-4 bg-white/5 dark:bg-white/5 rounded-xl border border-brand-green/20">
+                <div className="flex flex-col items-center text-center gap-3 p-4 bg-gray-50/80 dark:bg-white/5 rounded-xl border border-brand-green/30 dark:border-brand-green/20">
                   <div className="p-3 bg-brand-green/20 rounded-xl flex-shrink-0">
                     <TrendingUp className="w-6 h-6 text-brand-green" />
                   </div>
-                  <span className="font-semibold text-muted-foreground">Visual Progress Tracking</span>
+                  <span className="font-semibold text-gray-700 dark:text-muted-foreground">Visual Progress Tracking</span>
                 </div>
-                <div className="flex flex-col items-center text-center gap-3 p-4 bg-white/5 dark:bg-white/5 rounded-xl border border-brand-green/20">
+                <div className="flex flex-col items-center text-center gap-3 p-4 bg-gray-50/80 dark:bg-white/5 rounded-xl border border-brand-green/30 dark:border-brand-green/20">
                   <div className="p-3 bg-brand-green/20 rounded-xl flex-shrink-0">
                     <Smartphone className="w-6 h-6 text-brand-green" />
                   </div>
-                  <span className="font-semibold text-muted-foreground">Mobile Optimized</span>
+                  <span className="font-semibold text-gray-700 dark:text-muted-foreground">Mobile Optimized</span>
                 </div>
               </div>
             </section>
