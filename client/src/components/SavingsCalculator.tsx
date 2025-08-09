@@ -131,9 +131,11 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
         });
       }
       
-      // Force refresh of goals data
+      // Force refresh of goals data and auth data (to update guest counters)
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
       
       onSave?.(savedGoal);
     },
