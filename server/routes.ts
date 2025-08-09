@@ -33,10 +33,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Check existing tracking for this IP/fingerprint
     let tracking = await storage.getGuestTracking(ipAddress, fingerprint);
+    console.log(`[GUEST_TRACKING] IP: ${ipAddress}, Fingerprint: ${fingerprint}, Existing tracking:`, tracking ? `dailyPdfCount: ${tracking.dailyPdfCount}` : 'none');
     
     if (!tracking) {
       // Create new tracking entry
       tracking = await storage.createGuestTracking(ipAddress, fingerprint);
+      console.log(`[GUEST_TRACKING] Created new tracking for fingerprint: ${fingerprint}`);
     } else {
       // Check if 24 hours have passed and reset if needed
       const resetTime = new Date(tracking.nextResetTime);
@@ -568,12 +570,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.isGuest) {
         // Check database tracking for daily limit
         if (req.session.guestIpAddress && req.session.guestFingerprint) {
+          console.log(`[PDF_TRACKING] Guest PDF download attempt - IP: ${req.session.guestIpAddress}, Fingerprint: ${req.session.guestFingerprint}`);
+          
           const result = await storage.incrementGuestPdfCount(
             req.session.guestIpAddress,
             req.session.guestFingerprint
           );
           
+          console.log(`[PDF_TRACKING] PDF tracking result:`, result);
+          
           if (!result.allowed) {
+            console.log(`[PDF_TRACKING] PDF download BLOCKED - limit reached`);
             return res.status(429).json({
               message: "Daily PDF download limit reached. Guest users can download 1 PDF per day. Create an account for unlimited downloads.",
               isGuest: true,
@@ -582,6 +589,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               remaining: 0
             });
           }
+          
+          console.log(`[PDF_TRACKING] PDF download ALLOWED - remaining: ${result.remaining}`);
           
           // Update session counter to match database
           req.session.guestPdfDownloads = 1 - result.remaining;

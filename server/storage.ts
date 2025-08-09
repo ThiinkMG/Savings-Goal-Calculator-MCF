@@ -431,11 +431,9 @@ export class DatabaseStorage implements IStorage {
 
   // Guest tracking methods
   async getGuestTracking(ipAddress: string, fingerprint: string): Promise<GuestTracking | undefined> {
+    // Use only fingerprint for uniqueness to prevent IP address changes from bypassing limits
     const [tracking] = await db.select().from(guestTracking).where(
-      and(
-        eq(guestTracking.ipAddress, ipAddress),
-        eq(guestTracking.browserFingerprint, fingerprint)
-      )
+      eq(guestTracking.browserFingerprint, fingerprint)
     );
     
     // Check if we need to reset the daily counters
@@ -466,6 +464,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createGuestTracking(ipAddress: string, fingerprint: string): Promise<GuestTracking> {
+    // First check if tracking already exists by fingerprint only
+    const existing = await this.getGuestTracking(ipAddress, fingerprint);
+    if (existing) {
+      return existing;
+    }
+    
     const now = new Date();
     const [tracking] = await db.insert(guestTracking).values({
       ipAddress,
