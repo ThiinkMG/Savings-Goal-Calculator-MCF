@@ -357,19 +357,24 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   const renderAccountSettings = () => {
     return (
     <div className="h-full overflow-y-auto settings-content-scroll pr-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {user ? 'Account Information' : 'Guest Session'}
-          </CardTitle>
-          <CardDescription>
+      <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+              <User className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <CardTitle className="text-lg">
+              {user ? 'Account Information' : 'Guest Session'}
+            </CardTitle>
+          </div>
+          <CardDescription className="text-sm leading-relaxed">
             {user 
-              ? 'Your current account details' 
+              ? 'Your current account details and security settings' 
               : 'You\'re using My College Finance as a guest'
             }
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5">
           {user ? (
             // Authenticated user - show account details and preferences
             <>
@@ -421,14 +426,16 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           ) : (
             // Not authenticated - show blue button with correct text based on guest state
             <div className="space-y-4">
-              <div className="p-4 border border-border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <h4 className="font-medium text-sm text-blue-800 dark:text-blue-200">
+              <div className="p-5 border border-blue-200/50 rounded-xl bg-gradient-to-br from-blue-50/80 via-blue-50/40 to-transparent dark:from-blue-950/40 dark:via-blue-950/20 dark:to-transparent backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200">
                     {isGuest ? 'Guest Session Active' : 'Quick Access'}
                   </h4>
                 </div>
-                <p className="text-xs text-blue-700 dark:text-blue-300 mb-3 leading-relaxed">
+                <p className="text-sm text-blue-700 dark:text-blue-300 mb-4 leading-relaxed">
                   {isGuest 
                     ? 'Your savings goals are stored temporarily for this session only. Create an account to save your progress permanently.'
                     : 'Start using the savings calculator right away! You can save multiple goals for this session.'
@@ -448,8 +455,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
                       onClose();
                     }
                   }}
-                  size="sm"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200"
                 >
                   <User className="w-4 h-4 mr-2" />
                   {isGuest ? 'Create Free Account' : 'Continue as Guest'}
@@ -558,7 +564,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
               }
             }} 
             variant="outline" 
-            className="w-full mt-4"
+            className="w-full mt-4 border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 font-medium"
           >
             {(user || isGuest) ? 'Log Out' : 'Log In'}
           </Button>
@@ -573,17 +579,28 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
 
   const renderAppearanceSettings = () => (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Theme</CardTitle>
-          <CardDescription>Choose your preferred appearance</CardDescription>
+      <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+              <Globe className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <CardTitle className="text-lg">Theme</CardTitle>
+          </div>
+          <CardDescription className="text-sm leading-relaxed">Choose your preferred appearance</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Label>Current Theme</Label>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm capitalize">{theme} mode</span>
-              <Button onClick={toggleTheme} size="sm" variant="outline">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 rounded-xl border border-border/30 bg-gradient-to-r from-muted/30 to-transparent">
+              <div className="space-y-0.5">
+                <Label className="font-medium">Current Theme</Label>
+                <p className="text-sm text-muted-foreground capitalize">{theme} mode</p>
+              </div>
+              <Button 
+                onClick={toggleTheme} 
+                variant="outline" 
+                className="border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 font-medium"
+              >
                 Switch to {theme === 'light' ? 'Dark' : 'Light'}
               </Button>
             </div>
@@ -644,16 +661,21 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
 
   const renderDataSettings = () => (
     <div className="space-y-6 h-full overflow-y-auto settings-content-scroll pr-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>Data Export</CardTitle>
-          <CardDescription>Download your savings goals and progress data</CardDescription>
+      <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+              <BarChart3 className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <CardTitle className="text-lg">Data Export</CardTitle>
+          </div>
+          <CardDescription className="text-sm leading-relaxed">Download your savings goals and progress data</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Download Format</Label>
+        <CardContent className="space-y-5">
+          <div className="space-y-3">
+            <Label className="font-medium">Download Format</Label>
             <Select value={downloadFormat} onValueChange={(value) => setDownloadFormat(value as 'csv' | 'pdf-zip')}>
-              <SelectTrigger>
+              <SelectTrigger className="border-border/40 hover:border-primary/30 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -663,12 +685,25 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
             </Select>
           </div>
           
-          <Button onClick={handleDataExport} disabled={isLoading} className="w-full">
-            <Download className="w-4 h-4 mr-2" />
-            {isLoading ? "Exporting..." : "Download All Goals"}
+          <Button 
+            onClick={handleDataExport} 
+            disabled={isLoading} 
+            className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 font-medium relative overflow-hidden"
+          >
+            {isLoading ? (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 mr-2" />
+                Download All Goals
+              </>
+            )}
           </Button>
           
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-muted-foreground text-center leading-relaxed">
             {downloadFormat === 'csv' 
               ? "Downloads all your goals, progress data, and settings as a CSV file" 
               : "Downloads individual PDF reports for each goal in a ZIP file"}
@@ -769,7 +804,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
 
   return (
     <div className={`fixed inset-0 z-50 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-      {/* Backdrop */}
+        {/* Backdrop */}
       <div 
         className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0'
@@ -779,14 +814,19 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       />
       {/* Settings Panel */}
       <div 
-        className={`absolute right-0 top-0 h-screen w-full sm:w-96 bg-background border-l shadow-2xl transform transition-transform duration-300 ease-in-out ${
+        className={`absolute right-0 top-0 h-screen w-full sm:w-[420px] lg:w-[460px] bg-gradient-to-b from-background to-background/95 border-l border-border/50 shadow-2xl backdrop-blur-md transform transition-all duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-background dark:bg-[#1f1f1f]">
-          <h2 className="text-lg font-semibold">Settings</h2>
+        <div className="flex items-center justify-between p-6 border-b border-border/30 bg-gradient-to-r from-primary/5 to-transparent backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Globe className="w-4 h-4 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold tracking-tight">Settings</h2>
+          </div>
           <Button 
             variant="ghost" 
             size="sm" 
@@ -795,7 +835,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
               e.stopPropagation();
               onClose();
             }}
-            className="hover:bg-accent/50 transition-colors"
+            className="w-8 h-8 p-0 rounded-full hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
             aria-label="Close settings"
           >
             <X className="w-4 h-4" />
@@ -803,19 +843,26 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b bg-background dark:bg-[#1f1f1f]">
-          <div className="flex flex-col p-2 space-y-1">
+        <div className="border-b border-border/30 bg-muted/20">
+          <div className="flex flex-col p-3 space-y-1.5">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
               return (
                 <Button
                   key={tab.id}
-                  variant={activeTab === tab.id ? "secondary" : "ghost"}
-                  className="justify-start h-10"
+                  variant="ghost"
+                  className={`justify-start h-11 px-4 rounded-xl transition-all duration-200 ${
+                    isActive 
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                      : "hover:bg-accent/60 hover:translate-x-1"
+                  }`}
                   onClick={() => setActiveTab(tab.id as SettingsTab)}
                 >
-                  <Icon className="w-4 h-4 mr-3" />
-                  {tab.label}
+                  <div className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
+                    <Icon className="w-full h-full" />
+                  </div>
+                  <span className="font-medium">{tab.label}</span>
                 </Button>
               );
             })}
@@ -823,9 +870,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </div>
 
         {/* Content */}
-        <div 
-          className="h-[calc(100vh-180px)] p-4 bg-background dark:bg-[#1f1f1f]"
-        >
+        <div className="h-[calc(100vh-160px)] overflow-y-auto overscroll-contain px-4 py-2 space-y-4 custom-scrollbar">
           {renderTabContent()}
         </div>
       </div>
