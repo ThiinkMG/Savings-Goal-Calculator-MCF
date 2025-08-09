@@ -362,8 +362,27 @@ export async function generateSavingsPlanPDF(
 
   // --------- Save (REQUIRED) ----------
   console.log('About to save PDF...');
-  pdf.save(`${goal.name || 'Savings Goal'} - Plan Report.pdf`);
-  console.log('PDF save completed successfully');
+  const filename = `${goal.name || 'Savings Goal'} - Plan Report.pdf`;
+  console.log('Saving PDF with filename:', filename);
+  
+  // Try alternative download method if normal save fails
+  try {
+    pdf.save(filename);
+    console.log('PDF save completed successfully');
+  } catch (saveError) {
+    console.log('Normal save failed, trying alternative method:', saveError);
+    // Alternative method: create blob and trigger download
+    const blob = pdf.output('blob');
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    console.log('Alternative download method completed');
+  }
   } catch (error) {
     console.error('Error generating PDF:', error);
     console.error('Error details:', {
