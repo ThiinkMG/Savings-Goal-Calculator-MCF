@@ -53,11 +53,6 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
     
     // Always close the modal after guest selection
     handleClose();
-    
-    toast({
-      title: "Welcome!",
-      description: "You're signed in guest mode. You can save multiple goals for this session.",
-    });
   };
 
   // Load remembered credentials on component mount

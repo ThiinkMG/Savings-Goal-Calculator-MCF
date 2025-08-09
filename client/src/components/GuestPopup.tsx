@@ -14,7 +14,7 @@ export function GuestPopup({ onClose, onCreateAccount }: GuestPopupProps) {
           <Shield className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
           <div className="flex-1">
             <div className="text-sm text-white leading-relaxed">
-              <span className="font-medium">You're using My College Finance as a guest.</span>
+              <span className="font-medium">You're signed in guest mode.</span>
               <br />
               <span>Your data won't be saved between sessions. </span>
               <button 
