@@ -35,6 +35,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     req.session.guestLastResetDate = today;
     req.session.guestGoals = [];
     
+    // Explicitly save the session to ensure persistence
+    await new Promise<void>((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+    
     res.json({ 
       success: true, 
       message: "Guest session created",
@@ -328,6 +336,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         req.session.guestGoals.push(guestGoal);
         req.session.guestDailyCount = currentCount + 1;
+        
+        // Explicitly save the session to ensure persistence
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
         
         return res.status(201).json(guestGoal);
       }
