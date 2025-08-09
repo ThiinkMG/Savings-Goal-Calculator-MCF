@@ -570,9 +570,12 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           </Button>
 
           {/* Additional spacing for better scrolling */}
-          <div className="h-12"></div>
+          <div className="h-20"></div>
         </CardContent>
       </Card>
+      
+      {/* Extra bottom padding for account section */}
+      <div className="h-16 pb-8"></div>
     </div>
   );
   };
