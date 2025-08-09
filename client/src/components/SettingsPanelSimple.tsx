@@ -774,7 +774,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardContent>
       </Card>
 
-      <Card className="mb-6">
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle>Community</CardTitle>
           <CardDescription>Connect with other users</CardDescription>
