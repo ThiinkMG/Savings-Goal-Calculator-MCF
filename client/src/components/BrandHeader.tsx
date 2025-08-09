@@ -38,7 +38,7 @@ export function BrandHeader({ onContinueAsGuest }: BrandHeaderProps = {}) {
 
             {/* Enhanced Brand Text */}
             <div className="flex-1 relative overflow-visible">
-              <h1 className="text-xs xs:text-sm sm:text-lg font-black bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent font-sans leading-tight transition-all duration-300 group-hover:from-blue-500 group-hover:to-purple-600 whitespace-nowrap">
+              <h1 className="text-sm xs:text-base sm:text-lg font-black bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent font-sans leading-tight transition-all duration-300 group-hover:from-blue-500 group-hover:to-purple-600 whitespace-nowrap">
                 MY COLLEGE FINANCE
               </h1>
               <p className="text-[10px] sm:text-xs text-muted-foreground/80 leading-tight hidden xs:block transition-colors duration-300 group-hover:text-muted-foreground font-medium tracking-wide">
