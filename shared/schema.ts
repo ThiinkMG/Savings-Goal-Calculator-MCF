@@ -51,6 +51,19 @@ export const savingsGoals = pgTable("savings_goals", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Track guest usage to prevent abuse
+export const guestTracking = pgTable("guest_tracking", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  ipAddress: varchar("ip_address", { length: 45 }).notNull(), // Support IPv6
+  browserFingerprint: text("browser_fingerprint").notNull(),
+  dailyGoalCount: integer("daily_goal_count").default(0),
+  dailyPdfCount: integer("daily_pdf_count").default(0),
+  lastResetDate: timestamp("last_reset_date").notNull(),
+  nextResetTime: timestamp("next_reset_time").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const goalTypes = [
   'education',
   'emergency',
@@ -117,3 +130,4 @@ export type SavingsGoal = typeof savingsGoals.$inferSelect;
 export type InsertSavingsGoal = z.infer<typeof insertSavingsGoalSchema>;
 export type UpdateSavingsGoal = z.infer<typeof updateSavingsGoalSchema>;
 export type GoalType = typeof goalTypes[number];
+export type GuestTracking = typeof guestTracking.$inferSelect;

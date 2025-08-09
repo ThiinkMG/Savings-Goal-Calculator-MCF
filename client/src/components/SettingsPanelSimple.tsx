@@ -14,6 +14,8 @@ import { EnhancedAuthModal } from "./EnhancedAuthModal";
 import { TutorialModal } from "./TutorialModal";
 import { FAQModal } from "./FAQModal";
 import { SecuritySettingsModal } from "./SecuritySettingsModal";
+import { GuestLogoutWarning } from "./GuestLogoutWarning";
+import { useQuery } from "@tanstack/react-query";
 import JSZip from 'jszip';
 
 interface SettingsPanelProps {
@@ -32,6 +34,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [showFAQModal, setShowFAQModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
+  const [showGuestLogoutWarning, setShowGuestLogoutWarning] = useState(false);
   const [securityMode, setSecurityMode] = useState<'password' | 'username' | 'phone' | 'email'>('password');
   const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
@@ -39,6 +42,11 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   const { theme, toggleTheme } = useTheme();
 
   const { toast } = useToast();
+  
+  // Get guest info for next reset time
+  const { data: authData } = useQuery({
+    queryKey: ['/api/auth/me'],
+  });
 
   // Handle Escape key to close panel
   useEffect(() => {
@@ -482,8 +490,11 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
 
           <Button 
             onClick={() => { 
-              if (user || isGuest) {
-                // For both authenticated users and guests, logout clears session
+              if (isGuest) {
+                // Show warning for guest users
+                setShowGuestLogoutWarning(true);
+              } else if (user) {
+                // For authenticated users, logout directly
                 onClose(); // Close modal first
                 logout(); // Then logout (which will reload the page)
               } else {
@@ -793,6 +804,18 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         isOpen={showSecurityModal}
         onClose={() => setShowSecurityModal(false)}
         initialMode={securityMode}
+      />
+      
+      {/* Guest Logout Warning */}
+      <GuestLogoutWarning
+        isOpen={showGuestLogoutWarning}
+        onClose={() => setShowGuestLogoutWarning(false)}
+        onConfirmLogout={() => {
+          setShowGuestLogoutWarning(false);
+          onClose();
+          logout();
+        }}
+        nextResetTime={authData?.guestInfo?.nextResetTime ? new Date(authData.guestInfo.nextResetTime) : undefined}
       />
     </div>
   );

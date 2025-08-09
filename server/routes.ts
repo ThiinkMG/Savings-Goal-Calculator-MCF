@@ -22,18 +22,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/logout", logout);
   app.get("/api/auth/me", getCurrentUser);
   
-  // Create guest session endpoint
+  // Create guest session endpoint with tracking
   app.post("/api/auth/continue-as-guest", async (req, res) => {
     const now = Date.now();
     const today = new Date(now).toDateString();
     
+    // Get IP address and browser fingerprint
+    const ipAddress = req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || 'unknown';
+    const fingerprint = req.body.fingerprint || 'unknown';
+    
+    // Check existing tracking for this IP/fingerprint
+    let tracking = await storage.getGuestTracking(ipAddress, fingerprint);
+    
+    if (!tracking) {
+      // Create new tracking entry
+      tracking = await storage.createGuestTracking(ipAddress, fingerprint);
+    }
+    
+    // Set up session
     req.session.isGuest = true;
     req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
     req.session.guestSessionStart = now;
-    req.session.guestDailyCount = 0;
-    req.session.guestPdfDownloads = 0;
+    req.session.guestDailyCount = tracking.dailyGoalCount;
+    req.session.guestPdfDownloads = tracking.dailyPdfCount;
     req.session.guestLastResetDate = today;
     req.session.guestGoals = [];
+    req.session.guestIpAddress = ipAddress;
+    req.session.guestFingerprint = fingerprint;
     
     // Explicitly save the session to ensure persistence
     await new Promise<void>((resolve, reject) => {
@@ -47,12 +62,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       success: true, 
       message: "Guest session created",
       guestInfo: {
-        dailyCount: 0,
+        dailyCount: tracking.dailyGoalCount,
         dailyLimit: 3,
-        pdfDownloads: 0,
+        pdfDownloads: tracking.dailyPdfCount,
         pdfLimit: 1,
         sessionStart: now,
-        lastResetDate: today
+        lastResetDate: today,
+        nextResetTime: tracking.nextResetTime
       }
     });
   });

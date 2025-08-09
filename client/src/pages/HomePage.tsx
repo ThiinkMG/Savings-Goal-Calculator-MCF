@@ -109,10 +109,14 @@ export default function HomePage() {
   const handleContinueAsGuest = async () => {
     try {
       // Create guest session on the server
+      const { generateFingerprint } = await import('@/lib/browserFingerprint');
+      const fingerprint = await generateFingerprint();
+      
       const response = await fetch('/api/auth/continue-as-guest', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fingerprint })
       });
       
       if (response.ok) {

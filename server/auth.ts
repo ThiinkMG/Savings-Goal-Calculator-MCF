@@ -14,6 +14,8 @@ declare module 'express-session' {
     guestDailyCount?: number; // Number of goals created today
     guestPdfDownloads?: number; // Number of PDF downloads today
     guestLastResetDate?: string; // Date string to track daily resets
+    guestIpAddress?: string; // IP address for tracking
+    guestFingerprint?: string; // Browser fingerprint for tracking
     wixAccessToken?: string;
     wixRefreshToken?: string;
     authMethod?: 'wix' | 'app';
@@ -174,6 +176,18 @@ export async function getCurrentUser(req: Request, res: Response) {
   
   // Check if there's an actual guest session
   if (req.session.isGuest === true && req.session.userId?.startsWith('guest_')) {
+    // Get tracking info from database if available
+    let nextResetTime = undefined;
+    if (req.session.guestIpAddress && req.session.guestFingerprint) {
+      const tracking = await storage.getGuestTracking(
+        req.session.guestIpAddress,
+        req.session.guestFingerprint
+      );
+      if (tracking) {
+        nextResetTime = tracking.nextResetTime;
+      }
+    }
+    
     // Include guest session info for guest users
     const guestInfo = {
       dailyCount: req.session.guestDailyCount || 0,
@@ -181,7 +195,8 @@ export async function getCurrentUser(req: Request, res: Response) {
       pdfDownloads: req.session.guestPdfDownloads || 0,
       pdfLimit: 1,
       sessionStart: req.session.guestSessionStart,
-      lastResetDate: req.session.guestLastResetDate
+      lastResetDate: req.session.guestLastResetDate,
+      nextResetTime
     };
     
     return res.json({ user: null, isGuest: true, guestInfo });

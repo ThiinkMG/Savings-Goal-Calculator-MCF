@@ -1,4 +1,4 @@
-import { users, savingsGoals, verificationCodes, type User, type InsertUser, type SavingsGoal, type InsertSavingsGoal, type UpdateSavingsGoal } from "@shared/schema";
+import { users, savingsGoals, verificationCodes, guestTracking, type User, type InsertUser, type SavingsGoal, type InsertSavingsGoal, type UpdateSavingsGoal, type GuestTracking } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, lt, gt, sql } from "drizzle-orm";
 import { googleSheetsService } from "./googleSheetsService";
@@ -36,7 +36,12 @@ export interface IStorage {
   verifyCode(code: string, identifier: string, type: string): Promise<{ valid: boolean; userId?: string }>;
   markCodeAsUsed(codeId: string): Promise<void>;
   
-
+  // Guest tracking
+  getGuestTracking(ipAddress: string, fingerprint: string): Promise<GuestTracking | undefined>;
+  createGuestTracking(ipAddress: string, fingerprint: string): Promise<GuestTracking>;
+  updateGuestTracking(id: string, updates: Partial<GuestTracking>): Promise<void>;
+  incrementGuestGoalCount(ipAddress: string, fingerprint: string): Promise<{ allowed: boolean; remaining: number }>;
+  incrementGuestPdfCount(ipAddress: string, fingerprint: string): Promise<{ allowed: boolean; remaining: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -424,7 +429,116 @@ export class DatabaseStorage implements IStorage {
     return goal || undefined;
   }
 
+  // Guest tracking methods
+  async getGuestTracking(ipAddress: string, fingerprint: string): Promise<GuestTracking | undefined> {
+    const [tracking] = await db.select().from(guestTracking).where(
+      and(
+        eq(guestTracking.ipAddress, ipAddress),
+        eq(guestTracking.browserFingerprint, fingerprint)
+      )
+    );
+    
+    // Check if we need to reset the daily counters
+    if (tracking) {
+      const now = new Date();
+      const nextReset = new Date(tracking.nextResetTime);
+      
+      if (now >= nextReset) {
+        // Reset counters for new day
+        await this.updateGuestTracking(tracking.id, {
+          dailyGoalCount: 0,
+          dailyPdfCount: 0,
+          lastResetDate: now,
+          nextResetTime: new Date(now.getTime() + 24 * 60 * 60 * 1000) // 24 hours from now
+        });
+        
+        return {
+          ...tracking,
+          dailyGoalCount: 0,
+          dailyPdfCount: 0,
+          lastResetDate: now,
+          nextResetTime: new Date(now.getTime() + 24 * 60 * 60 * 1000)
+        };
+      }
+    }
+    
+    return tracking || undefined;
+  }
 
+  async createGuestTracking(ipAddress: string, fingerprint: string): Promise<GuestTracking> {
+    const now = new Date();
+    const [tracking] = await db.insert(guestTracking).values({
+      ipAddress,
+      browserFingerprint: fingerprint,
+      dailyGoalCount: 0,
+      dailyPdfCount: 0,
+      lastResetDate: now,
+      nextResetTime: new Date(now.getTime() + 24 * 60 * 60 * 1000) // 24 hours from now
+    }).returning();
+    
+    return tracking;
+  }
+
+  async updateGuestTracking(id: string, updates: Partial<GuestTracking>): Promise<void> {
+    await db.update(guestTracking)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(guestTracking.id, id));
+  }
+
+  async incrementGuestGoalCount(ipAddress: string, fingerprint: string): Promise<{ allowed: boolean; remaining: number }> {
+    let tracking = await this.getGuestTracking(ipAddress, fingerprint);
+    
+    if (!tracking) {
+      tracking = await this.createGuestTracking(ipAddress, fingerprint);
+    }
+    
+    const DAILY_GOAL_LIMIT = 3;
+    
+    if (tracking.dailyGoalCount >= DAILY_GOAL_LIMIT) {
+      return { 
+        allowed: false, 
+        remaining: 0 
+      };
+    }
+    
+    await this.updateGuestTracking(tracking.id, {
+      dailyGoalCount: tracking.dailyGoalCount + 1
+    });
+    
+    return { 
+      allowed: true, 
+      remaining: DAILY_GOAL_LIMIT - (tracking.dailyGoalCount + 1) 
+    };
+  }
+
+  async incrementGuestPdfCount(ipAddress: string, fingerprint: string): Promise<{ allowed: boolean; remaining: number }> {
+    let tracking = await this.getGuestTracking(ipAddress, fingerprint);
+    
+    if (!tracking) {
+      tracking = await this.createGuestTracking(ipAddress, fingerprint);
+    }
+    
+    const DAILY_PDF_LIMIT = 1;
+    
+    if (tracking.dailyPdfCount >= DAILY_PDF_LIMIT) {
+      return { 
+        allowed: false, 
+        remaining: 0 
+      };
+    }
+    
+    await this.updateGuestTracking(tracking.id, {
+      dailyPdfCount: tracking.dailyPdfCount + 1
+    });
+    
+    return { 
+      allowed: true, 
+      remaining: DAILY_PDF_LIMIT - (tracking.dailyPdfCount + 1) 
+    };
+  }
 }
 
 export const storage = new DatabaseStorage();
