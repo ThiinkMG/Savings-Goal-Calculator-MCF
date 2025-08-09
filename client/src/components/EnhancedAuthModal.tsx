@@ -108,6 +108,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   }, [isOpen]);
 
   const resetForm = () => {
+    // Check if we should preserve the remembered identifier
+    const rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
+    const rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    
     setFormData({
       fullName: '',
       email: '',
@@ -115,7 +119,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
       username: '',
       password: '',
       confirmPassword: '',
-      identifier: '',
+      identifier: (rememberedEnabled && rememberedIdentifier) ? rememberedIdentifier : '',
       code: '',
       resetToken: '',
       newPassword: ''
@@ -126,7 +130,31 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   };
 
   const handleClose = () => {
-    resetForm();
+    // Don't reset the identifier if remember login is enabled
+    const rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
+    const rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    
+    if (rememberedEnabled && rememberedIdentifier) {
+      // Reset form but preserve the remembered identifier
+      setFormData({
+        fullName: '',
+        email: '',
+        phoneNumber: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+        identifier: rememberedIdentifier,
+        code: '',
+        resetToken: '',
+        newPassword: ''
+      });
+    } else {
+      resetForm();
+    }
+    
+    setUsernameStatus(null);
+    setPasswordStrength(0);
+    setStep('entry');
     setOauthState(null);
     onClose();
   };
@@ -702,16 +730,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   const renderLoginStep = () => (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="identifier" className="text-sm font-medium">Email Address</Label>
+        <Label htmlFor="identifier" className="text-sm font-medium">Email, Username, or Phone</Label>
         <Input
           id="identifier"
-          type="email"
-          placeholder="Enter your website email"
+          type="text"
+          placeholder="Enter your email, username, or phone number"
           value={formData.identifier}
           onChange={(e) => handleInputChange('identifier', e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleEnhancedLogin()}
           className="h-12 text-base"
-          autoComplete="email"
+          autoComplete="username"
+          data-testid="input-identifier"
         />
       </div>
 
