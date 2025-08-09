@@ -329,24 +329,31 @@ export default function HomePage() {
                   </>
                 ) : isGuest ? (
                   <>
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                      <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                          Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} this session
-                        </span>
-                      </div>
-                      <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                            PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
+                    <div className="flex flex-col gap-3 w-full sm:w-auto">
+                      {/* Plans Status - Mobile Optimized */}
+                      <div className="flex items-center gap-3 px-4 py-3 bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/60 rounded-xl backdrop-blur-sm">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300 block">
+                            Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} this session
                           </span>
-                          {guestInfo?.pdfDownloads >= (guestInfo?.pdfLimit || 1) && guestInfo?.nextResetTime && (
-                            <div className="text-xs text-orange-600 dark:text-orange-400">
-                              Resets in: <CountdownTimer targetTime={guestInfo.nextResetTime} className="text-xs" />
-                            </div>
-                          )}
+                        </div>
+                      </div>
+                      
+                      {/* PDF Downloads Status - Mobile Optimized */}
+                      <div className="flex items-start gap-3 px-4 py-3 bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/60 rounded-xl backdrop-blur-sm">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0 shadow-sm mt-0.5"></div>
+                        <div className="flex-1 min-w-0">
+                          <div className="space-y-1">
+                            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300 block">
+                              PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
+                            </span>
+                            {guestInfo?.pdfDownloads >= (guestInfo?.pdfLimit || 1) && guestInfo?.nextResetTime && (
+                              <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">
+                                Resets in: <CountdownTimer targetTime={guestInfo.nextResetTime} className="text-xs font-mono" />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
