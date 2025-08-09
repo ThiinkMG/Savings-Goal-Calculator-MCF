@@ -179,17 +179,18 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
         <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="relative">
+              {/* Hide icon on mobile, show on sm and up */}
+              <div className="relative hidden sm:block">
                 <div className="p-3 sm:p-4 bg-gradient-to-br from-blue-500/20 to-blue-700/30 rounded-xl sm:rounded-2xl backdrop-blur-sm border border-blue-200/30 dark:border-blue-700/30 shadow-lg">
                   <List className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-xl sm:rounded-2xl blur-lg opacity-75"></div>
               </div>
               <div className="text-center sm:text-left">
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent">
+                <h3 className="text-2xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent leading-tight">
                   Savings Tracker Dashboard
                 </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground/80 mt-1 font-medium">
+                <p className="text-sm sm:text-sm text-muted-foreground/80 mt-1 font-medium">
                   Manage and track all your financial goals
                 </p>
               </div>
