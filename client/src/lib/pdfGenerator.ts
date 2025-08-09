@@ -207,11 +207,9 @@ export async function generateSavingsPlanPDF(
     const rh = 14;
     addPageIfNeeded(rh + 2);
 
-    // Zebra stripe for better readability - use same background as Goal Details section
-    if (rowIndex % 2 === 1) {
-      pdf.setFillColor(...c.band);
-      pdf.rect(x, y - 2, widths.reduce((a,b)=>a+b,0), rh, 'F');
-    }
+    // Apply consistent background to all rows - same as Goal Details section
+    pdf.setFillColor(...c.band);
+    pdf.rect(x, y - 2, widths.reduce((a,b)=>a+b,0), rh, 'F');
 
     setFont('normal', 10, c.black);
     let cx = x;
