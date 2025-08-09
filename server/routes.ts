@@ -263,6 +263,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/savings-goals", requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.session.userId;
+      console.log('[DEBUG] Get goals - userId:', userId, 'isGuest:', req.isGuest, 'session:', {
+        guestGoals: req.session.guestGoals?.length || 0,
+        sessionId: req.sessionID
+      });
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
@@ -270,6 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Return guest goals from session for guest users
       if (req.isGuest || userId.startsWith('guest_')) {
         const guestGoals = req.session.guestGoals || [];
+        console.log('[DEBUG] Returning guest goals:', guestGoals.length, 'goals');
         return res.json(guestGoals);
       }
       
@@ -305,6 +311,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/savings-goals", requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.session.userId;
+      console.log('[DEBUG] Create goal - userId:', userId, 'isGuest:', req.isGuest, 'session:', {
+        guestGoals: req.session.guestGoals?.length || 0,
+        guestDailyCount: req.session.guestDailyCount,
+        sessionId: req.sessionID
+      });
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
@@ -317,6 +329,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Check daily limit for guests (3 plans per day)
         const currentCount = req.session.guestDailyCount || 0;
+        console.log('[DEBUG] Guest goal creation - current count:', currentCount, 'goals in session:', req.session.guestGoals.length);
+        
         if (currentCount >= 3) {
           return res.status(429).json({ 
             message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
@@ -336,6 +350,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         req.session.guestGoals.push(guestGoal);
         req.session.guestDailyCount = currentCount + 1;
+        console.log('[DEBUG] After adding goal - goals in session:', req.session.guestGoals.length, 'daily count:', req.session.guestDailyCount);
         
         // Explicitly save the session to ensure persistence
         await new Promise<void>((resolve, reject) => {
