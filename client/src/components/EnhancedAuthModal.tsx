@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, ArrowLeft, Check, X, BookOpen, UserCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,6 +39,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [oauthState, setOauthState] = useState<string | null>(null);
+  const [rememberLogin, setRememberLogin] = useState(true);
   
   const { toast } = useToast();
   const { login } = useAuth();
@@ -58,7 +60,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
     });
   };
 
-  // Check for OAuth success/callback on component mount
+  // Load remembered credentials on component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const authCode = urlParams.get('wix_auth_code');
@@ -90,12 +92,20 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
       window.location.reload();
     }
     
+    // Load remembered credentials if enabled
+    const rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
+    const rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    
+    if (rememberedEnabled && rememberedIdentifier && isOpen) {
+      setFormData(prev => ({ ...prev, identifier: rememberedIdentifier }));
+    }
+    
     // Only reset form if we don't have URL parameters to prevent modal reset during guest login
     if (!authCode && !authState && !authError && urlParams.get('auth') !== 'success') {
       // This is a fresh modal opening, ensure clean state
       setStep('entry');
     }
-  }, []);
+  }, [isOpen]);
 
   const resetForm = () => {
     setFormData({
@@ -351,6 +361,11 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
         title: "Login Successful",
         description: "Welcome back!"
       });
+
+      // Save remembered login if enabled
+      if (rememberLogin && formData.identifier) {
+        localStorage.setItem('rememberedLoginIdentifier', formData.identifier);
+      }
 
       login(data.user);
       // Call the success callback if provided
@@ -725,10 +740,26 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
         </div>
       </div>
 
+      <div className="flex items-center space-x-2 mb-4">
+        <Checkbox 
+          id="remember-login"
+          checked={rememberLogin}
+          onCheckedChange={(checked) => setRememberLogin(checked === true)}
+          data-testid="checkbox-remember-login"
+        />
+        <Label 
+          htmlFor="remember-login" 
+          className="text-sm cursor-pointer"
+        >
+          Remember my login
+        </Label>
+      </div>
+
       <Button 
         onClick={handleEnhancedLogin} 
         className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700 text-white font-medium" 
         disabled={isLoading}
+        data-testid="button-sign-in"
       >
         {isLoading ? "Signing In..." : "Sign In & Sync Account"}
       </Button>

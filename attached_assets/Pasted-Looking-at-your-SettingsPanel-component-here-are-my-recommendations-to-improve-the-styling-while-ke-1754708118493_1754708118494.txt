@@ -1,0 +1,180 @@
+Looking at your SettingsPanel component, here are my recommendations to improve the styling while keeping all imports, variables, and routes unchanged:
+🎨 Visual Hierarchy & Layout Improvements
+1. Enhanced Panel Design
+typescript// Replace the main panel div with:
+<div 
+  className={`absolute right-0 top-0 h-screen w-full sm:w-[420px] bg-gradient-to-b from-background to-background/95 border-l border-border/50 shadow-2xl backdrop-blur-md transform transition-all duration-300 ease-out ${
+    isOpen ? 'translate-x-0' : 'translate-x-full'
+  }`}
+  onClick={(e) => e.stopPropagation()}
+>
+2. Modern Header with Gradient
+typescript// Update header styling:
+<div className="flex items-center justify-between p-6 border-b border-border/30 bg-gradient-to-r from-primary/5 to-transparent backdrop-blur-sm">
+  <div className="flex items-center gap-3">
+    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+      <Globe className="w-4 h-4 text-primary" />
+    </div>
+    <h2 className="text-xl font-semibold tracking-tight">Settings</h2>
+  </div>
+  <Button 
+    variant="ghost" 
+    size="sm" 
+    onClick={onClose}
+    className="w-8 h-8 p-0 rounded-full hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+  >
+    <X className="w-4 h-4" />
+  </Button>
+</div>
+3. Enhanced Tab Navigation
+typescript// Replace tab navigation with:
+<div className="border-b border-border/30 bg-muted/20">
+  <div className="flex flex-col p-3 space-y-1.5">
+    {tabs.map((tab) => {
+      const Icon = tab.icon;
+      const isActive = activeTab === tab.id;
+      return (
+        <Button
+          key={tab.id}
+          variant="ghost"
+          className={`justify-start h-11 px-4 rounded-xl transition-all duration-200 ${
+            isActive 
+              ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+              : "hover:bg-accent/60 hover:translate-x-1"
+          }`}
+          onClick={() => setActiveTab(tab.id as SettingsTab)}
+        >
+          <div className={`w-5 h-5 mr-3 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
+            <Icon className="w-full h-full" />
+          </div>
+          <span className="font-medium">{tab.label}</span>
+        </Button>
+      );
+    })}
+  </div>
+</div>
+🃏 Card Component Improvements
+4. Enhanced Card Styling
+typescript// Replace Card components with enhanced versions:
+<Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+  <CardHeader className="pb-3">
+    <div className="flex items-center gap-2">
+      <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+        <User className="w-3.5 h-3.5 text-primary" />
+      </div>
+      <CardTitle className="text-lg">Account Information</CardTitle>
+    </div>
+    <CardDescription className="text-sm leading-relaxed">
+      Your current account details and security settings
+    </CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-5">
+    {/* Content */}
+  </CardContent>
+</Card>
+5. Improved Button Styles
+typescript// For primary action buttons:
+<Button
+  onClick={handleAction}
+  className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 font-medium"
+>
+  <Icon className="w-4 h-4 mr-2" />
+  Button Text
+</Button>
+
+// For secondary buttons:
+<Button 
+  variant="outline" 
+  className="w-full border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 font-medium"
+>
+  Secondary Action
+</Button>
+6. Enhanced Status Indicators
+typescript// Replace status displays with:
+<div className="flex items-center justify-between p-3 rounded-xl border border-border/30 bg-gradient-to-r from-green-50/50 to-transparent dark:from-green-950/20">
+  <span className="text-sm font-medium">Username Login</span>
+  <div className="flex items-center gap-2">
+    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+    <span className="text-sm font-medium text-green-600 dark:text-green-400">Active</span>
+  </div>
+</div>
+📱 Mobile Responsiveness Improvements
+7. Better Mobile Layout
+typescript// Update main container:
+<div 
+  className={`absolute right-0 top-0 h-screen w-full sm:w-[420px] lg:w-[460px] bg-background/95 backdrop-blur-xl border-l border-border/50 shadow-2xl transform transition-all duration-300 ease-out ${
+    isOpen ? 'translate-x-0' : 'translate-x-full'
+  }`}
+>
+8. Enhanced Scrolling Areas
+typescript// Update content scrolling:
+<div className="h-[calc(100vh-160px)] overflow-y-auto overscroll-contain px-4 py-2 space-y-4 custom-scrollbar">
+  {renderTabContent()}
+</div>
+
+// Add custom scrollbar CSS:
+<style jsx>{`
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+  }
+`}</style>
+✨ Interactive Enhancements
+9. Improved Loading States
+typescript// Enhanced loading button:
+<Button onClick={handleDataExport} disabled={isLoading} className="w-full relative overflow-hidden">
+  {isLoading ? (
+    <>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+      Exporting...
+    </>
+  ) : (
+    <>
+      <Download className="w-4 h-4 mr-2" />
+      Download All Goals
+    </>
+  )}
+</Button>
+10. Enhanced Toggle Switches
+typescript// Better switch styling:
+<div className="flex items-center justify-between p-4 rounded-xl border border-border/30 hover:border-primary/30 transition-all duration-200 group">
+  <div className="space-y-1">
+    <Label className="font-medium group-hover:text-primary transition-colors">Goal Reminders</Label>
+    <p className="text-sm text-muted-foreground">Monthly progress check notifications</p>
+  </div>
+  <Switch
+    checked={notificationSettings.goalReminders}
+    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, goalReminders: checked }))}
+    className="data-[state=checked]:bg-primary"
+  />
+</div>
+11. Improved Info Boxes
+typescript// Enhanced guest session info:
+<div className="p-5 border border-blue-200/50 rounded-xl bg-gradient-to-br from-blue-50/80 via-blue-50/40 to-transparent dark:from-blue-950/40 dark:via-blue-950/20 dark:to-transparent backdrop-blur-sm">
+  <div className="flex items-center gap-3 mb-3">
+    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+      <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+    </div>
+    <h4 className="font-semibold text-blue-800 dark:text-blue-200">
+      Guest Session Active
+    </h4>
+  </div>
+  <p className="text-sm text-blue-700 dark:text-blue-300 mb-4 leading-relaxed">
+    Your savings goals are stored temporarily for this session only. Create an account to save your progress permanently.
+  </p>
+  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30">
+    <User className="w-4 h-4 mr-2" />
+    Create Free Account
+  </Button>
+</div>
+These improvements will give your settings panel a more modern, polished appearance with better visual hierarchy, enhanced interactivity, and improved mobile experience while maintaining all existing functionality.

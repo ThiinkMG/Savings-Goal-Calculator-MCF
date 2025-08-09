@@ -29,6 +29,7 @@ Preferred communication style: Simple, everyday language.
 ### Technical Implementations & Feature Specifications
 - **Multi-Method Authentication**: Supports email, phone, and username login, password recovery with 6-digit verification codes, username recovery, real-time availability checking, password strength validation, account lockout protection, and rate limiting.
 - **Security Management**: Comprehensive four-way security updates (password, username, phone, email), token-based verification, and secure password hashing with bcrypt.
+- **Remember Login Feature**: ✅ **COMPLETE** - Optional auto-fill functionality that stores last successful username/email for faster login (password never stored), includes settings panel toggle for authenticated users with tooltip explaining security, checkbox defaults to checked, and automatic localStorage management with cleanup when disabled.
 - **User Authentication & Data Isolation**: Comprehensive login/register functionality, session management with PostgreSQL storage, authenticated API routes enforcing data ownership, guest mode with temporary, isolated sessions.
 - **Savings Goal Management**: Users can create, edit, and delete savings goals with persistent storage. Goals include type, target amount, current savings, target date, monthly capacity, and status.
 - **Progress Visualization**: Circular progress indicators and milestone tracking for savings goals.

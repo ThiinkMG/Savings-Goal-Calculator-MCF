@@ -5,7 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles } from "lucide-react";
+import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles, HelpCircle as InfoIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -72,6 +73,10 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
     browserNotifications: true
   });
 
+  const [rememberLoginEnabled, setRememberLoginEnabled] = useState(() => {
+    return localStorage.getItem('rememberLoginEnabled') !== 'false';
+  });
+
   // Remove local state - will use context instead
   // const [languageSettings, setLanguageSettings] = useState({
   //   language: 'en-US',
@@ -99,6 +104,23 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
     // Authenticated user - show security modal
     setSecurityMode(mode as 'password' | 'username' | 'phone' | 'email');
     setShowSecurityModal(true);
+  };
+
+  const handleRememberLoginToggle = (enabled: boolean) => {
+    setRememberLoginEnabled(enabled);
+    localStorage.setItem('rememberLoginEnabled', enabled.toString());
+    
+    // If disabled, remove any stored credentials
+    if (!enabled) {
+      localStorage.removeItem('rememberedLoginIdentifier');
+    }
+    
+    toast({
+      title: "Settings Updated",
+      description: enabled 
+        ? "Login information will be remembered for faster sign-in" 
+        : "Login information will no longer be stored"
+    });
   };
 
   const removePhoneNumber = async () => {
@@ -349,21 +371,53 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </CardHeader>
         <CardContent className="space-y-4">
           {user ? (
-            // Authenticated user - show account details, no blue button
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Username</span>
-                <span className="text-sm text-muted-foreground">{user?.username || 'Not set'}</span>
+            // Authenticated user - show account details and preferences
+            <>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Username</span>
+                  <span className="text-sm text-muted-foreground">{user?.username || 'Not set'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Email</span>
+                  <span className="text-sm text-muted-foreground">{user?.email || 'Not set'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Phone</span>
+                  <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Email</span>
-                <span className="text-sm text-muted-foreground">{user?.email || 'Not set'}</span>
+              
+              <Separator />
+              
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium">Login Preferences</h4>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="remember-login-setting" className="text-sm">Remember my login</Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <InfoIcon className="w-3 h-3 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs max-w-48">Stores your username/email for faster login. Password is never stored.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Automatically fill your username/email at login</p>
+                  </div>
+                  <Switch
+                    id="remember-login-setting"
+                    checked={rememberLoginEnabled}
+                    onCheckedChange={handleRememberLoginToggle}
+                    data-testid="switch-remember-login"
+                  />
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Phone</span>
-                <span className="text-sm text-muted-foreground">{user?.phoneNumber || 'Not set'}</span>
-              </div>
-            </div>
+            </>
           ) : (
             // Not authenticated - show blue button with correct text based on guest state
             <div className="space-y-4">
@@ -815,7 +869,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           onClose();
           logout();
         }}
-        nextResetTime={authData?.guestInfo?.nextResetTime ? new Date(authData.guestInfo.nextResetTime) : undefined}
+        nextResetTime={(authData as any)?.guestInfo?.nextResetTime ? new Date((authData as any).guestInfo.nextResetTime) : undefined}
       />
     </div>
   );
