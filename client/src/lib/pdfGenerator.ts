@@ -188,11 +188,11 @@ export async function generateSavingsPlanPDF(
     const th = 14;
     addPageIfNeeded(th + 8);
 
-    // Header background
-    pdf.setFillColor(...c.band);
+    // Header background - dark blue like the main header
+    pdf.setFillColor(...c.headerBg);
     pdf.rect(x, y, cols.reduce((a,b)=>a + b.width, 0), th, 'F');
 
-    setFont('bold', 11, c.black);
+    setFont('bold', 11, [255, 255, 255]); // White text on dark background
     let cx = x;
     cols.forEach(col => {
       pdf.text(safeASCII(col.label), cx + 4, y + th - 3);
