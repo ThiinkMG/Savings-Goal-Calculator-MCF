@@ -259,13 +259,7 @@ export default function HomePage() {
           }}
         />
       )}
-      
-      {/* Debug info for popup state */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 left-4 bg-black text-white p-2 text-xs z-50 rounded">
-          isGuest: {String(isGuest)} | showGuestPopup: {String(showGuestPopup)} | showGuestBanner: {String(showGuestBanner)}
-        </div>
-      )}
+
 
       {/* User Authentication Status */}
       {isAuthenticated && (

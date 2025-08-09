@@ -18,8 +18,6 @@ interface MultipleGoalsManagerProps {
   onEditGoal: (goalId: string) => void;
 }
 
-// Moved shareGoal function inside component to access locale formatting
-
 export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleGoalsManagerProps) {
   const { theme } = useTheme();
   const { formatCurrency: formatLocaleCurrency } = useLocale();
@@ -81,7 +79,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
       });
-      
+
       if (!trackResponse.ok) {
         const errorData = await trackResponse.json();
         if (trackResponse.status === 429) {
@@ -95,17 +93,17 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
         // For authenticated users, continue even if tracking fails
         console.log('PDF tracking response not OK, but continuing:', errorData);
       }
-      
+
       await generateSavingsPlanPDF(
         goal,
         { name: 'Student', startDate: new Date() },
         theme === 'dark'
       );
-      
+
       // Refresh auth data to update PDF download counter
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
-      
+
       toast({
         title: "Success!",
         description: "PDF report downloaded successfully",
@@ -132,6 +130,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     event.stopPropagation(); // Prevent card click
     deleteGoalMutation.mutate(goalId);
   };
+
   const getProgressPercent = (goal: SavingsGoal) => {
     if (goal.targetAmount <= 0) return 0;
     const currentSavings = goal.currentSavings || 0;
@@ -143,25 +142,25 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     const today = new Date();
     const target = new Date(goal.targetDate);
     const monthsRemaining = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30));
-    
+
     if (progress >= 100) {
-      return <Badge className="bg-green-600 dark:bg-green-500 text-white border border-green-700 dark:border-green-400">Complete</Badge>;
+      return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-md">✨ Complete</Badge>;
     }
-    
+
     if (monthsRemaining <= 0) {
-      return <Badge variant="destructive">Overdue</Badge>;
+      return <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 shadow-md">⚠ Overdue</Badge>;
     }
-    
+
     const currentSavings = goal.currentSavings || 0;
     const remainingAmount = goal.targetAmount - currentSavings;
     const requiredMonthly = remainingAmount / monthsRemaining;
     const capacity = goal.monthlyCapacity || 0;
-    
+
     if (capacity > 0 && requiredMonthly > capacity * 1.2) {
-      return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">At Risk</Badge>;
+      return <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-md">⚡ At Risk</Badge>;
     }
-    
-    return <Badge className="bg-blue-600 dark:bg-blue-500 text-white border border-blue-700 dark:border-blue-400">On Track</Badge>;
+
+    return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-md">🎯 On Track</Badge>;
   };
 
   const calculateMonthlyRequired = (goal: SavingsGoal) => {
@@ -174,114 +173,150 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
   };
 
   return (
-    <Card className="animate-slide-in">
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col gap-4 mb-6">
-          <div className="flex items-center justify-center sm:justify-start gap-3">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex-shrink-0">
-              <List className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+    <Card className="animate-slide-in bg-gradient-to-br from-background to-background/80 border border-border/50 shadow-xl backdrop-blur-sm">
+      <CardContent className="p-6 sm:p-8">
+        {/* Enhanced Header Section */}
+        <div className="flex flex-col gap-6 mb-8">
+          <div className="flex items-center justify-center sm:justify-start gap-4">
+            <div className="relative">
+              <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-sm border border-blue-200/30 dark:border-blue-700/30 shadow-lg">
+                <List className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="absolute -inset-1 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-2xl blur-lg opacity-75"></div>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground text-center sm:text-left">
-              Savings Tracker Dashboard
-            </h3>
+            <div className="text-center sm:text-left">
+              <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-200 bg-clip-text text-transparent">
+                Savings Tracker Dashboard
+              </h3>
+              <p className="text-sm text-muted-foreground/80 mt-1 font-medium">
+                Manage and track all your financial goals
+              </p>
+            </div>
           </div>
-          
+
           <Button 
             onClick={onAddGoal}
-            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto sm:self-start font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 w-full sm:w-auto sm:self-start font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 overflow-hidden"
             size="lg"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Goal
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            <Plus className="w-5 h-5 mr-2 transition-transform group-hover:rotate-90" />
+            Add New Goal
           </Button>
         </div>
-        
+
         {goals.length === 0 ? (
-          <div className="text-center py-12 sm:py-16 px-4">
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-              <Target className="w-12 h-12 text-blue-600 dark:text-blue-400" />
+          <div className="text-center py-16 sm:py-20 px-4">
+            <div className="relative mb-8">
+              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 rounded-full p-8 w-32 h-32 mx-auto flex items-center justify-center backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50 shadow-xl">
+                <Target className="w-16 h-16 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="absolute -inset-4 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl opacity-60"></div>
             </div>
-            <h4 className="text-xl sm:text-2xl font-bold text-foreground mb-4">No Goals Yet</h4>
-            <p className="text-base sm:text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
-              Start by creating your first savings goal to track your progress.
+            <h4 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent mb-4">
+              Ready to Start Saving?
+            </h4>
+            <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
+              Create your first savings goal and begin tracking your financial journey toward success.
             </p>
             <Button 
               onClick={onAddGoal} 
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border border-blue-700 dark:border-blue-400 w-full sm:w-auto font-semibold shadow-lg hover:shadow-xl transition-all duration-200 py-3 px-6"
+              className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 w-full sm:w-auto font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 py-4 px-8 overflow-hidden"
               size="lg"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <Plus className="w-5 h-5 mr-2 transition-transform group-hover:rotate-90" />
               Create Your First Goal
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {goals.map((goal) => {
               const progress = getProgressPercent(goal);
               const monthlyRequired = calculateMonthlyRequired(goal);
               const today = new Date();
               const target = new Date(goal.targetDate);
               const monthsLeft = Math.max(0, Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)));
-              
+
               return (
                 <div
                   key={goal.id}
-                  className="p-4 sm:p-6 border border-border rounded-xl hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 overflow-hidden max-w-full bg-background"
+                  className="group relative p-6 border border-border/50 rounded-2xl hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300/50 dark:hover:border-blue-600/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-background to-background/80 backdrop-blur-sm"
                 >
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+
                   <div 
-                    className="cursor-pointer"
+                    className="relative cursor-pointer z-10"
                     onClick={() => onEditGoal(goal.id)}
                   >
-                    <div className="flex flex-col gap-3 mb-4">
+                    <div className="flex flex-col gap-4 mb-6">
                       <div className="flex justify-between items-start gap-3">
-                        <h4 className="font-bold text-lg text-foreground break-words max-w-full leading-tight">
+                        <h4 className="font-bold text-xl text-foreground break-words max-w-full leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                           {goal.name}
                         </h4>
                         {getStatusBadge(goal)}
                       </div>
-                      
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm text-muted-foreground">
-                          <span className="break-words font-medium">{formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}</span>
-                          <span className="font-bold text-blue-600 dark:text-blue-400">{Math.round(progress)}%</span>
+
+                      <div className="space-y-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="break-words font-medium text-muted-foreground">
+                            {formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}
+                          </span>
+                          <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            {Math.round(progress)}%
+                          </span>
                         </div>
-                        <Progress value={progress} className="h-3" />
+                        <div className="relative">
+                          <Progress value={progress} className="h-3 bg-gray-200 dark:bg-gray-700" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
                       </div>
-                      
-                      <div className="text-sm text-muted-foreground space-y-2">
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 flex-shrink-0 text-green-600 dark:text-green-400" />
-                          <span className="font-semibold">{formatLocaleCurrency(monthlyRequired)}/month required</span>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-green-50/50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200/30 dark:border-green-700/30">
+                          <div className="p-1.5 bg-green-500/10 rounded-lg">
+                            <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+                          </div>
+                          <span className="font-semibold text-green-800 dark:text-green-300">
+                            {formatLocaleCurrency(monthlyRequired)}/month required
+                          </span>
                         </div>
-                        <div className="space-y-1">
-                          <span className="text-sm font-medium">{monthsLeft} months remaining</span>
-                          <span className="text-xs text-muted-foreground/70 block">
+
+                        <div className="space-y-2 p-3 rounded-xl bg-muted/30">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-foreground">Time remaining</span>
+                            <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{monthsLeft} months</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground block">
                             Last updated: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Action buttons */}
-                  <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                    <div className="grid grid-cols-2 gap-2">
+
+                  {/* Enhanced Action buttons */}
+                  <div className="relative z-10 flex flex-col gap-3 pt-6 border-t border-border/50">
+                    <div className="grid grid-cols-2 gap-3">
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-sm h-10 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+                        className="group relative text-sm h-11 border-border/60 hover:border-blue-300/60 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 font-medium transition-all duration-200 overflow-hidden"
                         onClick={(e) => handleDownloadPDF(goal, e)}
                       >
-                        <Download className="w-4 h-4 mr-2" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+                        <Download className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
                         Download PDF
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-sm h-10 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+                        className="group relative text-sm h-11 border-border/60 hover:border-purple-300/60 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 font-medium transition-all duration-200 overflow-hidden"
                         onClick={(e) => handleShareGoal(goal, e)}
                       >
-                        <Share2 className="w-4 h-4 mr-2" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+                        <Share2 className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
                         Share Goal
                       </Button>
                     </div>
@@ -290,27 +325,28 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         <Button
                           size="sm"
                           variant="outline"
-                          className="w-full text-sm h-10 border-red-300 dark:border-red-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400 font-medium"
+                          className="group relative w-full text-sm h-11 border-red-200/60 dark:border-red-800/60 hover:border-red-300/60 hover:bg-red-50/50 dark:hover:bg-red-900/20 font-medium transition-all duration-200 overflow-hidden"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete Goal
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+                          <Trash2 className="w-4 h-4 mr-2 transition-transform group-hover:scale-110 text-red-600 dark:text-red-400" />
+                          <span className="text-red-600 dark:text-red-400">Delete Goal</span>
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent>
+                      <AlertDialogContent className="border border-border/50 bg-gradient-to-br from-background to-background/80 backdrop-blur-sm">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Savings Goal</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{goal.name}"? This action cannot be undone and all progress data will be permanently lost.
+                          <AlertDialogTitle className="text-xl font-bold">Delete Savings Goal</AlertDialogTitle>
+                          <AlertDialogDescription className="text-base leading-relaxed">
+                            Are you sure you want to delete "<span className="font-semibold text-foreground">{goal.name}</span>"? This action cannot be undone and all progress data will be permanently lost.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>No</AlertDialogCancel>
+                          <AlertDialogCancel className="font-medium">Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={(e) => handleDeleteGoal(goal.id, e)}
-                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:ring-red-600 font-medium shadow-lg"
                           >
-                            Confirm
+                            Delete Forever
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
