@@ -162,6 +162,16 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   };
 
   const handleDataExport = async () => {
+    // Prevent guest users from accessing data export
+    if (isGuest) {
+      toast({
+        title: "Feature Not Available",
+        description: "Data export is not available for guest accounts. Create a free account to access this feature.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Fetch all goals data
@@ -675,42 +685,74 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           <CardDescription className="text-sm leading-relaxed">Download your savings goals and progress data</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="space-y-3">
-            <Label className="font-medium">Download Format</Label>
-            <Select value={downloadFormat} onValueChange={(value) => setDownloadFormat(value as 'csv' | 'pdf-zip')}>
-              <SelectTrigger className="border-border/40 hover:border-primary/30 transition-colors">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="csv">CSV Data Export</SelectItem>
-                <SelectItem value="pdf-zip">PDF Reports (ZIP)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <Button 
-            onClick={handleDataExport} 
-            disabled={isLoading} 
-            className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 font-medium relative overflow-hidden"
-          >
-            {isLoading ? (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                Exporting...
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4 mr-2" />
-                Download All Goals
-              </>
-            )}
-          </Button>
-          
-          <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            {downloadFormat === 'csv' 
-              ? "Downloads all your goals, progress data, and settings as a CSV file" 
-              : "Downloads individual PDF reports for each goal in a ZIP file"}
-          </p>
+          {isGuest ? (
+            // Guest user limitation message
+            <div className="p-4 border border-amber-200/50 rounded-xl bg-gradient-to-br from-amber-50/80 via-amber-50/40 to-transparent dark:from-amber-950/40 dark:via-amber-950/20 dark:to-transparent backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h4 className="font-semibold text-amber-800 dark:text-amber-200">
+                  Guest Account Limitation
+                </h4>
+              </div>
+              <p className="text-sm text-amber-700 dark:text-amber-300 mb-4 leading-relaxed">
+                Data export is not available for guest accounts. Your goals are stored temporarily for this session only. 
+                Create a free account to access data export features and save your progress permanently.
+              </p>
+              <Button
+                onClick={() => {
+                  setShowAuthModal(true);
+                  onClose();
+                }}
+                variant="outline"
+                className="w-full border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-950/50"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Create Free Account
+              </Button>
+            </div>
+          ) : (
+            // Regular user data export
+            <>
+              <div className="space-y-3">
+                <Label className="font-medium">Download Format</Label>
+                <Select value={downloadFormat} onValueChange={(value) => setDownloadFormat(value as 'csv' | 'pdf-zip')}>
+                  <SelectTrigger className="border-border/40 hover:border-primary/30 transition-colors">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="csv">CSV Data Export</SelectItem>
+                    <SelectItem value="pdf-zip">PDF Reports (ZIP)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Button 
+                onClick={handleDataExport} 
+                disabled={isLoading} 
+                className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 font-medium relative overflow-hidden"
+              >
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download All Goals
+                  </>
+                )}
+              </Button>
+              
+              <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                {downloadFormat === 'csv' 
+                  ? "Downloads all your goals, progress data, and settings as a CSV file" 
+                  : "Downloads individual PDF reports for each goal in a ZIP file"}
+              </p>
+            </>
+          )}
         </CardContent>
       </Card>
 
