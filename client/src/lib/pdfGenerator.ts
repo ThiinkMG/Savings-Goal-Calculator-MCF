@@ -7,8 +7,11 @@ export async function generateSavingsPlanPDF(
   isDarkMode: boolean = false
 ): Promise<void> {
   try {
+    console.log('PDF Generation Started:', { goal: goal.name, userInfo, isDarkMode });
     const { default: jsPDF } = await import('jspdf');
+    console.log('jsPDF imported successfully');
     const pdf = new jsPDF();
+    console.log('PDF instance created');
 
   // --------- Page/Layout ----------
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -358,9 +361,16 @@ export async function generateSavingsPlanPDF(
   pdf.text(foot, pageWidth/2 - pdf.getTextWidth(foot)/2, pageHeight - M - 5);
 
   // --------- Save (REQUIRED) ----------
+  console.log('About to save PDF...');
   pdf.save(`${goal.name || 'Savings Goal'} - Plan Report.pdf`);
+  console.log('PDF save completed successfully');
   } catch (error) {
     console.error('Error generating PDF:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack',
+      type: typeof error
+    });
     throw error;
   }
 }
