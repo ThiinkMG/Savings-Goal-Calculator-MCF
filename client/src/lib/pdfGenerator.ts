@@ -96,11 +96,9 @@ export async function generateSavingsPlanPDF(
   const headerHeight = 65;
   drawRoundedRect(10, 10, pageWidth - 20, headerHeight, 5, colors.navy);
   
-  // Add subtle gradient overlay (simulated with transparency)
+  // Add subtle gradient overlay (simulated with lighter color instead of transparency)
   pdf.setFillColor(...colors.darkBlue);
-  pdf.setGlobalAlpha(0.5);
   pdf.rect(10, 10, pageWidth - 20, 20, 'F');
-  pdf.setGlobalAlpha(1);
 
   // Header Content
   pdf.setFont('helvetica', 'bold');

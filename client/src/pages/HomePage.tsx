@@ -120,6 +120,9 @@ export default function HomePage() {
       });
       
       if (response.ok) {
+        const data = await response.json();
+        console.log('Guest session created successfully:', data);
+        
         // Invalidate auth query to get fresh guest status
         queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
         queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
@@ -150,9 +153,15 @@ export default function HomePage() {
         // Now show the calculator form after successful guest login
         setShowNewGoalForm(true);
         setEditingGoalId(null);
+      } else {
+        const errorData = await response.json();
+        console.error('Guest session creation failed:', response.status, errorData);
+        // Still show the modal but with error state
+        setShowEnhancedAuthModal(false);
       }
     } catch (error) {
       console.error('Failed to create guest session:', error);
+      setShowEnhancedAuthModal(false);
     }
   };
 

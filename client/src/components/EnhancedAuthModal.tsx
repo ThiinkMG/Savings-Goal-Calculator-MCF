@@ -89,6 +89,12 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
       window.history.replaceState({}, '', newUrl);
       window.location.reload();
     }
+    
+    // Only reset form if we don't have URL parameters to prevent modal reset during guest login
+    if (!authCode && !authState && !authError && urlParams.get('auth') !== 'success') {
+      // This is a fresh modal opening, ensure clean state
+      setStep('entry');
+    }
   }, []);
 
   const resetForm = () => {
