@@ -570,7 +570,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           </Button>
 
           {/* Additional spacing for better scrolling */}
-          <div className="h-8"></div>
+          <div className="h-12"></div>
         </CardContent>
       </Card>
     </div>
