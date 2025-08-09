@@ -107,10 +107,12 @@ export default function HomePage() {
 
   // Handle when user explicitly chooses to continue as guest
   const handleContinueAsGuest = async () => {
+    console.log('handleContinueAsGuest called');
     try {
       // Create guest session on the server
       const { generateFingerprint } = await import('@/lib/browserFingerprint');
-      const fingerprint = await generateFingerprint();
+      const fingerprint = generateFingerprint();
+      console.log('Generated fingerprint:', fingerprint);
       
       const response = await fetch('/api/auth/continue-as-guest', {
         method: 'POST',
@@ -118,6 +120,8 @@ export default function HomePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fingerprint })
       });
+      
+      console.log('Response status:', response.status, 'OK:', response.ok);
       
       if (response.ok) {
         const data = await response.json();
@@ -154,13 +158,16 @@ export default function HomePage() {
         setShowNewGoalForm(true);
         setEditingGoalId(null);
       } else {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({ error: 'Failed to parse response' }));
         console.error('Guest session creation failed:', response.status, errorData);
         // Still show the modal but with error state
         setShowEnhancedAuthModal(false);
       }
     } catch (error) {
-      console.error('Failed to create guest session:', error);
+      console.error('Failed to create guest session - full error:', error);
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
       setShowEnhancedAuthModal(false);
     }
   };

@@ -74,3 +74,6 @@ export function getBrowserFingerprint(): string {
   
   return fingerprint;
 }
+
+// Alias for better API consistency
+export const generateFingerprint = getBrowserFingerprint;
