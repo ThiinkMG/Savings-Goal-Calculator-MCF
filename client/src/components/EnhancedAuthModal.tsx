@@ -694,6 +694,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your website email"
           value={formData.identifier}
           onChange={(e) => handleInputChange('identifier', e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleEnhancedLogin()}
           className="h-12 text-base"
           autoComplete="email"
         />
@@ -708,6 +709,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Enter your website password"
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleEnhancedLogin()}
             className="h-12 text-base pr-12"
             autoComplete="current-password"
           />
@@ -759,6 +761,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your full name"
           value={formData.fullName}
           onChange={(e) => handleInputChange('fullName', e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
         />
       </div>
 
@@ -770,6 +773,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your email"
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
           required
         />
       </div>
@@ -781,6 +785,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="+1 (555) 123-4567"
           value={formData.phoneNumber}
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
         />
       </div>
 
@@ -792,6 +797,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Choose a username"
             value={formData.username}
             onChange={(e) => handleInputChange('username', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
             required
           />
           {usernameStatus && (
@@ -819,6 +825,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Create a password"
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
             required
           />
           <Button
@@ -859,6 +866,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Confirm your password"
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
             required
           />
           <Button
@@ -911,6 +919,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your email or phone number"
           value={formData.identifier}
           onChange={(e) => handleInputChange('identifier', e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleForgotPassword()}
         />
       </div>
 
@@ -949,6 +958,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your email or phone number"
           value={formData.identifier}
           onChange={(e) => handleInputChange('identifier', e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleForgotUsername()}
         />
       </div>
 
@@ -988,6 +998,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           maxLength={6}
           value={formData.code}
           onChange={(e) => handleInputChange('code', e.target.value.replace(/\D/g, ''))}
+          onKeyDown={(e) => e.key === 'Enter' && handleVerifyCode()}
         />
         <p className="text-xs text-muted-foreground">
           Code expires in 15 minutes
@@ -1022,6 +1033,7 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Enter your new password"
             value={formData.newPassword}
             onChange={(e) => handleInputChange('newPassword', e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleResetPassword()}
           />
           <Button
             type="button"
