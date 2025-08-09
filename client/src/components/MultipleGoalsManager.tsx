@@ -179,13 +179,13 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex items-center justify-center sm:justify-start gap-4">
             <div className="relative">
-              <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-sm border border-blue-200/30 dark:border-blue-700/30 shadow-lg">
+              <div className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-700/30 rounded-2xl backdrop-blur-sm border border-blue-200/30 dark:border-blue-700/30 shadow-lg">
                 <List className="w-7 h-7 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="absolute -inset-1 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-2xl blur-lg opacity-75"></div>
+              <div className="absolute -inset-1 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-2xl blur-lg opacity-75"></div>
             </div>
             <div className="text-center sm:text-left">
-              <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-200 bg-clip-text text-transparent">
+              <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent">
                 Savings Tracker Dashboard
               </h3>
               <p className="text-sm text-muted-foreground/80 mt-1 font-medium">
@@ -196,7 +196,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
 
           <Button 
             onClick={onAddGoal}
-            className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 w-full sm:w-auto sm:self-start font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 overflow-hidden"
+            className="group relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 w-full sm:w-auto sm:self-start font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 overflow-hidden"
             size="lg"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
@@ -208,10 +208,10 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
         {goals.length === 0 ? (
           <div className="text-center py-16 sm:py-20 px-4">
             <div className="relative mb-8">
-              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 rounded-full p-8 w-32 h-32 mx-auto flex items-center justify-center backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50 shadow-xl">
+              <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/60 rounded-full p-8 w-32 h-32 mx-auto flex items-center justify-center backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50 shadow-xl">
                 <Target className="w-16 h-16 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="absolute -inset-4 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl opacity-60"></div>
+              <div className="absolute -inset-4 bg-gradient-to-br from-blue-400/20 to-blue-600/30 rounded-full blur-2xl opacity-60"></div>
             </div>
             <h4 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent mb-4">
               Ready to Start Saving?
@@ -221,7 +221,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
             </p>
             <Button 
               onClick={onAddGoal} 
-              className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 w-full sm:w-auto font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 py-4 px-8 overflow-hidden"
+              className="group relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 w-full sm:w-auto font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 py-4 px-8 overflow-hidden"
               size="lg"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
@@ -244,7 +244,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                   className="group relative p-6 border border-border/50 rounded-2xl hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300/50 dark:hover:border-blue-600/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-background to-background/80 backdrop-blur-sm"
                 >
                   {/* Hover glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-700/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
 
                   <div 
                     className="relative cursor-pointer z-10"
@@ -263,13 +263,13 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                           <span className="break-words font-medium text-muted-foreground">
                             {formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}
                           </span>
-                          <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                          <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-200 bg-clip-text text-transparent">
                             {Math.round(progress)}%
                           </span>
                         </div>
                         <div className="relative">
                           <Progress value={progress} className="h-3 bg-gray-200 dark:bg-gray-700" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-blue-700/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
                       </div>
 
@@ -312,10 +312,10 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                       <Button
                         size="sm"
                         variant="outline"
-                        className="group relative text-sm h-11 border-border/60 hover:border-purple-300/60 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 font-medium transition-all duration-200 overflow-hidden"
+                        className="group relative text-sm h-11 border-border/60 hover:border-blue-300/60 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 font-medium transition-all duration-200 overflow-hidden"
                         onClick={(e) => handleShareGoal(goal, e)}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
                         <Share2 className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
                         Share Goal
                       </Button>
