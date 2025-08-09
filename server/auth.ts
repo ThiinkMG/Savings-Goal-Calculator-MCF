@@ -176,27 +176,24 @@ export async function getCurrentUser(req: Request, res: Response) {
   
   // Check if there's an actual guest session
   if (req.session.isGuest === true && req.session.userId?.startsWith('guest_')) {
-    // Get tracking info from database if available
-    let nextResetTime = undefined;
+    // Get tracking info from database if available (for persistent tracking)
+    let persistentTracking = null;
     if (req.session.guestIpAddress && req.session.guestFingerprint) {
-      const tracking = await storage.getGuestTracking(
+      persistentTracking = await storage.getGuestTracking(
         req.session.guestIpAddress,
         req.session.guestFingerprint
       );
-      if (tracking) {
-        nextResetTime = tracking.nextResetTime;
-      }
     }
     
-    // Include guest session info for guest users
+    // Use persistent tracking data if available, otherwise fall back to session data
     const guestInfo = {
-      dailyCount: req.session.guestDailyCount || 0,
+      dailyCount: persistentTracking?.dailyGoalCount ?? req.session.guestDailyCount ?? 0,
       dailyLimit: 3,
-      pdfDownloads: req.session.guestPdfDownloads || 0,
+      pdfDownloads: persistentTracking?.dailyPdfCount ?? req.session.guestPdfDownloads ?? 0,
       pdfLimit: 1,
       sessionStart: req.session.guestSessionStart,
-      lastResetDate: req.session.guestLastResetDate,
-      nextResetTime
+      lastResetDate: persistentTracking?.lastResetDate ?? req.session.guestLastResetDate,
+      nextResetTime: persistentTracking?.nextResetTime
     };
     
     return res.json({ user: null, isGuest: true, guestInfo });
