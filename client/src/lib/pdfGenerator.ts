@@ -207,11 +207,17 @@ export async function generateSavingsPlanPDF(
     const rh = 14;
     addPageIfNeeded(rh + 2);
 
-    // Apply consistent background to all rows - same as Goal Details section
-    pdf.setFillColor(...c.band);
-    pdf.rect(x, y - 2, widths.reduce((a,b)=>a+b,0), rh, 'F');
+    // Use dark blue background for zebra striping (same as header)
+    const isDarkRow = rowIndex % 2 === 1;
+    if (isDarkRow) {
+      pdf.setFillColor(...c.headerBg);
+      pdf.rect(x, y - 2, widths.reduce((a,b)=>a+b,0), rh, 'F');
+    }
 
-    setFont('normal', 10, c.black);
+    // Dynamic text color: white on dark rows, black on light rows
+    const textColor = isDarkRow ? [255, 255, 255] : c.black;
+    setFont('normal', 10, textColor);
+    
     let cx = x;
     cells.forEach((cell, i) => {
       const wrapped = pdf.splitTextToSize(safeASCII(cell), widths[i] - 8);
