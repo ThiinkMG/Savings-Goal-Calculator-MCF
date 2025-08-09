@@ -92,6 +92,8 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
           });
           return;
         }
+        // For authenticated users, continue even if tracking fails
+        console.log('PDF tracking response not OK, but continuing:', errorData);
       }
       
       await generateSavingsPlanPDF(

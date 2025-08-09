@@ -352,7 +352,8 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
           return;
         }
         
-        throw new Error('PDF download not allowed');
+        // Don't throw error for authenticated users
+        console.log('Track PDF response not OK but continuing for auth users:', errorData);
       }
 
       const goalData: SavingsGoal = {
@@ -384,7 +385,11 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       // Refresh auth data to get updated PDF download count
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
     } catch (error) {
-      console.error('PDF generation error:', error);
+      console.error('PDF generation full error details:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error instanceof Error ? error.message : 'Not an Error object');
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      
       toast({
         title: "Export Failed",
         description: `Unable to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
