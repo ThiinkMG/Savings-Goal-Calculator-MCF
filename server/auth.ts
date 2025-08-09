@@ -185,11 +185,11 @@ export async function getCurrentUser(req: Request, res: Response) {
       );
     }
     
-    // Use persistent tracking data if available, otherwise fall back to session data
+    // Use session data for goals (per-session) and persistent data for PDFs (daily limit)
     const guestInfo = {
-      dailyCount: persistentTracking?.dailyGoalCount ?? req.session.guestDailyCount ?? 0,
+      dailyCount: req.session.guestDailyCount ?? 0, // Goals are per-session, not persistent
       dailyLimit: 3,
-      pdfDownloads: persistentTracking?.dailyPdfCount ?? req.session.guestPdfDownloads ?? 0,
+      pdfDownloads: persistentTracking?.dailyPdfCount ?? req.session.guestPdfDownloads ?? 0, // PDFs persist across sessions
       pdfLimit: 1,
       sessionStart: req.session.guestSessionStart,
       lastResetDate: persistentTracking?.lastResetDate ?? req.session.guestLastResetDate,

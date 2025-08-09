@@ -320,7 +320,7 @@ export default function HomePage() {
                       <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
                         <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
                         <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                          Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} today
+                          Plans: {guestInfo?.dailyCount || 0}/{guestInfo?.dailyLimit || 3} this session
                         </span>
                       </div>
                       <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">

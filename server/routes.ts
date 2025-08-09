@@ -60,8 +60,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     req.session.isGuest = true;
     req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
     req.session.guestSessionStart = now;
-    req.session.guestDailyCount = tracking.dailyGoalCount;
-    req.session.guestPdfDownloads = tracking.dailyPdfCount;
+    req.session.guestDailyCount = 0; // Reset goals per session (not persistent)
+    req.session.guestPdfDownloads = tracking.dailyPdfCount; // Keep PDF downloads persistent
     req.session.guestLastResetDate = today;
     req.session.guestGoals = [];
     req.session.guestIpAddress = ipAddress;
@@ -79,9 +79,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       success: true, 
       message: "Guest session created",
       guestInfo: {
-        dailyCount: tracking.dailyGoalCount,
+        dailyCount: 0, // Goals reset per session
         dailyLimit: 3,
-        pdfDownloads: tracking.dailyPdfCount,
+        pdfDownloads: tracking.dailyPdfCount, // PDF downloads persist across sessions
         pdfLimit: 1,
         sessionStart: now,
         lastResetDate: today,
@@ -360,40 +360,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           req.session.guestGoals = [];
         }
         
-        // Check database tracking for daily limit
-        if (req.session.guestIpAddress && req.session.guestFingerprint) {
-          const result = await storage.incrementGuestGoalCount(
-            req.session.guestIpAddress,
-            req.session.guestFingerprint
-          );
-          
-          if (!result.allowed) {
-            return res.status(429).json({ 
-              message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
-              isGuest: true,
-              dailyLimit: 3,
-              currentCount: 3,
-              remaining: 0
-            });
-          }
-          
-          // Update session counter to match database
-          req.session.guestDailyCount = 3 - result.remaining;
-        } else {
-          // Fallback to session-only tracking if no fingerprint
-          const currentCount = req.session.guestDailyCount || 0;
-          console.log('[DEBUG] Guest goal creation - current count:', currentCount, 'goals in session:', req.session.guestGoals.length);
-          
-          if (currentCount >= 3) {
-            return res.status(429).json({ 
-              message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
-              isGuest: true,
-              dailyLimit: 3,
-              currentCount: currentCount
-            });
-          }
-          req.session.guestDailyCount = currentCount + 1;
+        // Use session-only tracking for goals (no database persistence)
+        const currentCount = req.session.guestDailyCount || 0;
+        console.log('[DEBUG] Guest goal creation - current count:', currentCount, 'goals in session:', req.session.guestGoals.length);
+        
+        if (currentCount >= 3) {
+          return res.status(429).json({ 
+            message: "Session limit reached. Guest users can create up to 3 plans per session. Create an account for unlimited plans.",
+            isGuest: true,
+            dailyLimit: 3,
+            currentCount: currentCount
+          });
         }
+        req.session.guestDailyCount = currentCount + 1;
         
         const guestGoal = {
           id: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
