@@ -9,6 +9,7 @@ import { EnhancedAuthModal } from '@/components/EnhancedAuthModal';
 import { GuestBanner } from '@/components/GuestBanner';
 import { GuestPopup } from '@/components/GuestPopup';
 import { BenefitsModal } from '@/components/BenefitsModal';
+import { CountdownTimer } from '@/components/CountdownTimer';
 import { type SavingsGoal } from '@shared/schema';
 import { useAuth } from '@/hooks/useAuth';
 import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield, X } from 'lucide-react';
@@ -324,9 +325,16 @@ export default function HomePage() {
                       </div>
                       <div className="inline-flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
                         <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                          PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                            PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
+                          </span>
+                          {guestInfo?.pdfDownloads >= (guestInfo?.pdfLimit || 1) && guestInfo?.nextResetTime && (
+                            <div className="text-xs text-orange-600 dark:text-orange-400">
+                              Resets in: <CountdownTimer targetTime={guestInfo.nextResetTime} className="text-xs" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </>
