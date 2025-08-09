@@ -55,6 +55,9 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
+      // Also refresh auth data to update guest counters
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
       toast({
         title: "Success!",
         description: "Goal deleted successfully",

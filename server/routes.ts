@@ -406,7 +406,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete savings goal (with auth and ownership check)
   app.delete("/api/savings-goals/:id", requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      // First check if goal exists and user owns it
+      // Handle guest user deletion
+      if (req.isGuest) {
+        const goalId = req.params.id;
+        const guestGoals = req.session.guestGoals || [];
+        const goalIndex = guestGoals.findIndex((g: any) => g.id === goalId);
+        
+        if (goalIndex === -1) {
+          return res.status(404).json({ message: "Savings goal not found" });
+        }
+        
+        // Remove the goal from the session
+        guestGoals.splice(goalIndex, 1);
+        req.session.guestGoals = guestGoals;
+        
+        // Update the daily count
+        if (req.session.guestDailyCount && req.session.guestDailyCount > 0) {
+          req.session.guestDailyCount--;
+        }
+        
+        // Save the session
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+        
+        console.log(`[DEBUG] Guest goal deleted - remaining goals: ${guestGoals.length}, daily count: ${req.session.guestDailyCount}`);
+        
+        return res.json({ message: "Savings goal deleted successfully" });
+      }
+      
+      // For authenticated users
       const existingGoal = await storage.getSavingsGoal(req.params.id);
       if (!existingGoal) {
         return res.status(404).json({ message: "Savings goal not found" });
@@ -423,6 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({ message: "Savings goal deleted successfully" });
     } catch (error) {
+      console.error('Delete goal error:', error);
       res.status(500).json({ message: "Failed to delete savings goal" });
     }
   });
