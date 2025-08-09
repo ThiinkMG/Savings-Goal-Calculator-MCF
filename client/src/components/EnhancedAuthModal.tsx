@@ -13,11 +13,12 @@ interface EnhancedAuthModalProps {
   onClose: () => void;
   onWixLogin?: () => void;
   onContinueAsGuest?: () => void;
+  onAuthSuccess?: () => void;
 }
 
 type AuthStep = 'entry' | 'register' | 'login' | 'forgot-password' | 'forgot-username' | 'verify-code' | 'reset-password';
 
-export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGuest }: EnhancedAuthModalProps) {
+export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGuest, onAuthSuccess }: EnhancedAuthModalProps) {
   const [step, setStep] = useState<AuthStep>('entry');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -214,6 +215,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           description: "Your My College Finance account is now connected.",
         });
         
+        // Call the success callback if provided
+        if (onAuthSuccess) {
+          onAuthSuccess();
+        }
         handleClose();
       } else {
         throw new Error(result.message || 'Authentication failed');
@@ -342,6 +347,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
       });
 
       login(data.user);
+      // Call the success callback if provided
+      if (onAuthSuccess) {
+        onAuthSuccess();
+      }
       handleClose();
     } catch (error) {
       toast({
@@ -404,6 +413,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
       });
 
       login(data.user);
+      // Call the success callback if provided
+      if (onAuthSuccess) {
+        onAuthSuccess();
+      }
       handleClose();
     } catch (error) {
       toast({

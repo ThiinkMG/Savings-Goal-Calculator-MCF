@@ -142,6 +142,10 @@ export default function HomePage() {
           
           setRecurringPopupTimer(timer);
         }
+        
+        // Now show the calculator form after successful guest login
+        setShowNewGoalForm(true);
+        setEditingGoalId(null);
       }
     } catch (error) {
       console.error('Failed to create guest session:', error);
@@ -157,6 +161,15 @@ export default function HomePage() {
   const showCalculator = showNewGoalForm || editingGoal;
 
   const handleAddGoal = () => {
+    // Check if user is authenticated (either regular user or guest)
+    if (!isAuthenticated && !isGuest) {
+      // Not authenticated - show auth modal first
+      setShowEnhancedAuthModal(true);
+      // Don't open the calculator yet
+      return;
+    }
+    
+    // User is authenticated (or guest), proceed with showing the calculator
     setShowNewGoalForm(true);
     setEditingGoalId(null);
   };
@@ -493,6 +506,11 @@ export default function HomePage() {
         isOpen={showEnhancedAuthModal}
         onClose={() => setShowEnhancedAuthModal(false)}
         onContinueAsGuest={handleContinueAsGuest}
+        onAuthSuccess={() => {
+          // After successful login/registration, show the calculator
+          setShowNewGoalForm(true);
+          setEditingGoalId(null);
+        }}
       />
 
       <BenefitsModal
