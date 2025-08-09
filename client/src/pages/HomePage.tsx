@@ -174,9 +174,9 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Failed to create guest session - full error:', error);
-      console.error('Error name:', error?.name);
-      console.error('Error message:', error?.message);
-      console.error('Error stack:', error?.stack);
+      console.error('Error name:', (error as Error)?.name);
+      console.error('Error message:', (error as Error)?.message);
+      console.error('Error stack:', (error as Error)?.stack);
       setShowEnhancedAuthModal(false);
     }
   };
