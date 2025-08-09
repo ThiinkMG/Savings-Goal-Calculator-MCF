@@ -37,9 +37,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!tracking) {
       // Create new tracking entry
       tracking = await storage.createGuestTracking(ipAddress, fingerprint);
+    } else {
+      // Check if 24 hours have passed and reset if needed
+      const resetTime = new Date(tracking.nextResetTime);
+      if (new Date() >= resetTime) {
+        // Reset the counters
+        await storage.updateGuestTracking(tracking.id, {
+          dailyGoalCount: 0,
+          dailyPdfCount: 0,
+          lastResetDate: new Date(),
+          nextResetTime: new Date(Date.now() + 24 * 60 * 60 * 1000)
+        });
+        tracking.dailyGoalCount = 0;
+        tracking.dailyPdfCount = 0;
+        tracking.nextResetTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      }
     }
     
-    // Set up session
+    // Set up session with current tracking values
     req.session.isGuest = true;
     req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
     req.session.guestSessionStart = now;
@@ -343,17 +358,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
           req.session.guestGoals = [];
         }
         
-        // Check daily limit for guests (3 plans per day)
-        const currentCount = req.session.guestDailyCount || 0;
-        console.log('[DEBUG] Guest goal creation - current count:', currentCount, 'goals in session:', req.session.guestGoals.length);
-        
-        if (currentCount >= 3) {
-          return res.status(429).json({ 
-            message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
-            isGuest: true,
-            dailyLimit: 3,
-            currentCount: currentCount
-          });
+        // Check database tracking for daily limit
+        if (req.session.guestIpAddress && req.session.guestFingerprint) {
+          const result = await storage.incrementGuestGoalCount(
+            req.session.guestIpAddress,
+            req.session.guestFingerprint
+          );
+          
+          if (!result.allowed) {
+            return res.status(429).json({ 
+              message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
+              isGuest: true,
+              dailyLimit: 3,
+              currentCount: 3,
+              remaining: 0
+            });
+          }
+          
+          // Update session counter to match database
+          req.session.guestDailyCount = 3 - result.remaining;
+        } else {
+          // Fallback to session-only tracking if no fingerprint
+          const currentCount = req.session.guestDailyCount || 0;
+          console.log('[DEBUG] Guest goal creation - current count:', currentCount, 'goals in session:', req.session.guestGoals.length);
+          
+          if (currentCount >= 3) {
+            return res.status(429).json({ 
+              message: "Daily limit reached. Guest users can create up to 3 plans per day. Create an account for unlimited plans.",
+              isGuest: true,
+              dailyLimit: 3,
+              currentCount: currentCount
+            });
+          }
+          req.session.guestDailyCount = currentCount + 1;
         }
         
         const guestGoal = {
@@ -365,7 +402,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         
         req.session.guestGoals.push(guestGoal);
-        req.session.guestDailyCount = currentCount + 1;
         console.log('[DEBUG] After adding goal - goals in session:', req.session.guestGoals.length, 'daily count:', req.session.guestDailyCount);
         
         // Explicitly save the session to ensure persistence
@@ -526,29 +562,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // PDF download tracking endpoint
-  app.post("/api/track-pdf-download", requireAuth, (req: AuthenticatedRequest, res) => {
+  app.post("/api/track-pdf-download", requireAuth, async (req: AuthenticatedRequest, res) => {
     try {
       // Check if user is a guest and has reached PDF download limit
       if (req.isGuest) {
-        const currentCount = req.session.guestPdfDownloads || 0;
-        
-        if (currentCount >= 1) {
-          return res.status(429).json({
-            message: "Daily PDF download limit reached. Guest users can download 1 PDF per day. Create an account for unlimited downloads.",
-            isGuest: true,
-            pdfLimit: 1,
-            currentCount: currentCount
+        // Check database tracking for daily limit
+        if (req.session.guestIpAddress && req.session.guestFingerprint) {
+          const result = await storage.incrementGuestPdfCount(
+            req.session.guestIpAddress,
+            req.session.guestFingerprint
+          );
+          
+          if (!result.allowed) {
+            return res.status(429).json({
+              message: "Daily PDF download limit reached. Guest users can download 1 PDF per day. Create an account for unlimited downloads.",
+              isGuest: true,
+              pdfLimit: 1,
+              currentCount: 1,
+              remaining: 0
+            });
+          }
+          
+          // Update session counter to match database
+          req.session.guestPdfDownloads = 1 - result.remaining;
+          
+          return res.json({
+            success: true,
+            downloadsRemaining: result.remaining,
+            message: "PDF download tracked successfully"
+          });
+        } else {
+          // Fallback to session-only tracking if no fingerprint
+          const currentCount = req.session.guestPdfDownloads || 0;
+          
+          if (currentCount >= 1) {
+            return res.status(429).json({
+              message: "Daily PDF download limit reached. Guest users can download 1 PDF per day. Create an account for unlimited downloads.",
+              isGuest: true,
+              pdfLimit: 1,
+              currentCount: currentCount
+            });
+          }
+          
+          // Increment PDF download counter
+          req.session.guestPdfDownloads = currentCount + 1;
+          
+          return res.json({
+            success: true,
+            downloadsRemaining: 0,
+            message: "PDF download tracked successfully"
           });
         }
-        
-        // Increment PDF download counter
-        req.session.guestPdfDownloads = currentCount + 1;
-        
-        return res.json({
-          success: true,
-          downloadsRemaining: 0, // 1 - (currentCount + 1) = 0
-          message: "PDF download tracked successfully"
-        });
       }
       
       // For authenticated users, no limits
