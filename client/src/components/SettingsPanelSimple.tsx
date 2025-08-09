@@ -787,7 +787,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       </Card>
 
       {/* Additional spacing for better scrolling */}
-      <div className="h-20 pb-6"></div>
+      <div className="h-32 pb-8"></div>
     </div>
   );
 
