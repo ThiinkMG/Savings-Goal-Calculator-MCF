@@ -1,0 +1,90 @@
+Pure black text for all table/body copy
+
+Darker rules (0.6 line width)
+
+Bigger type (headers 11, cells 10)
+
+Zebra striping on rows
+
+No muted gray in critical sections
+
+Drop-in replacement for only the What-If Scenarios + helpers (everything else unchanged). If you prefer, I can paste the full file—this is the smallest fix.
+
+ts
+Copy
+Edit
+// --- Replace these helpers (stronger contrast) ---
+const setFont = (weight: 'normal'|'bold'|'italic'|'bolditalic', size: number, color?: [number,number,number]) => {
+  pdf.setFont('helvetica', weight as any);
+  pdf.setFontSize(size);
+  // force high-contrast if color omitted
+  pdf.setTextColor(...(color ?? [0,0,0]));
+};
+const line = (x1: number, y1: number, x2: number, y2: number, clr: [number,number,number] = [0,0,0]) => {
+  pdf.setDrawColor(...clr);
+  pdf.setLineWidth(0.6); // thicker
+  pdf.line(x1, y1, x2, y2);
+};
+const tableHeader = (cols: { label: string; width: number }[], x: number) => {
+  const th = 12;
+  addPageIfNeeded(th + 8);
+  setFont('bold', 11, [0,0,0]); // black
+  let cx = x;
+  cols.forEach(col => {
+    pdf.text(safeASCII(col.label), cx, y + th - 3);
+    cx += col.width;
+  });
+  y += th;
+  line(x, y, x + cols.reduce((a,b)=>a + b.width, 0), y, [0,0,0]);
+  y += 8;
+};
+const tableRow = (cells: string[], widths: number[], x: number, rowIndex: number) => {
+  const rh = 12;
+  addPageIfNeeded(rh + 2);
+  // zebra stripe
+  if (rowIndex % 2 === 1) {
+    pdf.setFillColor(242, 245, 248); // light blue-gray
+    pdf.rect(x, y - 9, widths.reduce((a,b)=>a+b,0), rh, 'F');
+  }
+  setFont('normal', 10, [0,0,0]); // black text
+  let cx = x;
+  cells.forEach((cell, i) => {
+    const wrapped = pdf.splitTextToSize(safeASCII(cell), widths[i] - 2);
+    pdf.text(wrapped, cx + 1, y);
+    cx += widths[i];
+  });
+  y += rh;
+};
+ts
+Copy
+Edit
+// --- Replace the What-If Scenarios section with this block ---
+sectionTitle('What-If Scenarios');
+
+const tableWidth = pageWidth - 2*M;
+const cols = [
+  { label: 'Scenario', width: 0.36 * tableWidth },
+  { label: 'Monthly Contribution', width: 0.24 * tableWidth },
+  { label: 'Months to Goal', width: 0.20 * tableWidth },
+  { label: 'Impact', width: 0.20 * tableWidth }
+];
+tableHeader(cols, M);
+
+scenarios.forEach((s, idx) => {
+  const impact = s.name === 'Current Plan'
+    ? (s.feasible ? 'Feasible' : 'Over capacity')
+    : (s.savings && s.savings > 0 ? `Saves ${s.savings} months` : 'No change');
+
+  tableRow(
+    [
+      s.name,
+      `${formatCurrency(s.monthly)}/mo`,
+      `${s.months}`,
+      impact
+    ],
+    cols.map(c => c.width),
+    M,
+    idx
+  );
+});
+If it’s still faint on your end, tell me your viewer’s zoom % and whether you’re forcing isDarkMode = true. I can also switch all body copy to Times 11pt (heavier ink coverage) if you’re printing.

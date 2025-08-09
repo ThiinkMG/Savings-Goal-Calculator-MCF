@@ -7,43 +7,56 @@ export async function generateSavingsPlanPDF(
   isDarkMode: boolean = false
 ): Promise<void> {
   const { default: jsPDF } = await import('jspdf');
-
   const pdf = new jsPDF();
+
+  // --------- Page/Layout ----------
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
+  const M = 18;   // margin
+  const G = 8;    // grid
+  let y = M;
 
-  // Professional Navy & Light Blue Color Palette
-  const colors = {
-    navy: [20, 42, 82] as [number, number, number],        // Deep navy blue
-    darkBlue: [35, 64, 115] as [number, number, number],   // Medium navy
-    blue: [59, 130, 246] as [number, number, number],      // Bright blue
-    lightBlue: [147, 197, 253] as [number, number, number], // Light blue
-    paleBlue: [219, 234, 254] as [number, number, number],  // Very light blue
-    skyBlue: [240, 249, 255] as [number, number, number],   // Sky blue background
-
-    success: [34, 197, 94] as [number, number, number],     // Green
-    warning: [251, 146, 60] as [number, number, number],    // Orange
-    danger: [239, 68, 68] as [number, number, number],      // Red
-
-    text: [30, 41, 59] as [number, number, number],         // Dark text
-    lightText: [100, 116, 139] as [number, number, number], // Light gray text
-    white: [255, 255, 255] as [number, number, number],
-    offWhite: [248, 250, 252] as [number, number, number],
+  // --------- Palette (neutral, print-friendly) ----------
+  // Light mode is true print style; dark mode inverts backgrounds & text
+  const light = {
+    bg: [255, 255, 255] as [number, number, number],
+    paper: [255, 255, 255] as [number, number, number],
+    text: [22, 27, 34] as [number, number, number],
+    muted: [96, 108, 118] as [number, number, number],
+    line: [210, 218, 226] as [number, number, number],
+    primary: [28, 100, 242] as [number, number, number],   // blue
+    accent: [13, 148, 136] as [number, number, number],    // teal
+    warn: [234, 179, 8] as [number, number, number],       // amber
+    danger: [220, 38, 38] as [number, number, number],     // red
+    success: [16, 163, 127] as [number, number, number],   // green
+    band: [244, 247, 252] as [number, number, number]      // subtle section bg
   };
+  const dark = {
+    bg: [18, 24, 32] as [number, number, number],
+    paper: [26, 33, 44] as [number, number, number],
+    text: [234, 236, 239] as [number, number, number],
+    muted: [158, 167, 177] as [number, number, number],
+    line: [60, 72, 88] as [number, number, number],
+    primary: [96, 165, 250] as [number, number, number],
+    accent: [45, 212, 191] as [number, number, number],
+    warn: [251, 191, 36] as [number, number, number],
+    danger: [248, 113, 113] as [number, number, number],
+    success: [52, 211, 153] as [number, number, number],
+    band: [30, 41, 59] as [number, number, number]
+  };
+  const c = isDarkMode ? dark : light;
 
-  // Calculate all necessary data
+  // --------- Core Calculations (unchanged) ----------
   const calculations = calculateSavings(
     goal.targetAmount ?? 0,
     goal.currentSavings ?? 0,
     goal.targetDate ? new Date(goal.targetDate) : new Date(),
     goal.monthlyCapacity ?? 300
   );
-
   const remaining = (goal.targetAmount ?? 0) - (goal.currentSavings ?? 0);
   const dailyAmount = calculations.monthlyRequired / 30.44;
   const weeklyAmount = calculations.monthlyRequired / 4.33;
 
-  // What-If Scenarios
   const scenarios = [
     {
       name: 'Current Plan',
@@ -65,317 +78,230 @@ export async function generateSavingsPlanPDF(
     }
   ];
 
-  // Reality Check Calculations
   const monthlyCapacity = goal.monthlyCapacity ?? 300;
   const isOnTrack = calculations.monthlyRequired <= monthlyCapacity;
   const shortfall = Math.max(0, calculations.monthlyRequired - monthlyCapacity);
 
-  // Equivalent Savings
-  const coffeeEquivalent = Math.round(weeklyAmount / 5.50);
+  const coffeeEquivalent = Math.round(weeklyAmount / 5.5);
   const lunchEquivalent = Math.round(weeklyAmount / 15);
   const streamingEquivalent = Math.round(calculations.monthlyRequired / 15.99);
 
-  // Helper function to draw rounded rectangles
-  const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number, fillColor?: [number, number, number], strokeColor?: [number, number, number]) => {
-    if (fillColor) {
-      pdf.setFillColor(...fillColor);
-      pdf.roundedRect(x, y, width, height, radius, radius, 'F');
-    }
-    if (strokeColor) {
-      pdf.setDrawColor(...strokeColor);
-      pdf.setLineWidth(0.3);
-      pdf.roundedRect(x, y, width, height, radius, radius, 'S');
+  // --------- Helpers ----------
+  const safeASCII = (s: string) => (s || '').replace(/[^\x20-\x7E]/g, '');
+  const setFont = (weight: 'normal'|'bold'|'italic'|'bolditalic', size: number, color?: [number,number,number]) => {
+    pdf.setFont('helvetica', weight as any);
+    pdf.setFontSize(size);
+    // force high-contrast if color omitted
+    pdf.setTextColor(...(color ?? [0,0,0]));
+  };
+  const line = (x1: number, y1: number, x2: number, y2: number, clr: [number,number,number] = [0,0,0]) => {
+    pdf.setDrawColor(...clr);
+    pdf.setLineWidth(0.6); // thicker
+    pdf.line(x1, y1, x2, y2);
+  };
+  const band = (x: number, y: number, w: number, h: number, clr = c.band) => {
+    pdf.setFillColor(...clr);
+    pdf.rect(x, y, w, h, 'F');
+  };
+  const addPageIfNeeded = (needed: number) => {
+    if (y + needed > pageHeight - M) {
+      pdf.addPage();
+      y = M;
     }
   };
+  const sectionTitle = (title: string) => {
+    addPageIfNeeded(24);
+    setFont('bold', 14, c.text);
+    pdf.text(safeASCII(title), M, y + 12);
+    line(M, y + 16, pageWidth - M, y + 16, c.primary);
+    y += 24;
+  };
+  const textRow = (label: string, value: string, x: number, w: number) => {
+    setFont('normal', 9, c.muted);
+    pdf.text(safeASCII(label), x, y);
+    const val = safeASCII(value);
+    setFont('bold', 11, c.text);
+    const tW = pdf.getTextWidth(val);
+    pdf.text(val, x + w - tW, y);
+    y += 12;
+  };
+  const progressBar = (value01: number, x: number, w: number) => {
+    const h = 8;
+    const r = 3;
+    addPageIfNeeded(16);
+    pdf.setFillColor(...c.line);
+    pdf.roundedRect(x, y, w, h, r, r, 'F');
+    const fillW = Math.max(0, Math.min(1, value01)) * w;
+    pdf.setFillColor(...c.primary);
+    pdf.roundedRect(x, y, fillW, h, r, r, 'F');
+    setFont('bold', 8, c.text);
+    const t = `${(value01 * 100).toFixed(1)}%`;
+    const tW = pdf.getTextWidth(t);
+    pdf.text(t, x + w/2 - tW/2, y + 6);
+    y += 14;
+  };
+  const tableHeader = (cols: { label: string; width: number }[], x: number) => {
+    const th = 12;
+    addPageIfNeeded(th + 8);
+    setFont('bold', 11, [0,0,0]); // black
+    let cx = x;
+    cols.forEach(col => {
+      pdf.text(safeASCII(col.label), cx, y + th - 3);
+      cx += col.width;
+    });
+    y += th;
+    line(x, y, x + cols.reduce((a,b)=>a + b.width, 0), y, [0,0,0]);
+    y += 8;
+  };
+  const tableRow = (cells: string[], widths: number[], x: number, rowIndex: number) => {
+    const rh = 12;
+    addPageIfNeeded(rh + 2);
+    // zebra stripe
+    if (rowIndex % 2 === 1) {
+      pdf.setFillColor(242, 245, 248); // light blue-gray
+      pdf.rect(x, y - 9, widths.reduce((a,b)=>a+b,0), rh, 'F');
+    }
+    setFont('normal', 10, [0,0,0]); // black text
+    let cx = x;
+    cells.forEach((cell, i) => {
+      const wrapped = pdf.splitTextToSize(safeASCII(cell), widths[i] - 2);
+      pdf.text(wrapped, cx + 1, y);
+      cx += widths[i];
+    });
+    y += rh;
+  };
 
-  // Set page background
-  pdf.setFillColor(...colors.offWhite);
+  // --------- Background ---------
+  pdf.setFillColor(...c.paper);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // HEADER SECTION - Navy gradient effect
-  const headerHeight = 65;
-  drawRoundedRect(10, 10, pageWidth - 20, headerHeight, 5, colors.navy);
+  // --------- Header ---------
+  // Title & meta on a subtle band
+  band(M, y, pageWidth - 2*M, 32, c.band);
+  setFont('bold', 18, c.text);
+  pdf.text('Savings Goal Report', M + G, y + 12);
+  setFont('normal', 10, c.muted);
+  pdf.text(`Generated: ${formatDate(new Date())}`, pageWidth - M - pdf.getTextWidth(`Generated: ${formatDate(new Date())}`), y + 12);
+  y += 22;
 
-  // Add subtle gradient overlay (simulated with lighter color instead of transparency)
-  pdf.setFillColor(...colors.darkBlue);
-  pdf.rect(10, 10, pageWidth - 20, 20, 'F');
+  setFont('bold', 12, c.text);
+  pdf.text(safeASCII(goal.name || 'Savings Goal'), M + G, y + 10);
+  setFont('normal', 10, c.muted);
+  const subtype = goal.goalType ? `Type: ${safeASCII(String(goal.goalType))}` : 'Type: N/A';
+  pdf.text(subtype, pageWidth - M - pdf.getTextWidth(subtype), y + 10);
+  y += 18;
 
-  // Header Content
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(24);
-  pdf.setTextColor(...colors.white);
-  pdf.text('Savings Goal Report', 20, 30);
+  // Owner line
+  setFont('normal', 10, c.muted);
+  const owner = `Owner: ${safeASCII(userInfo.name)} • Start: ${formatDate(userInfo.startDate)}`;
+  pdf.text(owner, M + G, y);
+  y += 12;
 
-  // Goal name with better typography
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(16);
-  pdf.setTextColor(...colors.lightBlue);
-  pdf.text(goal.name || 'Savings Goal', 20, 45);
+  // --------- Key Metrics (2x2 table layout) ---------
+  sectionTitle('Key Metrics');
 
-  // User info and date - right aligned
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.setTextColor(...colors.paleBlue);
-  const dateText = formatDate(new Date());
-  pdf.text(dateText, pageWidth - pdf.getTextWidth(dateText) - 20, 28);
-  pdf.text(userInfo.name, pageWidth - pdf.getTextWidth(userInfo.name) - 20, 38);
+  const colW = (pageWidth - 2*M - G) / 2;
+  const x1 = M, x2 = M + colW + G;
 
-  // Goal type badge
-  if (goal.goalType) {
-    const typeText = goal.goalType.toUpperCase();
-    const typeWidth = pdf.getTextWidth(typeText) + 12;
-    drawRoundedRect(pageWidth - typeWidth - 20, 48, typeWidth, 18, 3, colors.lightBlue);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(9);
-    pdf.setTextColor(...colors.navy);
-    pdf.text(typeText, pageWidth - typeWidth - 14, 59);
-  }
+  // Left column
+  textRow('Target Amount', formatCurrency(goal.targetAmount ?? 0), x1, colW);
+  textRow('Current Savings', formatCurrency(goal.currentSavings ?? 0), x1, colW);
+  // Right column
+  const xHold = y;
+  y -= 24; // align rows visually across columns
+  textRow('Monthly Required', formatCurrency(calculations.monthlyRequired), x2, colW);
+  textRow('Time Remaining', `${calculations.monthsRemaining} months`, x2, colW);
+  y = Math.max(xHold, y) + 2;
 
-  let currentY = headerHeight + 25;
+  // Visual progress
+  sectionTitle('Overall Progress');
+  const pct01 = Math.max(0, Math.min(100, calculations.progressPercent)) / 100;
+  progressBar(pct01, M, pageWidth - 2*M);
 
-  // KEY METRICS SECTION - Card-based layout
-  const cardHeight = 70;
-  const cardGap = 10;
-  const cardWidth = (pageWidth - 40 - cardGap * 3) / 4;
+  // --------- Reality Check ---------
+  sectionTitle('Reality Check');
+  // Status banner (ASCII only)
+  const statusText = isOnTrack ? '[OK] On Track' : '[!] Adjustment Needed';
+  band(M, y, pageWidth - 2*M, 16, isDarkMode ? c.line : c.band);
+  setFont('bold', 10, isOnTrack ? c.success : c.warn);
+  pdf.text(statusText, M + G, y + 11);
+  setFont('normal', 10, c.text);
+  const rcMsg = isOnTrack
+    ? `Capacity ${formatCurrency(monthlyCapacity)} >= Required ${formatCurrency(calculations.monthlyRequired)}`
+    : `Shortfall: ${formatCurrency(shortfall)} / month (Capacity ${formatCurrency(monthlyCapacity)} vs Required ${formatCurrency(calculations.monthlyRequired)})`;
+  pdf.text(safeASCII(rcMsg), M + 90, y + 11);
+  y += 24;
 
-  const metrics = [
-    {
-      label: 'Target Goal',
-      value: formatCurrency(goal.targetAmount ?? 0),
-      color: colors.navy,
-      icon: '🎯'
-    },
-    {
-      label: 'Current Savings',
-      value: formatCurrency(goal.currentSavings ?? 0),
-      color: colors.success,
-      icon: '💰'
-    },
-    {
-      label: 'Monthly Required',
-      value: formatCurrency(calculations.monthlyRequired),
-      color: isOnTrack ? colors.blue : colors.warning,
-      icon: '📅'
-    },
-    {
-      label: 'Time Left',
-      value: `${calculations.monthsRemaining} months`,
-      color: colors.darkBlue,
-      icon: '⏱️'
-    }
+  // Breakdown (two columns)
+  const rcColW = (pageWidth - 2*M - G) / 2;
+  const rx1 = M, rx2 = M + rcColW + G;
+  setFont('bold', 11, c.text);
+  pdf.text('Required Savings', rx1, y);
+  setFont('normal', 10, c.text);
+  y += 10;
+  textRow('Daily', formatCurrency(dailyAmount), rx1, rcColW);
+  textRow('Weekly', formatCurrency(weeklyAmount), rx1, rcColW);
+  textRow('Monthly', formatCurrency(calculations.monthlyRequired), rx1, rcColW);
+
+  // Equivalents
+  y -= 34; // move up to align opposite column
+  setFont('bold', 11, c.text);
+  pdf.text('Equivalent Spending Trade-offs', rx2, y);
+  setFont('normal', 10, c.text);
+  y += 10;
+  textRow('Coffees per week', `${coffeeEquivalent}`, rx2, rcColW);
+  textRow('Streaming services per month', `${streamingEquivalent}`, rx2, rcColW);
+  textRow('Simple lunches per week', `${lunchEquivalent}`, rx2, rcColW);
+  y += 4;
+
+  // --------- What-If Scenarios (table) ---------
+  sectionTitle('What-If Scenarios');
+  const cols = [
+    { label: 'Scenario', width: 0.35 * (pageWidth - 2*M) },
+    { label: 'Monthly Contribution', width: 0.25 * (pageWidth - 2*M) },
+    { label: 'Months to Goal', width: 0.2 * (pageWidth - 2*M) },
+    { label: 'Impact', width: 0.2 * (pageWidth - 2*M) }
   ];
-
-  metrics.forEach((metric, index) => {
-    const x = 20 + (index * (cardWidth + cardGap));
-
-    // Card background
-    drawRoundedRect(x, currentY, cardWidth, cardHeight, 4, colors.white, colors.paleBlue);
-
-    // Colored top bar
-    pdf.setFillColor(...metric.color);
-    pdf.roundedRect(x, currentY, cardWidth, 4, 2, 2, 'F');
-
-    // Metric label
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(9);
-    pdf.setTextColor(...colors.lightText);
-    pdf.text(metric.label, x + cardWidth/2 - pdf.getTextWidth(metric.label)/2, currentY + 20);
-
-    // Metric value
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(13);
-    pdf.setTextColor(...colors.text);
-    const valueWidth = pdf.getTextWidth(metric.value);
-    pdf.text(metric.value, x + cardWidth/2 - valueWidth/2, currentY + 40);
-
-    // Progress indicator for current savings
-    if (index === 1) {
-      const progressWidth = cardWidth - 20;
-      const progressHeight = 6;
-      const progressY = currentY + 50;
-
-      // Progress background
-      pdf.setFillColor(...colors.paleBlue);
-      pdf.roundedRect(x + 10, progressY, progressWidth, progressHeight, 2, 2, 'F');
-
-      // Progress fill
-      if (calculations.progressPercent > 0) {
-        pdf.setFillColor(...colors.success);
-        pdf.roundedRect(x + 10, progressY, (progressWidth * calculations.progressPercent) / 100, progressHeight, 2, 2, 'F');
-      }
-
-      // Progress text
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(7);
-      pdf.setTextColor(...colors.lightText);
-      pdf.text(`${calculations.progressPercent.toFixed(1)}%`, x + cardWidth - 25, progressY + 5);
-    }
+  tableHeader(cols, M);
+  scenarios.forEach((s, idx) => {
+    const impact = s.name === 'Current Plan'
+      ? (s.feasible ? 'Feasible' : 'Over capacity')
+      : (s.savings && s.savings > 0 ? `Saves ${s.savings} months` : 'No change');
+    tableRow(
+      [
+        s.name,
+        `${formatCurrency(s.monthly)}/mo`,
+        `${s.months}`,
+        impact
+      ],
+      cols.map(c => c.width),
+      M,
+      idx
+    );
   });
 
-  currentY += cardHeight + 20;
-
-  // PROGRESS & STATUS SECTION
-  const sectionWidth = pageWidth - 40;
-  drawRoundedRect(20, currentY, sectionWidth, 60, 4, colors.white, colors.paleBlue);
-
-  // Section header
-  pdf.setFillColor(...colors.navy);
-  pdf.roundedRect(20, currentY, sectionWidth, 25, 4, 4, 'F');
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(12);
-  pdf.setTextColor(...colors.white);
-  pdf.text('Progress & Status', 30, currentY + 16);
-
-  // Progress bar
-  const progressBarY = currentY + 35;
-  const progressBarWidth = sectionWidth - 40;
-
-  pdf.setFillColor(...colors.skyBlue);
-  pdf.roundedRect(30, progressBarY, progressBarWidth, 12, 3, 3, 'F');
-
-  if (calculations.progressPercent > 0) {
-    const progressColor = calculations.progressPercent >= 75 ? colors.success :
-                         calculations.progressPercent >= 50 ? colors.blue : colors.lightBlue;
-    pdf.setFillColor(...progressColor);
-    pdf.roundedRect(30, progressBarY, (progressBarWidth * calculations.progressPercent) / 100, 12, 3, 3, 'F');
-  }
-
-  // Progress percentage overlay
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.text);
-  pdf.text(`${calculations.progressPercent.toFixed(1)}% Complete`, 30 + progressBarWidth/2 - 20, progressBarY + 8);
-
-  currentY += 70;
-
-  // REALITY CHECK SECTION
-  drawRoundedRect(20, currentY, sectionWidth, 100, 4, colors.white, colors.paleBlue);
-
-  // Section header with conditional coloring
-  const headerColor = isOnTrack ? colors.darkBlue : colors.warning;
-  pdf.setFillColor(...headerColor);
-  pdf.roundedRect(20, currentY, sectionWidth, 25, 4, 4, 'F');
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(12);
-  pdf.setTextColor(...colors.white);
-  pdf.text('Reality Check & Adjustments', 30, currentY + 16);
-
-  const realityY = currentY + 35;
-
-  // Status indicator
-  if (isOnTrack) {
-    pdf.setFillColor(...colors.paleBlue);
-    pdf.roundedRect(30, realityY, sectionWidth - 60, 20, 3, 3, 'F');
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(11);
-    pdf.setTextColor(...colors.success);
-    pdf.text('✓ On Track', 40, realityY + 13);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(9);
-    pdf.setTextColor(...colors.text);
-    pdf.text(`Your capacity of ${formatCurrency(monthlyCapacity)} covers the required ${formatCurrency(calculations.monthlyRequired)}`, 100, realityY + 13);
-  } else {
-    pdf.setFillColor(255, 243, 224);
-    pdf.roundedRect(30, realityY, sectionWidth - 60, 20, 3, 3, 'F');
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(11);
-    pdf.setTextColor(...colors.warning);
-    pdf.text('⚠ Adjustment Needed', 40, realityY + 13);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(9);
-    pdf.setTextColor(...colors.text);
-    pdf.text(`Gap: ${formatCurrency(shortfall)}/month over capacity`, 130, realityY + 13);
-  }
-
-  // Two-column layout for breakdown and equivalents
-  const columnWidth = (sectionWidth - 80) / 2;
-
-  // Left column - Breakdown
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(...colors.navy);
-  pdf.text('Required Savings:', 40, realityY + 35);
-
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.text);
-  pdf.text(`Daily: ${formatCurrency(dailyAmount)}`, 45, realityY + 47);
-  pdf.text(`Weekly: ${formatCurrency(weeklyAmount)}`, 45, realityY + 57);
-
-  // Right column - Equivalents
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(...colors.navy);
-  pdf.text('Equivalent to:', 40 + columnWidth, realityY + 35);
-
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.text);
-  pdf.text(`${coffeeEquivalent} coffees/week`, 45 + columnWidth, realityY + 47);
-  pdf.text(`${streamingEquivalent} streaming services`, 45 + columnWidth, realityY + 57);
-
-  currentY += 110;
-
-  // WHAT-IF SCENARIOS SECTION
-  drawRoundedRect(20, currentY, sectionWidth, 80, 4, colors.white, colors.paleBlue);
-
-  pdf.setFillColor(...colors.blue);
-  pdf.roundedRect(20, currentY, sectionWidth, 25, 4, 4, 'F');
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(12);
-  pdf.setTextColor(...colors.white);
-  pdf.text('What-If Scenarios', 30, currentY + 16);
-
-  const scenarioY = currentY + 35;
-  const scenarioCardWidth = (sectionWidth - 80) / 3;
-
-  scenarios.forEach((scenario, index) => {
-    const x = 30 + (index * (scenarioCardWidth + 15));
-
-    // Scenario card
-    drawRoundedRect(x, scenarioY, scenarioCardWidth, 35, 3, colors.skyBlue);
-
-    // Scenario name
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(9);
-    pdf.setTextColor(...colors.navy);
-    pdf.text(scenario.name, x + 5, scenarioY + 10);
-
-    // Monthly amount
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
-    pdf.setTextColor(...colors.text);
-    pdf.text(`${formatCurrency(scenario.monthly)}/mo`, x + 5, scenarioY + 20);
-
-    // Time saved (if applicable)
-    if (scenario.savings && scenario.savings > 0) {
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(7);
-      pdf.setTextColor(...colors.success);
-      pdf.text(`Save ${scenario.savings} months`, x + 5, scenarioY + 29);
-    } else if (index === 0) {
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(7);
-      const statusColor = scenarios[0].feasible ? colors.success : colors.warning;
-      pdf.setTextColor(...statusColor);
-      pdf.text(scenarios[0].feasible ? 'Feasible' : 'Over capacity', x + 5, scenarioY + 29);
-    }
+  // --------- Goal Timing & Status ---------
+  sectionTitle('Goal Details');
+  const detailCols = [
+    { label: 'Goal Status', value: safeASCII(goal.status ?? 'N/A') },
+    { label: 'Target Date', value: goal.targetDate ? formatDate(new Date(goal.targetDate)) : 'N/A' },
+    { label: 'Owner', value: safeASCII(userInfo.name) }
+  ];
+  detailCols.forEach(d => {
+    setFont('normal', 10, c.muted);
+    pdf.text(d.label + ':', M, y);
+    setFont('bold', 10, c.text);
+    pdf.text(d.value, M + 60, y);
+    y += 10;
   });
 
-  // FOOTER
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8);
-  pdf.setTextColor(...colors.lightText);
-  const footerText = 'Generated by My College Finance • Savings Goal Calculator';
-  pdf.text(footerText, pageWidth / 2 - pdf.getTextWidth(footerText) / 2, pageHeight - 10);
+  // --------- Footer ----------
+  addPageIfNeeded(24);
+  line(M, pageHeight - M - 10, pageWidth - M, pageHeight - M - 10);
+  setFont('normal', 8, c.muted);
+  const foot = `Generated by My College Finance • ${formatDate(new Date())}`;
+  pdf.text(foot, pageWidth/2 - pdf.getTextWidth(foot)/2, pageHeight - M - 2);
 
-  // Generate filename
-  const userName = userInfo.name.replace(/[^a-zA-Z0-9]/g, '_');
-  const goalType = (goal.goalType ?? 'savings').replace(/[^a-zA-Z0-9]/g, '_');
-  const goalName = (goal.name ?? 'goal').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
-  const date = new Date().toISOString().split('T')[0];
-  const fileName = `${userName}_${goalType}_${goalName}_report_${date}.pdf`;
-
-  // Save the PDF
-  pdf.save(fileName);
+  // --------- Save (as requested) ----------
+  pdf.save(`${goal.name || 'Savings Goal'} - Plan Report.pdf`);
 }
