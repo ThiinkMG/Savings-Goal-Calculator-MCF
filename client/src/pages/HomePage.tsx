@@ -45,8 +45,10 @@ export default function HomePage() {
   // Show guest popup when user becomes a guest and auto-hide after 10 seconds
   useEffect(() => {
     if (isGuest && !isAuthenticated && showGuestBanner) {
+      console.log('useEffect: Setting guest popup to true (banner-dependent)');
       setShowGuestPopup(true);
       const timer = setTimeout(() => {
+        console.log('useEffect: Hiding guest popup after 10 seconds');
         setShowGuestPopup(false);
       }, 10000); // 10 seconds
       
@@ -133,13 +135,19 @@ export default function HomePage() {
         queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
         
         setShowGuestBanner(true);
-        setShowGuestPopup(true);
         setShowEnhancedAuthModal(false);
         
-        // Auto-hide popup after 10 seconds
+        // Show popup after auth queries are invalidated and modal is closed
         setTimeout(() => {
-          setShowGuestPopup(false);
-        }, 10000);
+          console.log('Setting guest popup to true');
+          setShowGuestPopup(true);
+          
+          // Auto-hide popup after 10 seconds
+          setTimeout(() => {
+            console.log('Hiding guest popup');
+            setShowGuestPopup(false);
+          }, 10000);
+        }, 200);
 
         // Start the recurring popup timer
         if (!recurringPopupTimer) {
@@ -240,12 +248,23 @@ export default function HomePage() {
       {/* Guest User Welcome Popup */}
       {isGuest && showGuestPopup && (
         <GuestPopup 
-          onClose={() => setShowGuestPopup(false)}
+          onClose={() => {
+            console.log('Guest popup closed by user');
+            setShowGuestPopup(false);
+          }}
           onCreateAccount={() => {
+            console.log('Guest popup - create account clicked');
             setShowGuestPopup(false);
             setShowEnhancedAuthModal(true);
           }}
         />
+      )}
+      
+      {/* Debug info for popup state */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 left-4 bg-black text-white p-2 text-xs z-50 rounded">
+          isGuest: {String(isGuest)} | showGuestPopup: {String(showGuestPopup)} | showGuestBanner: {String(showGuestBanner)}
+        </div>
       )}
 
       {/* User Authentication Status */}
