@@ -12,56 +12,23 @@ export async function generateSavingsPlanPDF(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   
-  // Professional Color Palette
+  // Professional Navy & Light Blue Color Palette
   const colors = {
-    primary: [1, 38, 153] as [number, number, number], // Space Dust Blue
-    secondary: [38, 224, 17] as [number, number, number], // Monstrous Green
-    accent: [253, 192, 3] as [number, number, number], // Marigold
-    dark: [0, 5, 22] as [number, number, number], // Black Knight
-    gray: [107, 114, 128] as [number, number, number], // Gray
-    lightGray: [229, 231, 235] as [number, number, number], // Light Gray
+    navy: [20, 42, 82] as [number, number, number],        // Deep navy blue
+    darkBlue: [35, 64, 115] as [number, number, number],   // Medium navy
+    blue: [59, 130, 246] as [number, number, number],      // Bright blue
+    lightBlue: [147, 197, 253] as [number, number, number], // Light blue
+    paleBlue: [219, 234, 254] as [number, number, number],  // Very light blue
+    skyBlue: [240, 249, 255] as [number, number, number],   // Sky blue background
+    
+    success: [34, 197, 94] as [number, number, number],     // Green
+    warning: [251, 146, 60] as [number, number, number],    // Orange
+    danger: [239, 68, 68] as [number, number, number],      // Red
+    
+    text: [30, 41, 59] as [number, number, number],         // Dark text
+    lightText: [100, 116, 139] as [number, number, number], // Light gray text
     white: [255, 255, 255] as [number, number, number],
-    background: [249, 250, 251] as [number, number, number],
-  };
-
-  // Helper Functions
-  const drawSection = (x: number, y: number, width: number, height: number, title?: string, titleBg?: [number, number, number]) => {
-    // Draw white section background
-    pdf.setFillColor(...colors.white);
-    pdf.rect(x, y, width, height, 'F');
-    
-    // Draw border
-    pdf.setDrawColor(...colors.lightGray);
-    pdf.setLineWidth(0.3);
-    pdf.rect(x, y, width, height, 'S');
-    
-    // Draw title if provided
-    if (title && titleBg) {
-      pdf.setFillColor(...titleBg);
-      pdf.rect(x, y, width, 32, 'F');
-      
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(12);
-      pdf.setTextColor(...colors.white);
-      pdf.text(title, x + 10, y + 20);
-    }
-  };
-
-  const drawProgressBar = (x: number, y: number, width: number, height: number, progress: number, color: [number, number, number]) => {
-    // Background
-    pdf.setFillColor(...colors.lightGray);
-    pdf.rect(x, y, width, height, 'F');
-    
-    // Progress fill
-    if (progress > 0) {
-      pdf.setFillColor(...color);
-      pdf.rect(x, y, (width * Math.min(100, progress)) / 100, height, 'F');
-    }
-    
-    // Border
-    pdf.setDrawColor(...colors.gray);
-    pdf.setLineWidth(0.2);
-    pdf.rect(x, y, width, height, 'S');
+    offWhite: [248, 250, 252] as [number, number, number],
   };
 
   // Calculate all necessary data
@@ -85,16 +52,16 @@ export async function generateSavingsPlanPDF(
       feasible: calculations.monthlyRequired <= (goal.monthlyCapacity ?? 300)
     },
     {
-      name: 'Save $50 More',
+      name: '+$50/month',
       monthly: calculations.monthlyRequired + 50,
       months: Math.ceil(remaining / (calculations.monthlyRequired + 50)),
-      feasible: (calculations.monthlyRequired + 50) <= (goal.monthlyCapacity ?? 300)
+      savings: calculations.monthsRemaining - Math.ceil(remaining / (calculations.monthlyRequired + 50))
     },
     {
-      name: 'Save $100 More',
+      name: '+$100/month',
       monthly: calculations.monthlyRequired + 100,
       months: Math.ceil(remaining / (calculations.monthlyRequired + 100)),
-      feasible: (calculations.monthlyRequired + 100) <= (goal.monthlyCapacity ?? 300)
+      savings: calculations.monthsRemaining - Math.ceil(remaining / (calculations.monthlyRequired + 100))
     }
   ];
 
@@ -102,226 +69,307 @@ export async function generateSavingsPlanPDF(
   const monthlyCapacity = goal.monthlyCapacity ?? 300;
   const isOnTrack = calculations.monthlyRequired <= monthlyCapacity;
   const shortfall = Math.max(0, calculations.monthlyRequired - monthlyCapacity);
-  const adjustmentNeeded = shortfall > 0;
   
-  // Equivalent Savings (Reality Check Items)
+  // Equivalent Savings
   const coffeeEquivalent = Math.round(weeklyAmount / 5.50);
   const lunchEquivalent = Math.round(weeklyAmount / 15);
   const streamingEquivalent = Math.round(calculations.monthlyRequired / 15.99);
 
+  // Helper function to draw rounded rectangles
+  const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number, fillColor?: [number, number, number], strokeColor?: [number, number, number]) => {
+    if (fillColor) {
+      pdf.setFillColor(...fillColor);
+      pdf.roundedRect(x, y, width, height, radius, radius, 'F');
+    }
+    if (strokeColor) {
+      pdf.setDrawColor(...strokeColor);
+      pdf.setLineWidth(0.3);
+      pdf.roundedRect(x, y, width, height, radius, radius, 'S');
+    }
+  };
+
   // Set page background
-  pdf.setFillColor(...colors.background);
+  pdf.setFillColor(...colors.offWhite);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // HEADER SECTION
-  const headerHeight = 50;
-  pdf.setFillColor(...colors.primary);
-  pdf.rect(0, 0, pageWidth, headerHeight, 'F');
+  // HEADER SECTION - Navy gradient effect
+  const headerHeight = 65;
+  drawRoundedRect(10, 10, pageWidth - 20, headerHeight, 5, colors.navy);
+  
+  // Add subtle gradient overlay (simulated with transparency)
+  pdf.setFillColor(...colors.darkBlue);
+  pdf.setGlobalAlpha(0.5);
+  pdf.rect(10, 10, pageWidth - 20, 20, 'F');
+  pdf.setGlobalAlpha(1);
 
-  // Title
+  // Header Content
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(20);
+  pdf.setFontSize(24);
   pdf.setTextColor(...colors.white);
-  pdf.text('Savings Goal Report', 20, 20);
+  pdf.text('Savings Goal Report', 20, 30);
 
-  // Goal name
+  // Goal name with better typography
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(14);
-  pdf.text(`${goal.name || 'Savings Goal'}`, 20, 32);
+  pdf.setFontSize(16);
+  pdf.setTextColor(...colors.lightBlue);
+  pdf.text(goal.name || 'Savings Goal', 20, 45);
 
-  // Date and user info
+  // User info and date - right aligned
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
-  pdf.setTextColor(200, 200, 200);
+  pdf.setTextColor(...colors.paleBlue);
   const dateText = formatDate(new Date());
-  pdf.text(dateText, pageWidth - pdf.getTextWidth(dateText) - 20, 20);
-  pdf.text(userInfo.name, pageWidth - pdf.getTextWidth(userInfo.name) - 20, 30);
+  pdf.text(dateText, pageWidth - pdf.getTextWidth(dateText) - 20, 28);
+  pdf.text(userInfo.name, pageWidth - pdf.getTextWidth(userInfo.name) - 20, 38);
 
   // Goal type badge
   if (goal.goalType) {
     const typeText = goal.goalType.toUpperCase();
-    const typeWidth = pdf.getTextWidth(typeText) + 10;
-    pdf.setFillColor(...colors.accent);
-    pdf.rect(pageWidth - typeWidth - 20, 36, typeWidth, 10, 'F');
+    const typeWidth = pdf.getTextWidth(typeText) + 12;
+    drawRoundedRect(pageWidth - typeWidth - 20, 48, typeWidth, 18, 3, colors.lightBlue);
     pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(8);
-    pdf.setTextColor(...colors.dark);
-    pdf.text(typeText, pageWidth - typeWidth - 15, 42);
+    pdf.setFontSize(9);
+    pdf.setTextColor(...colors.navy);
+    pdf.text(typeText, pageWidth - typeWidth - 14, 59);
   }
 
-  let currentY = headerHeight + 15;
+  let currentY = headerHeight + 25;
 
-  // KEY METRICS SECTION
-  drawSection(20, currentY, pageWidth - 40, 60, 'Key Metrics', colors.primary);
+  // KEY METRICS SECTION - Card-based layout
+  const cardHeight = 70;
+  const cardGap = 10;
+  const cardWidth = (pageWidth - 40 - cardGap * 3) / 4;
   
-  const metricsY = currentY + 38;
-  const metricWidth = (pageWidth - 40) / 4;
+  const metrics = [
+    {
+      label: 'Target Goal',
+      value: formatCurrency(goal.targetAmount ?? 0),
+      color: colors.navy,
+      icon: '🎯'
+    },
+    {
+      label: 'Current Savings',
+      value: formatCurrency(goal.currentSavings ?? 0),
+      color: colors.success,
+      icon: '💰'
+    },
+    {
+      label: 'Monthly Required',
+      value: formatCurrency(calculations.monthlyRequired),
+      color: isOnTrack ? colors.blue : colors.warning,
+      icon: '📅'
+    },
+    {
+      label: 'Time Left',
+      value: `${calculations.monthsRemaining} months`,
+      color: colors.darkBlue,
+      icon: '⏱️'
+    }
+  ];
+
+  metrics.forEach((metric, index) => {
+    const x = 20 + (index * (cardWidth + cardGap));
+    
+    // Card background
+    drawRoundedRect(x, currentY, cardWidth, cardHeight, 4, colors.white, colors.paleBlue);
+    
+    // Colored top bar
+    pdf.setFillColor(...metric.color);
+    pdf.roundedRect(x, currentY, cardWidth, 4, 2, 2, 'F');
+    
+    // Metric label
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9);
+    pdf.setTextColor(...colors.lightText);
+    pdf.text(metric.label, x + cardWidth/2 - pdf.getTextWidth(metric.label)/2, currentY + 20);
+    
+    // Metric value
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(13);
+    pdf.setTextColor(...colors.text);
+    const valueWidth = pdf.getTextWidth(metric.value);
+    pdf.text(metric.value, x + cardWidth/2 - valueWidth/2, currentY + 40);
+    
+    // Progress indicator for current savings
+    if (index === 1) {
+      const progressWidth = cardWidth - 20;
+      const progressHeight = 6;
+      const progressY = currentY + 50;
+      
+      // Progress background
+      pdf.setFillColor(...colors.paleBlue);
+      pdf.roundedRect(x + 10, progressY, progressWidth, progressHeight, 2, 2, 'F');
+      
+      // Progress fill
+      if (calculations.progressPercent > 0) {
+        pdf.setFillColor(...colors.success);
+        pdf.roundedRect(x + 10, progressY, (progressWidth * calculations.progressPercent) / 100, progressHeight, 2, 2, 'F');
+      }
+      
+      // Progress text
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(7);
+      pdf.setTextColor(...colors.lightText);
+      pdf.text(`${calculations.progressPercent.toFixed(1)}%`, x + cardWidth - 25, progressY + 5);
+    }
+  });
+
+  currentY += cardHeight + 20;
+
+  // PROGRESS & STATUS SECTION
+  const sectionWidth = pageWidth - 40;
+  drawRoundedRect(20, currentY, sectionWidth, 60, 4, colors.white, colors.paleBlue);
   
-  // Target Amount
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.gray);
-  pdf.text('Target Amount', 25, metricsY);
+  // Section header
+  pdf.setFillColor(...colors.navy);
+  pdf.roundedRect(20, currentY, sectionWidth, 25, 4, 4, 'F');
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.dark);
-  pdf.text(formatCurrency(goal.targetAmount ?? 0), 25, metricsY + 10);
+  pdf.setFontSize(12);
+  pdf.setTextColor(...colors.white);
+  pdf.text('Progress & Status', 30, currentY + 16);
 
-  // Current Savings
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.gray);
-  pdf.text('Current Savings', 25 + metricWidth, metricsY);
+  // Progress bar
+  const progressBarY = currentY + 35;
+  const progressBarWidth = sectionWidth - 40;
+  
+  pdf.setFillColor(...colors.skyBlue);
+  pdf.roundedRect(30, progressBarY, progressBarWidth, 12, 3, 3, 'F');
+  
+  if (calculations.progressPercent > 0) {
+    const progressColor = calculations.progressPercent >= 75 ? colors.success :
+                         calculations.progressPercent >= 50 ? colors.blue : colors.lightBlue;
+    pdf.setFillColor(...progressColor);
+    pdf.roundedRect(30, progressBarY, (progressBarWidth * calculations.progressPercent) / 100, 12, 3, 3, 'F');
+  }
+  
+  // Progress percentage overlay
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.secondary);
-  pdf.text(formatCurrency(goal.currentSavings ?? 0), 25 + metricWidth, metricsY + 10);
-
-  // Monthly Required
-  pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.setTextColor(...colors.gray);
-  pdf.text('Monthly Required', 25 + metricWidth * 2, metricsY);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  const monthlyColor = isOnTrack ? colors.secondary : colors.accent;
-  pdf.setTextColor(monthlyColor[0], monthlyColor[1], monthlyColor[2]);
-  pdf.text(formatCurrency(calculations.monthlyRequired), 25 + metricWidth * 2, metricsY + 10);
-
-  // Time Remaining
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.gray);
-  pdf.text('Time Remaining', 25 + metricWidth * 3, metricsY);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  pdf.setTextColor(...colors.dark);
-  const monthsText = calculations.monthsRemaining === 1 ? '1 month' : `${calculations.monthsRemaining} months`;
-  pdf.text(monthsText, 25 + metricWidth * 3, metricsY + 10);
+  pdf.setTextColor(...colors.text);
+  pdf.text(`${calculations.progressPercent.toFixed(1)}% Complete`, 30 + progressBarWidth/2 - 20, progressBarY + 8);
 
   currentY += 70;
 
-  // PROGRESS OVERVIEW SECTION
-  drawSection(20, currentY, pageWidth - 40, 50, 'Progress Overview', colors.secondary);
+  // REALITY CHECK SECTION
+  drawRoundedRect(20, currentY, sectionWidth, 100, 4, colors.white, colors.paleBlue);
   
-  const progressY = currentY + 38;
-  
-  // Progress percentage
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.setTextColor(...colors.gray);
-  pdf.text('Overall Progress:', 30, progressY);
-  
+  // Section header with conditional coloring
+  const headerColor = isOnTrack ? colors.darkBlue : colors.warning;
+  pdf.setFillColor(...headerColor);
+  pdf.roundedRect(20, currentY, sectionWidth, 25, 4, 4, 'F');
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(12);
-  pdf.setTextColor(...colors.dark);
-  pdf.text(`${calculations.progressPercent.toFixed(1)}%`, 90, progressY);
-  
-  // Progress bar
-  drawProgressBar(30, progressY + 5, pageWidth - 80, 8, calculations.progressPercent, colors.secondary);
+  pdf.setTextColor(...colors.white);
+  pdf.text('Reality Check & Adjustments', 30, currentY + 16);
 
-  currentY += 60;
-
-  // REALITY CHECK & ADJUSTMENTS SECTION
-  drawSection(20, currentY, pageWidth - 40, 110, 'Reality Check & Adjustments', colors.primary);
+  const realityY = currentY + 35;
   
-  const realityY = currentY + 38;
-  
-  // Status
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(11);
+  // Status indicator
   if (isOnTrack) {
-    pdf.setTextColor(...colors.secondary);
-    pdf.text('✓ On Track', 30, realityY);
+    pdf.setFillColor(...colors.paleBlue);
+    pdf.roundedRect(30, realityY, sectionWidth - 60, 20, 3, 3, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    pdf.setTextColor(...colors.success);
+    pdf.text('✓ On Track', 40, realityY + 13);
     pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(10);
-    pdf.setTextColor(...colors.gray);
-    pdf.text(`Your monthly capacity of ${formatCurrency(monthlyCapacity)} covers the required amount.`, 30, realityY + 10);
+    pdf.setFontSize(9);
+    pdf.setTextColor(...colors.text);
+    pdf.text(`Your capacity of ${formatCurrency(monthlyCapacity)} covers the required ${formatCurrency(calculations.monthlyRequired)}`, 100, realityY + 13);
   } else {
-    pdf.setTextColor(...colors.accent);
-    pdf.text('⚠ Adjustment Needed', 30, realityY);
+    pdf.setFillColor(255, 243, 224);
+    pdf.roundedRect(30, realityY, sectionWidth - 60, 20, 3, 3, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    pdf.setTextColor(...colors.warning);
+    pdf.text('⚠ Adjustment Needed', 40, realityY + 13);
     pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(10);
-    pdf.setTextColor(...colors.gray);
-    pdf.text(`You need ${formatCurrency(shortfall)} more per month than your current capacity.`, 30, realityY + 10);
+    pdf.setFontSize(9);
+    pdf.setTextColor(...colors.text);
+    pdf.text(`Gap: ${formatCurrency(shortfall)}/month over capacity`, 130, realityY + 13);
   }
 
-  // Daily & Weekly Breakdown
+  // Two-column layout for breakdown and equivalents
+  const columnWidth = (sectionWidth - 80) / 2;
+  
+  // Left column - Breakdown
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
-  pdf.setTextColor(...colors.dark);
-  pdf.text('Required Savings Breakdown:', 30, realityY + 30);
+  pdf.setTextColor(...colors.navy);
+  pdf.text('Required Savings:', 40, realityY + 35);
   
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.setTextColor(...colors.gray);
-  pdf.text(`• Daily: ${formatCurrency(dailyAmount)}`, 35, realityY + 42);
-  pdf.text(`• Weekly: ${formatCurrency(weeklyAmount)}`, 35, realityY + 52);
-  pdf.text(`• Monthly: ${formatCurrency(calculations.monthlyRequired)}`, 35, realityY + 62);
+  pdf.setFontSize(9);
+  pdf.setTextColor(...colors.text);
+  pdf.text(`Daily: ${formatCurrency(dailyAmount)}`, 45, realityY + 47);
+  pdf.text(`Weekly: ${formatCurrency(weeklyAmount)}`, 45, realityY + 57);
 
-  // Equivalents
+  // Right column - Equivalents
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
-  pdf.setTextColor(...colors.dark);
-  pdf.text('Equivalent to:', pageWidth / 2, realityY + 30);
+  pdf.setTextColor(...colors.navy);
+  pdf.text('Equivalent to:', 40 + columnWidth, realityY + 35);
   
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.setTextColor(...colors.gray);
-  pdf.text(`• ${coffeeEquivalent} coffees per week`, pageWidth / 2 + 5, realityY + 42);
-  pdf.text(`• ${lunchEquivalent} lunches per week`, pageWidth / 2 + 5, realityY + 52);
-  pdf.text(`• ${streamingEquivalent} streaming services`, pageWidth / 2 + 5, realityY + 62);
+  pdf.setFontSize(9);
+  pdf.setTextColor(...colors.text);
+  pdf.text(`${coffeeEquivalent} coffees/week`, 45 + columnWidth, realityY + 47);
+  pdf.text(`${streamingEquivalent} streaming services`, 45 + columnWidth, realityY + 57);
 
-  currentY += 120;
+  currentY += 110;
 
   // WHAT-IF SCENARIOS SECTION
-  drawSection(20, currentY, pageWidth - 40, 90, 'What-If Scenarios', colors.accent);
+  drawRoundedRect(20, currentY, sectionWidth, 80, 4, colors.white, colors.paleBlue);
   
-  const scenariosY = currentY + 38;
-  const scenarioWidth = (pageWidth - 60) / 3;
+  pdf.setFillColor(...colors.blue);
+  pdf.roundedRect(20, currentY, sectionWidth, 25, 4, 4, 'F');
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(12);
+  pdf.setTextColor(...colors.white);
+  pdf.text('What-If Scenarios', 30, currentY + 16);
+
+  const scenarioY = currentY + 35;
+  const scenarioCardWidth = (sectionWidth - 80) / 3;
   
   scenarios.forEach((scenario, index) => {
-    const x = 30 + (index * scenarioWidth);
+    const x = 30 + (index * (scenarioCardWidth + 15));
+    
+    // Scenario card
+    drawRoundedRect(x, scenarioY, scenarioCardWidth, 35, 3, colors.skyBlue);
     
     // Scenario name
     pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(10);
-    pdf.setTextColor(...colors.dark);
-    pdf.text(scenario.name, x, scenariosY);
+    pdf.setFontSize(9);
+    pdf.setTextColor(...colors.navy);
+    pdf.text(scenario.name, x + 5, scenarioY + 10);
     
     // Monthly amount
     pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(9);
-    pdf.setTextColor(...colors.gray);
-    pdf.text('Monthly:', x, scenariosY + 12);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(formatCurrency(scenario.monthly), x + 25, scenariosY + 12);
+    pdf.setFontSize(8);
+    pdf.setTextColor(...colors.text);
+    pdf.text(`${formatCurrency(scenario.monthly)}/mo`, x + 5, scenarioY + 20);
     
-    // Time to goal
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Time:', x, scenariosY + 24);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(`${scenario.months} months`, x + 25, scenariosY + 24);
-    
-    // Feasibility
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Status:', x, scenariosY + 36);
-    pdf.setFont('helvetica', 'bold');
-    if (scenario.feasible) {
-      pdf.setTextColor(...colors.secondary);
-      pdf.text('Feasible', x + 25, scenariosY + 36);
-    } else {
-      pdf.setTextColor(...colors.accent);
-      pdf.text('Over capacity', x + 25, scenariosY + 36);
+    // Time saved (if applicable)
+    if (scenario.savings && scenario.savings > 0) {
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(7);
+      pdf.setTextColor(...colors.success);
+      pdf.text(`Save ${scenario.savings} months`, x + 5, scenarioY + 29);
+    } else if (index === 0) {
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(7);
+      const statusColor = scenarios[0].feasible ? colors.success : colors.warning;
+      pdf.setTextColor(...statusColor);
+      pdf.text(scenarios[0].feasible ? 'Feasible' : 'Over capacity', x + 5, scenarioY + 29);
     }
-    pdf.setTextColor(...colors.gray);
   });
 
   // FOOTER
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
-  pdf.setTextColor(...colors.gray);
-  pdf.text('Generated by My College Finance • Savings Goal Calculator', pageWidth / 2 - 40, pageHeight - 10);
+  pdf.setTextColor(...colors.lightText);
+  const footerText = 'Generated by My College Finance • Savings Goal Calculator';
+  pdf.text(footerText, pageWidth / 2 - pdf.getTextWidth(footerText) / 2, pageHeight - 10);
 
   // Generate filename
   const userName = userInfo.name.replace(/[^a-zA-Z0-9]/g, '_');
