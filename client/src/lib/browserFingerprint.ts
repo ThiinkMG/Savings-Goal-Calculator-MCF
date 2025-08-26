@@ -71,7 +71,7 @@ export function generateBrowserFingerprint(): string {
 }
 
 // Store fingerprint in sessionStorage for consistency, with iframe fallback
-export function getBrowserFingerprint(): string {
+export async function getBrowserFingerprint(): Promise<string> {
   let fingerprint;
   
   try {

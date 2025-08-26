@@ -12,6 +12,7 @@ import { BenefitsModal } from '@/components/BenefitsModal';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { type SavingsGoal } from '@shared/schema';
 import { useAuth } from '@/hooks/useAuth';
+import { generateFingerprint } from '@/lib/browserFingerprint';
 import { GraduationCap, TrendingUp, Smartphone, ArrowLeft, Plus, User, LogOut, Shield, X } from 'lucide-react';
 import logoPath from '@assets/Updated Final - My College Finace Logo w New Oliver 2 - Thiink Media Graphics (Transparent)_1753980792432.png';
 
@@ -133,8 +134,7 @@ export default function HomePage() {
     
     try {
       // Create guest session on the server
-      const { generateFingerprint } = await import('@/lib/browserFingerprint');
-      const fingerprint = generateFingerprint();
+      const fingerprint = await generateFingerprint();
       console.log('Generated fingerprint:', fingerprint);
       
       const response = await fetch('/api/auth/continue-as-guest', {
