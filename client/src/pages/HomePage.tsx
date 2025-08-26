@@ -26,16 +26,29 @@ export default function HomePage() {
   
   const { user, isGuest, isAuthenticated, guestInfo, logout, isLoggingOut } = useAuth();
 
-  // Daily benefits modal logic - show once per day
+  // Daily benefits modal logic - show once per day (iframe-safe)
   useEffect(() => {
-    const lastShownDate = localStorage.getItem('benefitsModalLastShown');
+    let lastShownDate = null;
     const today = new Date().toDateString();
+    
+    try {
+      lastShownDate = localStorage.getItem('benefitsModalLastShown');
+    } catch (error) {
+      // localStorage blocked in iframe - skip benefits modal
+      console.log('localStorage blocked, skipping benefits modal');
+      return;
+    }
     
     if (lastShownDate !== today) {
       // Show after a 3 second delay for better user experience
       const timer = setTimeout(() => {
         setShowBenefitsModal(true);
-        localStorage.setItem('benefitsModalLastShown', today);
+        try {
+          localStorage.setItem('benefitsModalLastShown', today);
+        } catch (error) {
+          // Ignore storage errors in iframe
+          console.log('Cannot save benefits modal state in iframe');
+        }
       }, 3000);
       
       return () => clearTimeout(timer);
@@ -111,6 +124,13 @@ export default function HomePage() {
   // Handle when user explicitly chooses to continue as guest
   const handleContinueAsGuest = async () => {
     console.log('handleContinueAsGuest called');
+    
+    // Check if we're in an iframe
+    const isInIframe = window !== window.top;
+    if (isInIframe) {
+      console.log('Running in iframe environment');
+    }
+    
     try {
       // Create guest session on the server
       const { generateFingerprint } = await import('@/lib/browserFingerprint');

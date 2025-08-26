@@ -87,9 +87,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
       window.location.reload();
     }
     
-    // Load remembered credentials if enabled
-    const rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
-    const rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    // Load remembered credentials if enabled - with iframe safety
+    let rememberedEnabled = false;
+    let rememberedIdentifier = null;
+    
+    try {
+      rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
+      rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    } catch (error) {
+      // localStorage blocked in iframe - skip remembered login
+      console.log('localStorage access blocked (iframe environment)');
+    }
     
     if (rememberedEnabled && rememberedIdentifier && isOpen) {
       setFormData(prev => ({ ...prev, identifier: rememberedIdentifier }));
@@ -103,9 +111,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   }, [isOpen]);
 
   const resetForm = () => {
-    // Check if we should preserve the remembered identifier
-    const rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
-    const rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    // Check if we should preserve the remembered identifier - with iframe safety
+    let rememberedEnabled = false;
+    let rememberedIdentifier = null;
+    
+    try {
+      rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
+      rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    } catch (error) {
+      // localStorage blocked in iframe
+      console.log('localStorage access blocked during form reset');
+    }
     
     setFormData({
       fullName: '',
@@ -125,9 +141,17 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   };
 
   const handleClose = () => {
-    // Don't reset the identifier if remember login is enabled
-    const rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
-    const rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    // Don't reset the identifier if remember login is enabled - with iframe safety
+    let rememberedEnabled = false;
+    let rememberedIdentifier = null;
+    
+    try {
+      rememberedEnabled = localStorage.getItem('rememberLoginEnabled') !== 'false';
+      rememberedIdentifier = localStorage.getItem('rememberedLoginIdentifier');
+    } catch (error) {
+      // localStorage blocked in iframe
+      console.log('localStorage access blocked during modal close');
+    }
     
     if (rememberedEnabled && rememberedIdentifier) {
       // Reset form but preserve the remembered identifier
