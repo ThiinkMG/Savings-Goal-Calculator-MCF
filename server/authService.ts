@@ -117,18 +117,18 @@ export async function sendPasswordResetCode(identifier: string): Promise<{
       await sendEmail({
         to: user.email || '',
         from: 'noreply@mycollegefinance.com',
-        subject: 'Password Reset Code - My College Finance',
+        subject: 'Password Reset Code - Savings Goal Calculator',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #333;">Password Reset Request</h2>
             <p>Hello ${user.fullName || user.username},</p>
-            <p>You requested a password reset for your My College Finance account.</p>
+            <p>You requested a password reset for your Savings Goal Calculator account.</p>
             <div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
               <h3 style="margin: 0; font-size: 24px; letter-spacing: 3px;">${code}</h3>
               <p style="margin: 10px 0 0 0; color: #666;">This code expires in 15 minutes</p>
             </div>
             <p>If you didn't request this reset, please ignore this email.</p>
-            <p>Best regards,<br>My College Finance Team</p>
+            <p>Best regards,<br>Savings Goal Calculator Team</p>
           </div>
         `
       });
@@ -167,17 +167,17 @@ export async function sendUsernameRecovery(identifier: string): Promise<{
       await sendEmail({
         to: user.email,
         from: 'noreply@mycollegefinance.com',
-        subject: 'Username Recovery - My College Finance',
+        subject: 'Username Recovery - Savings Goal Calculator',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #333;">Username Recovery</h2>
             <p>Hello ${user.fullName || 'there'},</p>
-            <p>Your username for My College Finance is:</p>
+            <p>Your username for the Savings Goal Calculator is:</p>
             <div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
               <h3 style="margin: 0; font-size: 20px;">${user.username}</h3>
             </div>
             <p>You can use this username to log in to your account.</p>
-            <p>Best regards,<br>My College Finance Team</p>
+            <p>Best regards,<br>Savings Goal Calculator Team</p>
           </div>
         `
       });

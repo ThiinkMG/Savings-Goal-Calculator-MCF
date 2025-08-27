@@ -18,7 +18,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <BookOpen className="w-5 h-5 text-brand-blue" />
-            How to Use My College Finance Savings Calculator
+            How to Use the Savings Goal Calculator
           </DialogTitle>
         </DialogHeader>
         
@@ -33,7 +33,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
               </h3>
               <div className="space-y-3 text-sm">
                 <p className="text-muted-foreground">
-                  Welcome to your personal savings goal calculator! This tool helps you plan and track your financial goals with precision and ease.
+                  Welcome to the Savings Goal Calculator! This tool helps you plan and track your financial goals with precision and ease.
                 </p>
                 <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                   <h4 className="font-medium mb-2">Quick Start Guide:</h4>

@@ -72,7 +72,7 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
       <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
-            Welcome to My College Finance! 🎓
+            Welcome to the Savings Goal Calculator! 🎯
           </DialogTitle>
           <p className="text-center text-muted-foreground mb-6">
             Your intelligent companion for achieving financial goals and building healthy money habits
@@ -84,7 +84,7 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
           <div>
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-500" />
-              Why Choose My College Finance?
+              Why Use This Savings Calculator?
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {appBenefits.map((benefit, index) => (
