@@ -574,7 +574,16 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             placeholder="Enter your current password"
             value={formData.currentPassword}
             onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleVerifyPassword()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                // Focus the verify button instead of submitting directly
+                const verifyButton = e.currentTarget.closest('div')?.querySelector('button[type="button"]') as HTMLElement;
+                if (verifyButton) {
+                  verifyButton.focus();
+                }
+              }
+            }}
           />
           <Button
             type="button"
@@ -641,9 +650,18 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             value={formData.newPassword}
             onChange={(e) => handleInputChange('newPassword', e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && passwordStrength >= 75 && formData.newPassword === formData.confirmPassword) {
+              if (e.key === 'Enter') {
                 e.preventDefault();
-                handleChangePassword();
+                // Move to the next input field instead of submitting
+                const form = e.currentTarget.closest('div');
+                if (form) {
+                  const inputs = form.querySelectorAll('input:not([disabled])');
+                  const currentIndex = Array.from(inputs).indexOf(e.currentTarget);
+                  if (currentIndex >= 0 && currentIndex < inputs.length - 1) {
+                    const nextInput = inputs[currentIndex + 1] as HTMLElement;
+                    nextInput.focus();
+                  }
+                }
               }
             }}
           />
@@ -686,9 +704,18 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && passwordStrength >= 75 && formData.newPassword === formData.confirmPassword) {
+              if (e.key === 'Enter') {
                 e.preventDefault();
-                handleChangePassword();
+                // Move to the next input field instead of submitting
+                const form = e.currentTarget.closest('div');
+                if (form) {
+                  const inputs = form.querySelectorAll('input:not([disabled])');
+                  const currentIndex = Array.from(inputs).indexOf(e.currentTarget);
+                  if (currentIndex >= 0 && currentIndex < inputs.length - 1) {
+                    const nextInput = inputs[currentIndex + 1] as HTMLElement;
+                    nextInput.focus();
+                  }
+                }
               }
             }}
           />
@@ -754,9 +781,13 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             value={formData.newUsername}
             onChange={(e) => handleInputChange('newUsername', e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && usernameStatus === 'available') {
+              if (e.key === 'Enter') {
                 e.preventDefault();
-                handleChangeUsername();
+                // Focus the submit button instead of submitting directly
+                const submitButton = e.currentTarget.closest('div')?.querySelector('button[type="button"]:last-of-type') as HTMLElement;
+                if (submitButton) {
+                  submitButton.focus();
+                }
               }
             }}
           />
@@ -818,9 +849,13 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             value={formData.newPhoneNumber}
             onChange={(e) => handleInputChange('newPhoneNumber', e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && phoneStatus === 'available') {
+              if (e.key === 'Enter') {
                 e.preventDefault();
-                handleChangePhone();
+                // Focus the submit button instead of submitting directly
+                const submitButton = e.currentTarget.closest('div')?.querySelector('button[type="button"]:last-of-type') as HTMLElement;
+                if (submitButton) {
+                  submitButton.focus();
+                }
               }
             }}
           />
@@ -887,9 +922,13 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             value={formData.newEmail}
             onChange={(e) => handleInputChange('newEmail', e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && emailStatus === 'available') {
+              if (e.key === 'Enter') {
                 e.preventDefault();
-                handleChangeEmail();
+                // Focus the submit button instead of submitting directly
+                const submitButton = e.currentTarget.closest('div')?.querySelector('button[type="button"]:last-of-type') as HTMLElement;
+                if (submitButton) {
+                  submitButton.focus();
+                }
               }
             }}
           />

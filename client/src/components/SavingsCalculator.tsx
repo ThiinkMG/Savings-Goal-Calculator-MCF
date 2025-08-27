@@ -282,7 +282,7 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
   };
 
-  // Fix Ctrl+A behavior for inputs and enable Enter key submission
+  // Fix Ctrl+A behavior for inputs and enable Enter key to move to next field
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.ctrlKey && e.key === 'a') {
       e.stopPropagation();
@@ -290,10 +290,21 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       e.currentTarget.select();
       e.preventDefault();
     }
-    // Enable Enter key to submit the form
+    // Enable Enter key to move to next field (like Tab)
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleSaveGoal();
+      // Find the next focusable element
+      const form = e.currentTarget.closest('form') || e.currentTarget.closest('.space-y-6');
+      if (form) {
+        const focusableElements = form.querySelectorAll(
+          'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+        );
+        const currentIndex = Array.from(focusableElements).indexOf(e.currentTarget);
+        if (currentIndex >= 0 && currentIndex < focusableElements.length - 1) {
+          const nextElement = focusableElements[currentIndex + 1] as HTMLElement;
+          nextElement.focus();
+        }
+      }
     }
   };
 

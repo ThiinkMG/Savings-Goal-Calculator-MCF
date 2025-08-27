@@ -769,7 +769,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your email, username, or phone number"
           value={formData.identifier}
           onChange={(e) => handleInputChange('identifier', e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleEnhancedLogin()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              // Move to password field
+              const passwordField = document.getElementById('password') as HTMLInputElement;
+              if (passwordField) {
+                passwordField.focus();
+              }
+            }
+          }}
           className="h-12 text-base"
           autoComplete="username"
           data-testid="input-identifier"
@@ -785,7 +794,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Enter your website password"
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleEnhancedLogin()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                // Focus the remember checkbox, then sign in button
+                const rememberCheckbox = document.getElementById('remember-login') as HTMLElement;
+                if (rememberCheckbox) {
+                  rememberCheckbox.focus();
+                }
+              }
+            }}
             className="h-12 text-base pr-12"
             autoComplete="current-password"
           />
@@ -853,7 +871,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your full name"
           value={formData.fullName}
           onChange={(e) => handleInputChange('fullName', e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              // Move to next field
+              const emailField = document.getElementById('email') as HTMLInputElement;
+              if (emailField) {
+                emailField.focus();
+              }
+            }
+          }}
         />
       </div>
 
@@ -865,7 +892,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="Enter your email"
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              // Move to phone field
+              const phoneField = document.getElementById('phoneNumber') as HTMLInputElement;
+              if (phoneField) {
+                phoneField.focus();
+              }
+            }
+          }}
           required
         />
       </div>
@@ -877,7 +913,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
           placeholder="+1 (555) 123-4567"
           value={formData.phoneNumber}
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              // Move to username field
+              const usernameField = document.getElementById('username') as HTMLInputElement;
+              if (usernameField) {
+                usernameField.focus();
+              }
+            }
+          }}
         />
       </div>
 
@@ -889,7 +934,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Choose a username"
             value={formData.username}
             onChange={(e) => handleInputChange('username', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                // Move to password field in register form
+                const registerPasswordField = e.currentTarget.closest('.space-y-4')?.querySelector('#password') as HTMLInputElement;
+                if (registerPasswordField) {
+                  registerPasswordField.focus();
+                }
+              }
+            }}
             required
           />
           {usernameStatus && (
@@ -917,7 +971,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Create a password"
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                // Move to confirm password field
+                const confirmField = document.getElementById('confirmPassword') as HTMLInputElement;
+                if (confirmField) {
+                  confirmField.focus();
+                }
+              }
+            }}
             required
           />
           <Button
@@ -958,7 +1021,16 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             placeholder="Confirm your password"
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                // Focus the register button
+                const registerButton = e.currentTarget.closest('.space-y-4')?.querySelector('button[type="button"]') as HTMLElement;
+                if (registerButton && registerButton.textContent?.includes('Register')) {
+                  registerButton.focus();
+                }
+              }
+            }}
             required
           />
           <Button
