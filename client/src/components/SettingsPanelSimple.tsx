@@ -823,7 +823,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           </div>
           <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/knowledge-bank/categories/oliver-s-nest-update', '_blank')}>
             <RefreshCw className="w-4 h-4 mr-2" />
-            Check for Updates
+            Announcements
           </Button>
         </CardContent>
       </Card>
