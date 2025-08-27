@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles, HelpCircle as InfoIcon } from "lucide-react";
+import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles, Rocket, HelpCircle as InfoIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -17,6 +17,7 @@ import { FAQModal } from "./FAQModal";
 import { SecuritySettingsModal } from "./SecuritySettingsModal";
 import { GuestLogoutWarning } from "./GuestLogoutWarning";
 import { ContactSupportModal } from "./ContactSupportModal";
+import { ReleaseNotesModal } from "./ReleaseNotesModal";
 import { useQuery } from "@tanstack/react-query";
 import JSZip from 'jszip';
 
@@ -38,6 +39,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [showGuestLogoutWarning, setShowGuestLogoutWarning] = useState(false);
   const [showContactSupport, setShowContactSupport] = useState(false);
+  const [showReleaseNotes, setShowReleaseNotes] = useState(false);
   const [securityMode, setSecurityMode] = useState<'password' | 'username' | 'phone' | 'email'>('password');
   const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
@@ -802,6 +804,10 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
             <MessageCircle className="w-4 h-4 mr-2" />
             Contact Support
           </Button>
+          <Button variant="outline" className="w-full" onClick={() => setShowReleaseNotes(true)}>
+            <Rocket className="w-4 h-4 mr-2" />
+            Release Notes
+          </Button>
         </CardContent>
       </Card>
 
@@ -813,7 +819,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
             <span>Version</span>
-            <span className="text-sm text-muted-foreground">v4.2.0 (Beta)</span>
+            <span className="text-sm text-muted-foreground">v4.3.0 (Beta)</span>
           </div>
           <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/knowledge-bank/categories/oliver-s-nest-update', '_blank')}>
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -969,6 +975,12 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       <ContactSupportModal
         isOpen={showContactSupport}
         onClose={() => setShowContactSupport(false)}
+      />
+      
+      {/* Release Notes Modal */}
+      <ReleaseNotesModal
+        isOpen={showReleaseNotes}
+        onClose={() => setShowReleaseNotes(false)}
       />
     </div>
   );
