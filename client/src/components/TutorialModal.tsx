@@ -14,7 +14,7 @@ interface TutorialModalProps {
 export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[85vh] p-0">
+      <DialogContent className="w-[95vw] sm:max-w-4xl h-[95vh] sm:h-auto sm:max-h-[85vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <BookOpen className="w-5 h-5 text-brand-blue" />
@@ -22,7 +22,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
           </DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="px-6 py-4 max-h-[70vh]">
+        <ScrollArea className="px-4 sm:px-6 py-4 h-[calc(95vh-8rem)] sm:h-auto sm:max-h-[70vh]">
           <div className="space-y-8">
             
             {/* Getting Started Section */}
@@ -56,7 +56,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
                 Setting Up Your Goals
               </h3>
               <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <h4 className="font-medium mb-2">Goal Types Available:</h4>
                     <div className="space-y-1 text-sm text-muted-foreground">
@@ -114,7 +114,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
               <div className="space-y-4">
                 <div className="bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
                   <h4 className="font-medium mb-3">Key Metrics Explained:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
                     <div>
                       <h5 className="font-medium text-purple-700 dark:text-purple-300 mb-2">Progress Indicators:</h5>
                       <ul className="space-y-1 text-muted-foreground">
@@ -154,7 +154,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
                 <Settings className="w-5 h-5 text-gray-600" />
                 Available Features
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <Download className="w-5 h-5 mt-0.5 text-blue-600" />
@@ -211,10 +211,10 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
           </div>
         </ScrollArea>
 
-        <div className="px-6 py-4 border-t bg-gray-50 dark:bg-gray-900/50">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">Need more help?</span>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <span className="text-sm text-muted-foreground hidden sm:inline">Need more help?</span>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -237,7 +237,7 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
                 Contact Support
               </Button>
             </div>
-            <Button onClick={onClose}>
+            <Button onClick={onClose} className="w-full sm:w-auto">
               Got it!
             </Button>
           </div>

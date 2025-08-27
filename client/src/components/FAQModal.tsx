@@ -13,15 +13,15 @@ interface FAQModalProps {
 export function FAQModal({ isOpen, onClose }: FAQModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[85vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className="w-[95vw] sm:max-w-4xl h-[95vh] sm:h-auto sm:max-h-[85vh] p-0">
+        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <HelpCircle className="w-5 h-5 text-brand-blue" />
             Frequently Asked Questions
           </DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="px-6 py-4 max-h-[70vh]">
+        <ScrollArea className="px-4 sm:px-6 py-3 sm:py-4 h-[calc(95vh-8rem)] sm:h-auto sm:max-h-[70vh]">
           <div className="space-y-6">
             
             {/* Getting Started FAQs */}

@@ -69,12 +69,12 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="w-[95vw] sm:max-w-4xl h-[95vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
             Welcome to the Savings Goal Calculator! 🎯
           </DialogTitle>
-          <p className="text-center text-muted-foreground mb-6">
+          <p className="text-center text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
             Your intelligent companion for achieving financial goals and building healthy money habits
           </p>
         </DialogHeader>
@@ -86,7 +86,7 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
               <Sparkles className="w-5 h-5 text-blue-500" />
               Why Use This Savings Calculator?
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {appBenefits.map((benefit, index) => (
                 <Card key={index} className="border-l-4 border-l-blue-500">
                   <CardContent className="p-4">
@@ -109,18 +109,18 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
               <Shield className="w-5 h-5 text-green-500" />
               Guest vs Account Benefits
             </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+            <div className="overflow-x-auto -mx-3 sm:mx-0">
+              <table className="w-full border-collapse min-w-[320px]">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left p-3 font-medium">Feature</th>
-                    <th className="text-center p-3 font-medium">
+                    <th className="text-left p-2 sm:p-3 font-medium text-sm sm:text-base">Feature</th>
+                    <th className="text-center p-2 sm:p-3 font-medium">
                       <div className="flex flex-col items-center">
                         <Badge variant="outline" className="mb-1">Guest Mode</Badge>
                         <span className="text-xs text-muted-foreground">Try it out</span>
                       </div>
                     </th>
-                    <th className="text-center p-3 font-medium">
+                    <th className="text-center p-2 sm:p-3 font-medium">
                       <div className="flex flex-col items-center">
                         <Badge className="mb-1 bg-green-500">Full Account</Badge>
                         <span className="text-xs text-muted-foreground">Maximum value</span>
@@ -131,8 +131,8 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
                 <tbody>
                   {featureComparison.map((item, index) => (
                     <tr key={index} className="border-b border-muted/20">
-                      <td className="p-3 font-medium">{item.feature}</td>
-                      <td className="p-3 text-center">
+                      <td className="p-2 sm:p-3 font-medium text-sm sm:text-base">{item.feature}</td>
+                      <td className="p-2 sm:p-3 text-center">
                         <div className="flex flex-col items-center gap-1">
                           {item.guest.available ? (
                             <CheckCircle className="w-4 h-4 text-blue-500" />
@@ -142,7 +142,7 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
                           <span className="text-xs text-muted-foreground">{item.guest.limit}</span>
                         </div>
                       </td>
-                      <td className="p-3 text-center">
+                      <td className="p-2 sm:p-3 text-center">
                         <div className="flex flex-col items-center gap-1">
                           {item.account.available ? (
                             <CheckCircle className="w-4 h-4 text-green-500" />
@@ -160,9 +160,9 @@ export function BenefitsModal({ isOpen, onClose, onCreateAccount }: BenefitsModa
           </div>
 
           {/* Call to Action */}
-          <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-950/20 dark:to-green-950/20 rounded-lg p-6 text-center">
-            <h4 className="font-semibold text-lg mb-2">Ready to Unlock Your Financial Potential?</h4>
-            <p className="text-muted-foreground mb-4">
+          <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-950/20 dark:to-green-950/20 rounded-lg p-4 sm:p-6 text-center">
+            <h4 className="font-semibold text-base sm:text-lg mb-2">Ready to Unlock Your Financial Potential?</h4>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4">
               Create a free account to access unlimited features and permanent goal storage
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">

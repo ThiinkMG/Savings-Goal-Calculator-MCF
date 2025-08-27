@@ -65,7 +65,7 @@ export function GuestLogoutWarning({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="w-[95vw] sm:max-w-md">
         <AlertDialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-full">
