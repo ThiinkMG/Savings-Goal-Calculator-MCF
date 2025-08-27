@@ -189,15 +189,16 @@ export default function HomePage() {
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Failed to parse response' }));
         console.error('Guest session creation failed:', response.status, errorData);
-        // Still show the modal but with error state
-        setShowEnhancedAuthModal(false);
+        // Don't close the modal on error - let user try again
+        throw new Error(errorData.error || 'Failed to create guest session');
       }
     } catch (error) {
       console.error('Failed to create guest session - full error:', error);
       console.error('Error name:', (error as Error)?.name);
       console.error('Error message:', (error as Error)?.message);
       console.error('Error stack:', (error as Error)?.stack);
-      setShowEnhancedAuthModal(false);
+      // Re-throw the error so the modal can handle it
+      throw error;
     }
   };
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Guest Button</title>
+</head>
+<body>
+    <h1>Testing Guest Session API</h1>
+    <button id="testBtn">Test Continue as Guest</button>
+    <div id="result"></div>
+    
+    <script>
+        // Generate simple fingerprint
+        function generateFingerprint() {
+            const fingerprint = [];
+            fingerprint.push(window.screen.width + 'x' + window.screen.height);
+            fingerprint.push(new Date().getTimezoneOffset());
+            fingerprint.push(navigator.language || 'unknown');
+            return 'fp_test_' + fingerprint.join('_');
+        }
+        
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const fingerprint = generateFingerprint();
+            console.log('Generated fingerprint:', fingerprint);
+            
+            try {
+                const response = await fetch('/api/auth/continue-as-guest', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fingerprint })
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('Response:', data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p style="color:red">Error: ' + error.message + '</p>';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

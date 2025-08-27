@@ -45,14 +45,26 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
   const { login } = useAuth();
 
   // Handle continue as guest
-  const handleContinueAsGuestClick = () => {
-    // Call the parent's handler if provided
-    if (onContinueAsGuest) {
-      onContinueAsGuest();
+  const handleContinueAsGuestClick = async () => {
+    setIsLoading(true);
+    try {
+      // Call the parent's handler if provided and wait for it to complete
+      if (onContinueAsGuest) {
+        await onContinueAsGuest();
+      }
+      
+      // Only close the modal after the guest session is successfully created
+      // The parent handler will close the modal when ready
+    } catch (error) {
+      console.error('Error creating guest session:', error);
+      toast({
+        title: "Error",
+        description: "Failed to continue as guest. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    // Always close the modal after guest selection
-    handleClose();
   };
 
   // Load remembered credentials on component mount
@@ -737,9 +749,10 @@ export function EnhancedAuthModal({ isOpen, onClose, onWixLogin, onContinueAsGue
             variant="outline"
             className="w-full h-10 text-sm border-green-300 text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-950/50"
             data-testid="button-continue-guest"
+            disabled={isLoading}
           >
             <UserCheck className="w-4 h-4 mr-2" />
-            Continue as Guest
+            {isLoading ? "Setting up guest session..." : "Continue as Guest"}
           </Button>
         </div>
       </div>
