@@ -12,7 +12,8 @@ export async function generateSavingsPlanPDF(
     console.log('👤 User data:', userInfo);
     
     console.log('📥 Importing jsPDF...');
-    const { default: jsPDF } = await import('jspdf');
+    const jsPDFModule = await import('jspdf');
+    const jsPDF = jsPDFModule.jsPDF;
     console.log('✅ jsPDF imported successfully');
     
     console.log('📄 Creating PDF instance...');

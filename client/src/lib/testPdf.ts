@@ -1,7 +1,8 @@
 export async function testSimplePDF(): Promise<void> {
   try {
     console.log('Starting PDF test...');
-    const { default: jsPDF } = await import('jspdf');
+    const jsPDFModule = await import('jspdf');
+    const jsPDF = jsPDFModule.jsPDF;
     console.log('jsPDF imported successfully');
     
     const pdf = new jsPDF();
