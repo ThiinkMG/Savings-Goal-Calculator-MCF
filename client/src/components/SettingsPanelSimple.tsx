@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, RefreshCw, AlertTriangle, Sparkles, Rocket, HelpCircle as InfoIcon } from "lucide-react";
+import { X, User, Globe, Bell, BarChart3, HelpCircle, Download, BookOpen, MessageCircle, Send, AlertTriangle, Sparkles, Rocket, HelpCircle as InfoIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -813,16 +813,12 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
 
       <Card>
         <CardHeader>
-          <CardTitle>App Information</CardTitle>
-          <CardDescription>Version and My College Finance resources</CardDescription>
+          <CardTitle>More Resources</CardTitle>
+          <CardDescription>Learn more about My College Finance</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span>Version</span>
-            <span className="text-sm text-muted-foreground">v4.3.0 (Beta)</span>
-          </div>
           <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/knowledge-bank/categories/oliver-s-nest-update', '_blank')}>
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <Send className="w-4 h-4 mr-2" />
             Announcements
           </Button>
         </CardContent>
