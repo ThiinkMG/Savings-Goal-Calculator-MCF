@@ -16,6 +16,7 @@ import { TutorialModal } from "./TutorialModal";
 import { FAQModal } from "./FAQModal";
 import { SecuritySettingsModal } from "./SecuritySettingsModal";
 import { GuestLogoutWarning } from "./GuestLogoutWarning";
+import { ContactSupportModal } from "./ContactSupportModal";
 import { useQuery } from "@tanstack/react-query";
 import JSZip from 'jszip';
 
@@ -36,6 +37,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
   const [showFAQModal, setShowFAQModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [showGuestLogoutWarning, setShowGuestLogoutWarning] = useState(false);
+  const [showContactSupport, setShowContactSupport] = useState(false);
   const [securityMode, setSecurityMode] = useState<'password' | 'username' | 'phone' | 'email'>('password');
   const [downloadFormat, setDownloadFormat] = useState<'csv' | 'pdf-zip'>('csv');
   
@@ -796,7 +798,8 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
             <MessageCircle className="w-4 h-4 mr-2" />
             FAQ
           </Button>
-          <Button variant="outline" className="w-full" onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScYaEGpSP3GsvLPWMx4yAk-uckDCG32HqoXYgtzh4npLDPjNw/viewform?usp=sharing&ouid=105426481604057488731', '_blank')}>
+          <Button variant="outline" className="w-full" onClick={() => setShowContactSupport(true)}>
+            <MessageCircle className="w-4 h-4 mr-2" />
             Contact Support
           </Button>
         </CardContent>
@@ -960,6 +963,12 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
           logout();
         }}
         nextResetTime={(authData as any)?.guestInfo?.nextResetTime ? new Date((authData as any).guestInfo.nextResetTime) : undefined}
+      />
+      
+      {/* Contact Support Modal */}
+      <ContactSupportModal
+        isOpen={showContactSupport}
+        onClose={() => setShowContactSupport(false)}
       />
     </div>
   );

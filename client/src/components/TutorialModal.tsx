@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, Target, TrendingUp, Download, Share2, Settings, PieChart, Calendar, DollarSign, BookOpen, MessageCircle, ExternalLink } from "lucide-react";
+import { Calculator, Target, TrendingUp, Download, Share2, Settings, PieChart, Calendar, DollarSign, BookOpen, MessageCircle } from "lucide-react";
+import { ContactSupportModal } from "./ContactSupportModal";
 
 interface TutorialModalProps {
   isOpen: boolean;
@@ -12,7 +14,9 @@ interface TutorialModalProps {
 }
 
 export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps) {
+  const [showContactSupport, setShowContactSupport] = useState(false);
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] sm:max-w-4xl h-[95vh] sm:h-auto sm:max-h-[85vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
@@ -230,10 +234,10 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScYaEGpSP3GsvLPWMx4yAk-uckDCG32HqoXYgtzh4npLDPjNw/viewform?usp=sharing&ouid=105426481604057488731', '_blank')}
+                onClick={() => setShowContactSupport(true)}
                 className="h-8"
               >
-                <ExternalLink className="w-3 h-3 mr-1" />
+                <MessageCircle className="w-3 h-3 mr-1" />
                 Contact Support
               </Button>
             </div>
@@ -244,5 +248,11 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
         </div>
       </DialogContent>
     </Dialog>
+    
+    <ContactSupportModal
+      isOpen={showContactSupport}
+      onClose={() => setShowContactSupport(false)}
+    />
+    </>
   );
 }
