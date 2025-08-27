@@ -312,7 +312,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         pdf.setFontSize(10);
         pdf.setTextColor(128, 128, 128);
         pdf.text(`Generated on ${new Date().toLocaleDateString()}`, 20, 280);
-        pdf.text('My College Finance - Savings Goal Calculator v4.1.0 (Beta)', 20, 290);
+        pdf.text('My College Finance - Savings Goal Calculator v4.2.0 (Beta)', 20, 290);
         
         // Add PDF to ZIP
         const pdfData = pdf.output('arraybuffer');
@@ -326,7 +326,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         totalTargetAmount: goalsData.reduce((sum, goal) => sum + (goal.targetAmount || 0), 0),
         totalCurrentSavings: goalsData.reduce((sum, goal) => sum + (goal.currentSavings || 0), 0),
         user: user?.username || 'Guest',
-        version: "v4.1.0 (Beta)"
+        version: "v4.2.0 (Beta)"
       };
       zip.file('export_summary.json', JSON.stringify(summaryData, null, 2));
       
@@ -810,7 +810,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
             <span>Version</span>
-            <span className="text-sm text-muted-foreground">v4.1.0 (Beta)</span>
+            <span className="text-sm text-muted-foreground">v4.2.0 (Beta)</span>
           </div>
           <Button variant="outline" className="w-full" onClick={() => window.open('https://www.mycollegefinance.com/knowledge-bank/categories/oliver-s-nest-update', '_blank')}>
             <RefreshCw className="w-4 h-4 mr-2" />

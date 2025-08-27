@@ -563,7 +563,7 @@ export default function HomePage() {
               
               {/* Copyright and App Version */}
               <p className="text-gray-500 text-xs font-medium">
-                © 2025 My College Finance, LLC. All rights reserved | Savings Goal Calculator • v3.0.0 (Beta)
+                © 2025 My College Finance, LLC. All rights reserved | Savings Goal Calculator • v4.2.0 (Beta)
               </p>
             </div>
           </div>
