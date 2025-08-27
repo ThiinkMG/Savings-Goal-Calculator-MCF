@@ -814,7 +814,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       <Card>
         <CardHeader>
           <CardTitle>App Information</CardTitle>
-          <CardDescription>Version and announcements</CardDescription>
+          <CardDescription>Version and My College Finance resources</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
