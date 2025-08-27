@@ -282,13 +282,18 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
   };
 
-  // Fix Ctrl+A behavior for inputs
+  // Fix Ctrl+A behavior for inputs and enable Enter key submission
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.ctrlKey && e.key === 'a') {
       e.stopPropagation();
       // Let the default behavior happen for the input only
       e.currentTarget.select();
       e.preventDefault();
+    }
+    // Enable Enter key to submit the form
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveGoal();
     }
   };
 
@@ -628,8 +633,13 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
                           value={manualAmount}
                           onChange={(e) => handleManualAmountChange(e.target.value)}
                           onKeyDown={(e) => {
-                            handleInputKeyDown(e);
+                            if (e.ctrlKey && e.key === 'a') {
+                              e.stopPropagation();
+                              e.currentTarget.select();
+                              e.preventDefault();
+                            }
                             if (e.key === 'Enter') {
+                              e.preventDefault();
                               handleSubmitManualEntry();
                             }
                           }}

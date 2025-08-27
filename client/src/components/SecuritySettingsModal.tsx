@@ -640,6 +640,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             placeholder="Create a new password"
             value={formData.newPassword}
             onChange={(e) => handleInputChange('newPassword', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && passwordStrength >= 75 && formData.newPassword === formData.confirmPassword) {
+                e.preventDefault();
+                handleChangePassword();
+              }
+            }}
           />
           <Button
             type="button"
@@ -679,6 +685,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             placeholder="Confirm your new password"
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && passwordStrength >= 75 && formData.newPassword === formData.confirmPassword) {
+                e.preventDefault();
+                handleChangePassword();
+              }
+            }}
           />
           <Button
             type="button"
@@ -741,6 +753,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             placeholder="Choose a new username"
             value={formData.newUsername}
             onChange={(e) => handleInputChange('newUsername', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && usernameStatus === 'available') {
+                e.preventDefault();
+                handleChangeUsername();
+              }
+            }}
           />
           {usernameStatus && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -799,6 +817,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             placeholder="+1 234-567-8900"
             value={formData.newPhoneNumber}
             onChange={(e) => handleInputChange('newPhoneNumber', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && phoneStatus === 'available') {
+                e.preventDefault();
+                handleChangePhone();
+              }
+            }}
           />
           {phoneStatus && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -862,6 +886,12 @@ export function SecuritySettingsModal({ isOpen, onClose, initialMode }: Security
             placeholder="your.email@example.com"
             value={formData.newEmail}
             onChange={(e) => handleInputChange('newEmail', e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && emailStatus === 'available') {
+                e.preventDefault();
+                handleChangeEmail();
+              }
+            }}
           />
           {emailStatus && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
