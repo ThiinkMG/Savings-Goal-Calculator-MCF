@@ -859,13 +859,13 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
       />
       {/* Settings Panel */}
       <div 
-        className={`absolute right-0 top-0 h-screen w-full sm:w-[420px] lg:w-[460px] bg-gradient-to-b from-background to-background/95 border-l border-border/50 shadow-2xl backdrop-blur-md transform transition-all duration-300 ease-out ${
+        className={`absolute right-0 top-0 h-screen w-full sm:w-[420px] lg:w-[460px] bg-background sm:bg-gradient-to-b sm:from-background sm:to-background/95 border-l border-border/50 shadow-2xl sm:backdrop-blur-md transform transition-all duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border/30 bg-gradient-to-r from-primary/5 to-transparent backdrop-blur-sm">
+        <div className="flex items-center justify-between p-6 border-b border-border/30 bg-primary/5 sm:bg-gradient-to-r sm:from-primary/5 sm:to-transparent sm:backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Globe className="w-4 h-4 text-primary" />
@@ -888,7 +888,7 @@ export function SettingsPanel({ isOpen, onClose, onContinueAsGuest, onShowBenefi
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-border/30 bg-muted/20">
+        <div className="border-b border-border/30 bg-muted/40 sm:bg-muted/20">
           <div className="flex flex-col p-3 space-y-1.5">
             {tabs.map((tab) => {
               const Icon = tab.icon;
