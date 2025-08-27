@@ -7,9 +7,16 @@ echo "Wix OAuth Token Exchange Helper"
 echo "==============================="
 echo ""
 
-# Default values
-CLIENT_ID="2583909e-4c0c-429e-b4d3-8d58e7096828"
+# Default values - use environment variable for security
+CLIENT_ID="${WIX_CLIENT_ID:-}"
 AUTH_ENDPOINT="https://www.wixapis.com/oauth/access"
+
+# Validate that CLIENT_ID is provided
+if [ -z "$CLIENT_ID" ]; then
+    echo "Error: WIX_CLIENT_ID environment variable is not set."
+    echo "Please set it with: export WIX_CLIENT_ID=your-client-id"
+    exit 1
+fi
 
 echo "Current Configuration:"
 echo "Client ID: $CLIENT_ID"
