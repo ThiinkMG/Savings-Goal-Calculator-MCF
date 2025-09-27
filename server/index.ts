@@ -56,9 +56,19 @@ app.use((req, res, next) => {
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
+    
+    // Log the error for debugging
+    console.error('Server error:', err);
+    
+    // Only send response if not already sent
+    if (!res.headersSent) {
+      res.status(status).json({ message });
+    }
+    
+    // Don't re-throw in production to avoid crashes
+    if (process.env.NODE_ENV !== 'production') {
+      throw err;
+    }
   });
 
   // importantly only setup vite in development and after
