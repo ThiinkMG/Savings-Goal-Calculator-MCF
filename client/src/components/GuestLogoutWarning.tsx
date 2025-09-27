@@ -73,7 +73,10 @@ export function GuestLogoutWarning({
             </div>
             <AlertDialogTitle className="text-xl">Guest Daily Limits Warning</AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="space-y-3">
+          <AlertDialogDescription>
+            This action will log you out of your guest session.
+          </AlertDialogDescription>
+          <div className="space-y-3 mt-4">
             <div className="bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
               <p className="font-semibold text-orange-900 dark:text-orange-100 mb-2">
                 Important: Your daily limits will NOT reset if you log out!
@@ -112,7 +115,7 @@ export function GuestLogoutWarning({
                 <span className="font-semibold">Tip:</span> Create a free account to enjoy unlimited goals and PDF downloads!
               </p>
             </div>
-          </AlertDialogDescription>
+          </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>
