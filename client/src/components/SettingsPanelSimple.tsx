@@ -59,7 +59,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   });
 
   // Get all savings goals for export
-  const { data: goals = [], isLoading: goalsLoading } = useQuery({
+  const { data: goals = [], isLoading: goalsLoading } = useQuery<any[]>({
     queryKey: ['/api/savings-goals'],
   });
 

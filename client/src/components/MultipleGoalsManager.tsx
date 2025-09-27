@@ -9,20 +9,25 @@ import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 
 interface MultipleGoalsManagerProps {
-  goals: SavingsGoal[];
-  onAddGoal: () => void;
   onEditGoal: (goalId: string) => void;
+  onDeleteGoal: () => void;
+  onAddGoal: () => void;
 }
 
-export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleGoalsManagerProps) {
+export function MultipleGoalsManager({ onEditGoal, onDeleteGoal, onAddGoal }: MultipleGoalsManagerProps) {
   const { theme } = useTheme();
   const { formatCurrency: formatLocaleCurrency } = useLocale();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Fetch goals from API
+  const { data: goals = [], isLoading, error } = useQuery<SavingsGoal[]>({
+    queryKey: ['/api/savings-goals'],
+  });
 
   const shareGoal = async (goal: SavingsGoal) => {
     if (navigator.share) {
@@ -53,9 +58,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
-      // Also refresh auth data to update guest counters
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
+      onDeleteGoal(); // Notify parent component
       toast({
         title: "Success!",
         description: "Goal deleted successfully",
