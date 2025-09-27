@@ -466,10 +466,13 @@ export function SavingsCalculator({ editingGoalId, onGoalSaved }: SavingsCalcula
           {calculations && (
             <>
               <ProgressVisualization
-                calculations={calculations}
                 targetAmount={targetAmount}
                 currentSavings={currentSavings}
-                goalName={goalName}
+                monthlyRequired={calculations.monthlyRequired}
+                monthsRemaining={calculations.monthsRemaining}
+                progressPercent={calculations.progressPercent}
+                monthlyCapacity={monthlyCapacity[0]}
+                selectedTradeOffs={selectedTradeOffs}
               />
 
               <WhatIfScenarios
