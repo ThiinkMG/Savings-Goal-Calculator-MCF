@@ -843,7 +843,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const member = memberInfo.member;
-      const email = member.loginEmail || member.contactDetails?.emails?.[0]?.email;
+      const email = member.loginEmail || (member as any).contactDetails?.emails?.[0]?.email;
       
       if (!email) {
         throw new Error('No email address found for member');
@@ -855,8 +855,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         // Create new user with Wix member data
         const fullName = member.profile?.nickname || 
-                         (member.contactDetails?.firstName && member.contactDetails?.lastName 
-                           ? `${member.contactDetails.firstName} ${member.contactDetails.lastName}` 
+                         ((member as any).contactDetails?.firstName && (member as any).contactDetails?.lastName 
+                           ? `${(member as any).contactDetails.firstName} ${(member as any).contactDetails.lastName}` 
                            : email.split('@')[0]);
         
         user = await storage.createUser({
@@ -864,11 +864,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           username: member.profile?.nickname || email.split('@')[0],
           fullName,
           password: 'wix-oauth-user', // OAuth users don't have traditional passwords
-          wixUserId: member._id
+          wixUserId: member._id || undefined
         });
       } else if (!user.wixUserId) {
         // Link existing user to Wix account
-        user.wixUserId = member._id;
+        user.wixUserId = member._id || null;
       }
       
       // Store tokens securely (in production, encrypt these)
@@ -880,7 +880,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set session
       req.session.userId = user.id;
       req.session.isGuest = false;
-      req.session.authMethod = 'wix-oauth';
+      req.session.authMethod = 'wix' as any;
       
       res.json({
         success: true,
@@ -895,7 +895,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: member._id,
           email: email,
           profile: member.profile,
-          contactDetails: member.contactDetails
+          contactDetails: (member as any).contactDetails
         }
       });
       
@@ -984,7 +984,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Remove phone number by setting it to null
-      const success = await storage.updatePhoneNumber(userId, null);
+      const success = await storage.updatePhoneNumber(userId, '');
       if (!success) {
         return res.status(500).json({ message: "Failed to remove phone number" });
       }
