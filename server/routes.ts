@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     req.session.userId = `guest_${now}_${Math.random().toString(36).substr(2, 9)}`;
     req.session.guestSessionStart = now;
     req.session.guestDailyCount = 0; // Reset goals per session (not persistent)
-    req.session.guestPdfDownloads = tracking.dailyPdfCount; // Keep PDF downloads persistent
+    req.session.guestPdfDownloads = tracking.dailyPdfCount || 0; // Keep PDF downloads persistent
     req.session.guestLastResetDate = today;
     req.session.guestGoals = [];
     req.session.guestIpAddress = ipAddress;

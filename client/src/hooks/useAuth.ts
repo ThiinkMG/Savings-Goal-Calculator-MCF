@@ -17,6 +17,7 @@ export interface GuestInfo {
   pdfLimit: number;
   sessionStart?: number;
   lastResetDate?: string;
+  nextResetTime?: Date | string;
 }
 
 export interface AuthResponse {

@@ -369,7 +369,7 @@ export default function HomePage() {
                             <span className="text-sm font-semibold text-blue-700 dark:text-blue-300 block">
                               PDF Downloads: {guestInfo?.pdfDownloads || 0}/{guestInfo?.pdfLimit || 1} today
                             </span>
-                            {guestInfo?.pdfDownloads >= (guestInfo?.pdfLimit || 1) && guestInfo?.nextResetTime && (
+                            {(guestInfo?.pdfDownloads || 0) >= (guestInfo?.pdfLimit || 1) && guestInfo?.nextResetTime && (
                               <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">
                                 Resets in: <CountdownTimer targetTime={guestInfo.nextResetTime} className="text-xs font-mono" />
                               </div>
