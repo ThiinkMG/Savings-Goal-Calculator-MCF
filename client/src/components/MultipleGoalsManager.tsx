@@ -208,7 +208,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {goals.map((goal) => {
               const progress = getProgressPercent(goal);
               const monthlyRequired = calculateMonthlyRequired(goal);
@@ -219,7 +219,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
               return (
                 <div
                   key={goal.id}
-                  className="group relative p-6 sm:p-7 lg:p-8 border border-gray-300/60 dark:border-border/50 rounded-xl sm:rounded-2xl hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-400/70 dark:hover:border-blue-600/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-white/95 to-gray-50/80 dark:from-background dark:to-background/80 backdrop-blur-sm min-h-[400px] sm:min-h-[420px] lg:min-h-[450px] flex flex-col"
+                  className="group relative p-6 sm:p-8 lg:p-10 border border-gray-300/60 dark:border-border/50 rounded-xl sm:rounded-2xl hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-400/70 dark:hover:border-blue-600/50 transition-all duration-300 overflow-hidden bg-gradient-to-br from-white/95 to-gray-50/80 dark:from-background dark:to-background/80 backdrop-blur-sm min-h-[400px] sm:min-h-[450px] flex flex-col w-full"
                 >
                   {/* Hover glow effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-700/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl sm:rounded-2xl"></div>
@@ -228,7 +228,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                     className="relative cursor-pointer z-10 flex-1 flex flex-col"
                     onClick={() => onEditGoal(goal.id)}
                   >
-                    <div className="flex flex-col gap-4 sm:gap-5 mb-6 sm:mb-8 flex-1">
+                    <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8 flex-1">
                       <div className="flex justify-between items-start gap-2 sm:gap-3">
                         <h4 className="font-bold text-lg sm:text-xl text-foreground break-words max-w-[70%] leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                           {goal.name}
@@ -238,7 +238,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         </div>
                       </div>
 
-                      <div className="space-y-4 sm:space-y-5">
+                      <div className="space-y-4 sm:space-y-6">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2">
                           <span className="text-xs sm:text-sm break-words font-medium text-muted-foreground">
                             {formatLocaleCurrency(goal.currentSavings || 0)} of {formatLocaleCurrency(goal.targetAmount)}
@@ -253,7 +253,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                         </div>
                       </div>
 
-                      <div className="space-y-3 sm:space-y-4 flex-1">
+                      <div className="space-y-4 sm:space-y-5 flex-1">
                         <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-green-50/50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200/30 dark:border-green-700/30">
                           <div className="p-1 sm:p-1.5 bg-green-500/10 rounded-md sm:rounded-lg flex-shrink-0">
                             <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 dark:text-green-400" />
@@ -277,7 +277,7 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                   </div>
 
                   {/* Enhanced Action buttons - Improved mobile layout */}
-                  <div className="relative z-10 flex flex-col gap-3 sm:gap-4 pt-6 sm:pt-8 border-t border-gray-300/60 dark:border-border/50 mt-auto">
+                  <div className="relative z-10 flex flex-col gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-gray-300/60 dark:border-border/50 mt-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <Button
                         size="sm"
