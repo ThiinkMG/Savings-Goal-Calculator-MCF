@@ -1,0 +1,48 @@
+Tutorial | Create a Self-Hosted App
+In this tutorial, you'll create an app with a simple dashboard page extension using a self-hosted iframe.
+
+Before you begin
+Make sure you're logged into your Wix account, or create an account if you don't have one yet.
+If you haven't done so yet, move to the new Wix Studio workspace by joining Wix Studio.
+Step 1 | Create an app in the Custom Apps page of your Wix Studio workspace
+We'll start off by creating a new app.
+
+In the Custom Apps page, go to My Apps, and then click Create New App.
+Select Build from scratch.
+Select Self-Hosted, and then click Get Started.
+choose-app-framework
+
+A new app is created in the Custom Apps page.
+
+Step 2 | Add a dashboard page extension
+We'll now add a dashboard page extension in your app's dashboard. This extension uses an iframe to embed a web page in the dashboard. We've already deployed a web page on an external server for you to use in this tutorial. When configuring the extension, you'll register the URL of this web page.
+
+In the left sidebar, under Develop, select Extensions, and then click Create Extension.
+A panel opens, showing the available extension types.
+Find the Dashboard page extension and click Create.
+Fill in the following configuration data:
+Name: Demo page
+iframe URL: https://www.quickstartselfhostedapp.com/
+Click Save.
+iframe-url
+
+You’ve finished setting up the dashboard page extension and can now install it on a site to see it in action.
+
+Step 3 | Install your app on a site
+Wix provides a free Premium development site so you can easily install your app and see it working. In this step, you'll create a development site, install your app on the site, and try it out.
+
+In the top right corner of your app's dashboard, click Test App and select Test on dev site.
+Select an existing development site or click + Create Dev Site to create a new site. Select the editor and the Wix Business Solution you want to use and click Create Dev Site.
+Click Test App. Wix installs your app and opens the site in a new tab. You can set which site page opens in your app settings. If you don't set a page, the site editor opens by default.
+Your app is now installed on the development site. You can see the external web page embedded in the dashboard.
+
+self-hosted-iframe
+
+Next steps
+You now have a fully working app that can be installed on Wix sites. Take some time to play around in your app's dashboard to explore more features that you can add to your app.
+
+Use the following resources to continue building your app:
+
+Wix Design System: Learn how to use Wix's React components for a cohesive user experience consistent with Wix's design standards.
+Wix APIs: Learn how to integrate your app with Wix to transfer data between your app and the site it's installed on and extend Wix business solutions, such as Wix eCommerce or Wix Bookings.
+Extension catalog: Learn about other extensions you can add to your app.

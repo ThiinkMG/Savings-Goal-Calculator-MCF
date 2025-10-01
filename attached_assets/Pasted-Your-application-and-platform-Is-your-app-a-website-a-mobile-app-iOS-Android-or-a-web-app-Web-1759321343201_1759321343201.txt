@@ -1,0 +1,28 @@
+Your application and platform
+Is your app a website, a mobile app (iOS/Android), or a web app?
+Website: Is it a single-page application (SPA), a server-rendered app, or a simple static site?
+Mobile App: Are you using native SDKs (Swift/Kotlin) or a cross-platform framework like React Native or Flutter?
+What technology stack is your app built on?
+Frontend: (e.g., React, Angular, Vue, plain JavaScript)
+Backend: (e.g., Node.js, Python, Ruby, PHP, .NET)
+Does your app currently have its own user database?
+If yes, is there a plan to migrate those users to Wix members, or will you need to handle logins from both systems?
+Are you using a frontend framework that is compatible with the Wix SDK?
+Wix provides a JavaScript SDK that simplifies implementation, but you will need to determine if it's the right fit for your project. 
+User experience and interface
+What is the desired look and feel of the login screen?
+Wix-managed (easiest): Do you prefer to redirect users to a standard Wix-branded login page? This is the fastest way to get started and is a low-effort approach.
+Custom (more complex): Do you need a seamless, branded login experience that looks and feels like a native part of your app?
+Will users have separate accounts on your app and Wix, or do you want to unify them?
+This is critical for determining whether you need to handle account matching or consolidation.
+What post-login experience do you want?
+For example, will authenticated users be immediately redirected to a specific part of your app, or will they be returned to the page they were on? 
+Security and backend logic
+How are you currently handling user sessions and state?
+(e.g., JWTs, server-side sessions, cookies)
+Are you familiar with the OAuth 2.0 with PKCE authorization flow?
+Implementing a custom login page requires understanding this protocol to handle token exchanges securely.
+Do you need to perform server-side actions on behalf of the member?
+This includes tasks like creating or deleting member data. These actions require a specific Admin API Key authentication strategy in addition to the member's OAuth tokens.
+How will you handle sensitive data and tokens?
+Wix's SDK and API documentation describe the process for securely storing tokens, but your implementation will depend on your backend's architecture
