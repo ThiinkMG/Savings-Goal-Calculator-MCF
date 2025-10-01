@@ -147,6 +147,50 @@ export const mockApiRequest = async (
       } else {
         throw new Error('Invalid goal ID');
       }
+    } else if (url.startsWith('/api/calculate-scenarios') && method === 'GET') {
+      // Handle calculate-scenarios endpoint for WhatIfScenarios
+      // URL format: /api/calculate-scenarios/10000/0/2026-10-01/300
+      const urlParts = url.split('/');
+      if (urlParts.length >= 6) {
+        const targetAmount = parseFloat(urlParts[3]) || 0;
+        const currentSavings = parseFloat(urlParts[4]) || 0;
+        const targetDate = urlParts[5];
+        const monthlyCapacity = parseFloat(urlParts[6]) || 0;
+        
+        const endDate = new Date(targetDate);
+        const today = new Date();
+        const monthsRemaining = Math.max(1, Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+        const amountNeeded = Math.max(0, targetAmount - currentSavings);
+        const monthlyRequired = amountNeeded / monthsRemaining;
+        const progressPercent = Math.min(100, (currentSavings / targetAmount) * 100);
+        
+        result = {
+          targetAmount,
+          currentSavings,
+          amountNeeded,
+          monthsRemaining,
+          monthlyRequired: Math.round(monthlyRequired * 100) / 100,
+          monthlyCapacity,
+          progressPercent: Math.round(progressPercent * 100) / 100,
+          canAfford: monthlyCapacity >= monthlyRequired,
+          scenarios: {
+            plus50: {
+              monthlyAmount: monthlyRequired + 50,
+              monthsSaved: Math.max(0, monthsRemaining - Math.ceil(amountNeeded / (monthlyRequired + 50)))
+            },
+            plus100: {
+              monthlyAmount: monthlyRequired + 100,
+              monthsSaved: Math.max(0, monthsRemaining - Math.ceil(amountNeeded / (monthlyRequired + 100)))
+            },
+            plus150: {
+              monthlyAmount: monthlyRequired + 150,
+              monthsSaved: Math.max(0, monthsRemaining - Math.ceil(amountNeeded / (monthlyRequired + 150)))
+            }
+          }
+        };
+      } else {
+        throw new Error('Invalid calculate-scenarios parameters');
+      }
     } else {
       throw new Error('Unknown endpoint');
     }

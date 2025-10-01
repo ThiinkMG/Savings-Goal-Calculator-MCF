@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Globe, BarChart3, HelpCircle, Download, MessageCircle, BookOpen, FileQuestion, Rocket } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { TutorialModal } from "./TutorialModal";
 import { FAQModal } from "./FAQModal";
 import { ContactSupportModal } from "./ContactSupportModal";
@@ -36,8 +37,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const handleDataExport = async () => {
     setIsLoading(true);
     try {
-      // Fetch all goals data
-      const response = await fetch('/api/savings-goals');
+      // Fetch all goals data using localStorage service
+      const response = await apiRequest('GET', '/api/savings-goals');
       let goalsData = [];
       
       if (response.ok) {
