@@ -263,12 +263,12 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
                           </span>
                         </div>
 
-                        <div className="space-y-1 sm:space-y-2 p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gray-100/60 dark:bg-muted/30 border border-gray-200/50 dark:border-transparent">
+                        <div className="space-y-1 sm:space-y-2 p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gray-100/60 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/60">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-foreground">Time remaining</span>
-                            <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">{monthsLeft} months</span>
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200">Time remaining</span>
+                            <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-300">{monthsLeft} months</span>
                           </div>
-                          <span className="text-xs text-gray-600 dark:text-muted-foreground block">
+                          <span className="text-xs text-gray-600 dark:text-gray-400 block">
                             Last updated: {goal.updatedAt ? new Date(goal.updatedAt).toLocaleDateString() : 'N/A'}
                           </span>
                         </div>
