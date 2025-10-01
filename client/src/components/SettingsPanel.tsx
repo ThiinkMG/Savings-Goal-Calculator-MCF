@@ -382,8 +382,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           </SheetHeader>
 
           <div className="flex h-[calc(100vh-100px)] overflow-hidden">
-            <div className="w-40 border-r border-border/50 bg-muted/20 p-3 overflow-y-auto">
-              <div className="space-y-1">
+            <div className="w-40 border-r border-border/50 bg-muted/20 p-3 flex flex-col">
+              <div className="space-y-1 flex-1">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
@@ -402,6 +402,18 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     </button>
                   );
                 })}
+              </div>
+              
+              <div className="mt-auto pt-3 border-t border-border/30">
+                <div className="text-center space-y-1">
+                  <div className="text-xs font-semibold text-primary flex items-center justify-center gap-1">
+                    <Rocket className="w-3 h-3" />
+                    v5.0.0 Beta
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    My College Finance
+                  </div>
+                </div>
               </div>
             </div>
 

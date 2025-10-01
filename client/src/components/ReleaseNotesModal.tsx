@@ -16,7 +16,7 @@ export function ReleaseNotesModal({ isOpen, onClose }: ReleaseNotesModalProps) {
         <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Rocket className="w-5 h-5 text-brand-blue" />
-            Release Notes - Version 4.3.0
+            Release Notes - Version 5.0.0 Beta
           </DialogTitle>
           <DialogDescription className="sr-only">
             View the latest updates and features added to the Savings Goal Calculator
@@ -26,11 +26,78 @@ export function ReleaseNotesModal({ isOpen, onClose }: ReleaseNotesModalProps) {
         <ScrollArea className="px-4 sm:px-6 py-4 h-[calc(95vh-8rem)] sm:h-auto sm:max-h-[70vh]">
           <div className="space-y-8">
             
-            {/* Latest Release */}
+            {/* Latest Release - Version 5.0.0 Beta */}
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-semibold">Version 5.0.0 Beta</h3>
+                <Badge variant="default" className="bg-green-600">Latest</Badge>
+                <Badge variant="outline" className="border-orange-500 text-orange-600">Beta</Badge>
+                <span className="text-sm text-muted-foreground">Released October 2025</span>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium flex items-center gap-2 mb-2">
+                    <Zap className="w-4 h-4 text-yellow-600" />
+                    Authentication-Free Experience (Rollback)
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                    <li>Removed authentication requirements for immediate access to all features</li>
+                    <li>No login, signup, or guest mode needed - direct access to calculator</li>
+                    <li>Simplified user experience based on feedback</li>
+                    <li>All features available instantly without barriers</li>
+                    <li>Session-based storage with seamless experience</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-medium flex items-center gap-2 mb-2">
+                    <Settings className="w-4 h-4 text-blue-600" />
+                    Settings Menu Redesign
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                    <li>New slide-in sidebar panel from the right side (Sheet component)</li>
+                    <li>Organized navigation with Appearance, Data, and Help tabs</li>
+                    <li>Optimized width at 540px for desktop with responsive mobile support</li>
+                    <li>Improved accessibility with proper ARIA descriptions on all modals</li>
+                    <li>Tutorial, FAQ, Release Notes, and Contact Support all accessible from Help tab</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-medium flex items-center gap-2 mb-2">
+                    <FileText className="w-4 h-4 text-purple-600" />
+                    PDF Export Consistency (Rollback)
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                    <li>PDF reports now use consistent light theme colors for better readability</li>
+                    <li>Reverted from theme-aware to always-light for professional appearance</li>
+                    <li>Improved print compatibility and document clarity</li>
+                    <li>Better user experience for shared and printed reports</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-medium flex items-center gap-2 mb-2">
+                    <Shield className="w-4 h-4 text-green-600" />
+                    Accessibility Improvements
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                    <li>Fixed missing DialogDescription on all modal components</li>
+                    <li>Improved screen reader support with proper ARIA labels</li>
+                    <li>Enhanced keyboard navigation throughout the app</li>
+                    <li>Better focus management in modal dialogs</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <Separator />
+
+            {/* Version 4.3.0 */}
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <h3 className="text-lg font-semibold">Version 4.3.0</h3>
-                <Badge variant="default" className="bg-green-600">Latest</Badge>
                 <span className="text-sm text-muted-foreground">Released August 2025</span>
               </div>
               
