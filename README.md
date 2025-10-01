@@ -56,4 +56,4 @@ This project is licensed under the terms specified in the LICENSE file.
 
 ---
 
-**Created by Thiink Media Graphics for My College Finance**
+**Created by [Thiink Media Graphics](https://www.thiinkmediagraphics.com/) for My College Finance**
