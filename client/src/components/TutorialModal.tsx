@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -24,6 +24,9 @@ export function TutorialModal({ isOpen, onClose, onOpenFAQ }: TutorialModalProps
             <BookOpen className="w-5 h-5 text-brand-blue" />
             How to Use the Savings Goal Calculator
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Learn how to use the Savings Goal Calculator with this interactive tutorial guide
+          </DialogDescription>
         </DialogHeader>
         
         <ScrollArea className="px-4 sm:px-6 py-4 h-[calc(95vh-8rem)] sm:h-auto sm:max-h-[70vh]">

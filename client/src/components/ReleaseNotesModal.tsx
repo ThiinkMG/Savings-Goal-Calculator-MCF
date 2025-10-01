@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +18,9 @@ export function ReleaseNotesModal({ isOpen, onClose }: ReleaseNotesModalProps) {
             <Rocket className="w-5 h-5 text-brand-blue" />
             Release Notes - Version 4.3.0
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            View the latest updates and features added to the Savings Goal Calculator
+          </DialogDescription>
         </DialogHeader>
         
         <ScrollArea className="px-4 sm:px-6 py-4 h-[calc(95vh-8rem)] sm:h-auto sm:max-h-[70vh]">

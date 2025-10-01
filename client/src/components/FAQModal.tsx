@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -19,6 +19,9 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
             <HelpCircle className="w-5 h-5 text-brand-blue" />
             Frequently Asked Questions
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Find answers to common questions about using the Savings Goal Calculator
+          </DialogDescription>
         </DialogHeader>
         
         <ScrollArea className="px-4 sm:px-6 py-3 sm:py-4 h-[calc(95vh-8rem)] sm:h-auto sm:max-h-[70vh]">

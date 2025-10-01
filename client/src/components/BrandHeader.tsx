@@ -2,7 +2,7 @@ import { Sun, Moon, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Logo } from './Logo';
-import { SettingsPanel } from './SettingsPanelSimple';
+import { SettingsPanel } from './SettingsPanel';
 import { useState } from 'react';
 
 export function BrandHeader() {

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageCircle } from "lucide-react";
 
 interface ContactSupportModalProps {
@@ -15,6 +15,9 @@ export function ContactSupportModal({ isOpen, onClose }: ContactSupportModalProp
             <MessageCircle className="w-5 h-5 text-brand-blue" />
             Contact Support
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Contact our support team for help with the Savings Goal Calculator
+          </DialogDescription>
         </DialogHeader>
         
         <div className="w-full h-[calc(95vh-4rem)] sm:h-[600px] overflow-hidden">
