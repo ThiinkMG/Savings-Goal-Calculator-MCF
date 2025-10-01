@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { X, Globe, BarChart3, HelpCircle, Download, MessageCircle, BookOpen, FileQuestion, Rocket } from "lucide-react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Globe, BarChart3, HelpCircle, Download, MessageCircle, BookOpen, FileQuestion, Rocket } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { TutorialModal } from "./TutorialModal";
@@ -31,23 +32,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
-
-  // Handle Escape key to close panel
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isOpen, onClose]);
 
   const handleDataExport = async () => {
     setIsLoading(true);
@@ -236,8 +220,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
   const renderAppearanceSettings = () => {
     return (
-      <div className="h-full overflow-y-auto settings-content-scroll pr-2">
-        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+      <div className="space-y-4">
+        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -277,8 +261,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
   const renderDataSettings = () => {
     return (
-      <div className="h-full overflow-y-auto settings-content-scroll pr-2">
-        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+      <div className="space-y-4">
+        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -327,8 +311,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
   const renderHelpSettings = () => {
     return (
-      <div className="h-full overflow-y-auto settings-content-scroll pr-2">
-        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-br from-card to-card/80">
+      <div className="space-y-4">
+        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -384,35 +368,21 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     );
   };
 
-  if (!isOpen) return null;
-
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
-        <div className="relative z-10 bg-background rounded-xl shadow-2xl border border-border w-full max-w-4xl h-[85vh] overflow-hidden flex flex-col mx-4">
-          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50 bg-gradient-to-r from-card/50 to-background/50 backdrop-blur-sm flex-shrink-0">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Settings
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Manage your preferences
-              </p>
-            </div>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
-              data-testid="button-close-settings"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      <Sheet open={isOpen} onOpenChange={onClose}>
+        <SheetContent side="right" className="w-full sm:w-[540px] sm:max-w-[540px] p-0 overflow-hidden">
+          <SheetHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-r from-card/50 to-background/50">
+            <SheetTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Settings
+            </SheetTitle>
+            <SheetDescription className="text-sm text-muted-foreground">
+              Manage your preferences
+            </SheetDescription>
+          </SheetHeader>
 
-          <div className="flex flex-1 overflow-hidden">
-            <div className="w-48 border-r border-border/50 bg-muted/20 p-3 overflow-y-auto flex-shrink-0">
+          <div className="flex h-[calc(100vh-100px)] overflow-hidden">
+            <div className="w-40 border-r border-border/50 bg-muted/20 p-3 overflow-y-auto">
               <div className="space-y-1">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -435,16 +405,14 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
               </div>
             </div>
 
-            <div className="flex-1 overflow-hidden">
-              <div className="p-4 sm:p-6 h-full">
-                {activeTab === 'appearance' && renderAppearanceSettings()}
-                {activeTab === 'data' && renderDataSettings()}
-                {activeTab === 'help' && renderHelpSettings()}
-              </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              {activeTab === 'appearance' && renderAppearanceSettings()}
+              {activeTab === 'data' && renderDataSettings()}
+              {activeTab === 'help' && renderHelpSettings()}
             </div>
           </div>
-        </div>
-      </div>
+        </SheetContent>
+      </Sheet>
 
       <TutorialModal
         isOpen={showTutorialModal}
