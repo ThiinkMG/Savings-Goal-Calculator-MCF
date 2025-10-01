@@ -24,6 +24,24 @@ export const localStorageService = {
   // Create a new goal
   createGoal(goalData: InsertSavingsGoal): SavingsGoal {
     console.log('createGoal called with:', goalData);
+    
+    // Validate required fields
+    if (!goalData.userId) {
+      throw new Error('userId is required');
+    }
+    if (!goalData.name) {
+      throw new Error('name is required');
+    }
+    if (!goalData.goalType) {
+      throw new Error('goalType is required');
+    }
+    if (!goalData.targetAmount || goalData.targetAmount <= 0) {
+      throw new Error('targetAmount must be a positive number');
+    }
+    if (!goalData.targetDate) {
+      throw new Error('targetDate is required');
+    }
+    
     const goals = this.getGoals();
     console.log('Current goals:', goals);
     const newGoal: SavingsGoal = {
@@ -97,6 +115,15 @@ export const mockApiRequest = async (
       result = localStorageService.getGoals();
     } else if (url === '/api/savings-goals' && method === 'POST') {
       console.log('Creating goal with data:', data);
+      console.log('Data type check:', typeof data, 'Is object:', typeof data === 'object');
+      console.log('Required fields check:', {
+        hasUserId: !!(data as any)?.userId,
+        hasName: !!(data as any)?.name,
+        hasGoalType: !!(data as any)?.goalType,
+        hasTargetAmount: !!(data as any)?.targetAmount,
+        hasTargetDate: !!(data as any)?.targetDate
+      });
+      
       result = localStorageService.createGoal(data as InsertSavingsGoal);
       console.log('Created goal result:', result);
     } else if (url.startsWith('/api/savings-goals/') && method === 'PATCH') {
