@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { mockApiRequest } from "./localStorageService";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -12,13 +13,8 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
+  // Use localStorage service for static deployment (GitHub Pages)
+  const res = await mockApiRequest(method, url, data);
   await throwIfResNotOk(res);
   return res;
 }
@@ -29,9 +25,10 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-    });
+    const url = queryKey.join("/") as string;
+    
+    // Use localStorage service for static deployment (GitHub Pages)
+    const res = await mockApiRequest("GET", url);
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
