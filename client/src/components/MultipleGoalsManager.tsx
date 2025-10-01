@@ -53,9 +53,6 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
-      // Also refresh auth data to update guest counters
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
       toast({
         title: "Success!",
         description: "Goal deleted successfully",
@@ -73,36 +70,11 @@ export function MultipleGoalsManager({ goals, onAddGoal, onEditGoal }: MultipleG
   const handleDownloadPDF = async (goal: SavingsGoal, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent card click
     try {
-      // Track PDF download for guest users
-      const trackResponse = await fetch('/api/track-pdf-download', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (!trackResponse.ok) {
-        const errorData = await trackResponse.json();
-        if (trackResponse.status === 429) {
-          toast({
-            title: "Daily Limit Reached",
-            description: errorData.message || "You've reached your daily PDF download limit",
-            variant: "destructive",
-          });
-          return;
-        }
-        // For authenticated users, continue even if tracking fails
-        console.log('PDF tracking response not OK, but continuing:', errorData);
-      }
-
       await generateSavingsPlanPDF(
         goal,
         { name: 'Student', startDate: new Date() },
         theme === 'dark'
       );
-
-      // Refresh auth data to update PDF download counter
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
 
       toast({
         title: "Success!",

@@ -13,7 +13,6 @@ import { calculateSavings, formatCurrency, type CalculationResult } from '@/lib/
 import { generateSavingsPlanPDF } from '@/lib/pdfGenerator';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLocale } from '@/contexts/LocaleContext';
-import { useAuth } from '@/hooks/useAuth';
 import { GoalSelectionCard } from './GoalSelectionCard';
 import { ProgressVisualization } from './ProgressVisualization';
 import { EducationalTips } from './EducationalTips';
@@ -22,15 +21,13 @@ import { WhatIfScenarios } from './WhatIfScenarios';
 interface SavingsCalculatorProps {
   existingGoal?: SavingsGoal;
   onSave?: (goal: SavingsGoal) => void;
-  onAuthRequired?: () => void;
 }
 
-export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: SavingsCalculatorProps) {
+export function SavingsCalculator({ existingGoal, onSave }: SavingsCalculatorProps) {
   const { theme } = useTheme();
   const { formatCurrency: formatLocaleCurrency } = useLocale();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user, isAuthenticated, isGuest } = useAuth();
 
   // Default goal names for each category
   const defaultGoalNames = {
@@ -117,70 +114,19 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return response.json();
     },
     onSuccess: (savedGoal: SavingsGoal) => {
-      // Show appropriate success message based on user type
-      if (isGuest) {
-        toast({
-          title: "Goal Saved for Session!",
-          description: "Your goal is saved temporarily. Create an account to save permanently.",
-          variant: "default",
-        });
-      } else {
-        toast({
-          title: "Goal Saved Successfully!",
-          description: existingGoal ? "Your goal has been updated" : "Your new goal has been created",
-        });
-      }
+      toast({
+        title: "Goal Saved Successfully!",
+        description: existingGoal ? "Your goal has been updated" : "Your new goal has been created",
+      });
       
-      // Force refresh of goals data and auth data (to update guest counters)
+      // Force refresh of goals data
       queryClient.invalidateQueries({ queryKey: ['/api/savings-goals'] });
       queryClient.refetchQueries({ queryKey: ['/api/savings-goals'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-      queryClient.refetchQueries({ queryKey: ['/api/auth/me'] });
       
       onSave?.(savedGoal);
     },
     onError: (error: Error) => {
       console.log('Save goal error:', error.message);
-      
-      // Try to parse JSON error response (remove HTTP status prefix if present)
-      try {
-        const cleanMessage = error.message.replace(/^\d+:\s*/, ''); // Remove "429: " or "401: " prefix
-        const errorData = JSON.parse(cleanMessage);
-        console.log('Parsed error data:', errorData);
-        
-        // Check for daily limit exceeded (429 status)
-        if (error.message.startsWith('429:') || errorData.dailyLimit) {
-          toast({
-            title: "Daily Limit Reached",
-            description: "You've reached your daily limit of 3 plans. Create an account for unlimited plans!",
-            variant: "destructive",
-          });
-          onAuthRequired?.();
-          return;
-        }
-        
-        // Check if the error is for guest authentication
-        if (errorData.isGuest || (errorData.message && errorData.message.includes("create an account"))) {
-          toast({
-            title: "Create Account to Save",
-            description: "Sign up to save your goals permanently",
-            variant: "default",
-          });
-          onAuthRequired?.();
-          return;
-        }
-      } catch (e) {
-        // JSON parsing failed, check for text-based indicators
-        if (error.message.includes("Daily limit reached") || error.message.includes("create an account") || error.message.includes("isGuest")) {
-          toast({
-            title: "Create Account to Save",
-            description: "Sign up to save your goals permanently",
-            variant: "default",
-          });
-          onAuthRequired?.();
-          return;
-        }
-      }
       
       toast({
         title: "Error",
@@ -318,15 +264,8 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
       return;
     }
 
-    // Check if user is authenticated - if not signed in and hasn't chosen "Continue as Guest", open login modal
-    if (!isAuthenticated && !isGuest) {
-      // User is neither signed in nor has activated guest mode - open login modal
-      onAuthRequired?.();
-      return;
-    }
-
     const goalData: InsertSavingsGoal = {
-      userId: user?.id || 'guest', // Handle guest users
+      userId: 'user',
       name: goalName,
       goalType,
       targetAmount,
@@ -352,29 +291,9 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
     }
 
     try {
-      // Check PDF download limits for guests
-      const trackResponse = await apiRequest('POST', '/api/track-pdf-download');
-      
-      if (!trackResponse.ok) {
-        const errorData = await trackResponse.json();
-        
-        if (trackResponse.status === 429 && errorData.pdfLimit) {
-          toast({
-            title: "Daily Download Limit Reached",
-            description: "You've reached your daily limit of 1 PDF download. Create an account for unlimited downloads!",
-            variant: "destructive",
-          });
-          onAuthRequired?.();
-          return;
-        }
-        
-        // Don't throw error for authenticated users
-        console.log('Track PDF response not OK but continuing for auth users:', errorData);
-      }
-
       const goalData: SavingsGoal = {
         id: existingGoal?.id || 'temp-id',
-        userId: existingGoal?.userId || user?.id || '',
+        userId: existingGoal?.userId || 'user',
         name: goalName,
         goalType,
         targetAmount,
@@ -397,9 +316,6 @@ export function SavingsCalculator({ existingGoal, onSave, onAuthRequired }: Savi
         title: "PDF Downloaded Successfully!",
         description: "Check your downloads folder for the savings plan report",
       });
-
-      // Refresh auth data to get updated PDF download count
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
     } catch (error) {
       console.error('PDF generation full error details:', error);
       console.error('Error type:', typeof error);
