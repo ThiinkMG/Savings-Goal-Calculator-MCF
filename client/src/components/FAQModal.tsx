@@ -35,21 +35,6 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
               </div>
               
               <Accordion type="single" collapsible className="space-y-2">
-                <AccordionItem value="account-creation" className="border rounded-lg px-4">
-                  <AccordionTrigger className="text-left">
-                    Do I need to create an account to use the calculator?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground pb-4">
-                    <p>No, you can use the savings calculator as a guest. However, creating an account allows you to:</p>
-                    <ul className="mt-2 ml-4 space-y-1">
-                      <li>• Save multiple goals and track progress over time</li>
-                      <li>• Access your data across different devices</li>
-                      <li>• Generate and download detailed PDF reports</li>
-                      <li>• Receive updates on new features and educational content</li>
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-
                 <AccordionItem value="goal-types" className="border rounded-lg px-4">
                   <AccordionTrigger className="text-left">
                     What types of savings goals can I create?
