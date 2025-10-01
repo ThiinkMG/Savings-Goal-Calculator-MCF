@@ -1,7 +1,7 @@
 # My College Finance - Savings Goal Calculator
 
 ## Overview
-My College Finance is a full-stack web application designed to empower college students and young adults in managing their savings goals. It offers an intuitive platform for goal calculation, progress visualization, and financial guidance. The application aims to foster healthy financial habits through interactive goal setting and tracking, providing a responsive design with both light and dark themes. Key capabilities include comprehensive goal tracking, multi-method authentication, and seamless integration with external platforms for enhanced user experience and data management.
+My College Finance is a full-stack web application designed to empower college students and young adults in managing their savings goals. It offers an intuitive platform for goal calculation, progress visualization, and financial guidance. The application aims to foster healthy financial habits through interactive goal setting and tracking, providing a responsive design with both light and dark themes. The app provides direct access to all features without requiring authentication - users can create, track, and export savings goals immediately.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -27,41 +27,24 @@ Preferred communication style: Simple, everyday language.
 - **Storage**: DatabaseStorage class for persistent data.
 
 ### Technical Implementations & Feature Specifications
-- **Multi-Method Authentication**: Supports email, phone, and username login, password recovery with 6-digit verification codes, username recovery, real-time availability checking, password strength validation, account lockout protection, and rate limiting.
-- **Security Management**: Comprehensive four-way security updates (password, username, phone, email), token-based verification, and secure password hashing with bcrypt.
-- **Remember Login Feature**: ✅ **COMPLETE** - Optional auto-fill functionality that stores last successful username/email for faster login (password never stored), includes settings panel toggle for authenticated users with tooltip explaining security, checkbox defaults to checked, and automatic localStorage management with cleanup when disabled.
-- **User Authentication & Data Isolation**: Comprehensive login/register functionality, session management with PostgreSQL storage, authenticated API routes enforcing data ownership, guest mode with temporary, isolated sessions.
+- **Authentication-Free Access**: ✅ **COMPLETE** - All authentication features have been removed. Users can access the calculator directly without login, guest mode, or any authentication barriers. The app uses in-memory storage with a default user context for all operations.
 - **Savings Goal Management**: Users can create, edit, and delete savings goals with persistent storage. Goals include type, target amount, current savings, target date, monthly capacity, and status.
 - **Progress Visualization**: Circular progress indicators and milestone tracking for savings goals.
-- **Reporting**: PDF export for savings plan reports and CSV data export for compatibility with tools like Excel.
+- **Reporting**: ✅ **UPDATED** - PDF export for savings plan reports (always uses light theme colors regardless of user's current theme) and CSV data export for compatibility with tools like Excel.
 - **UI Improvements & Reality Check Enhancement**: ✅ **COMPLETE (6-Step Enhancement Plan)** - Enhanced "Savings Tracker Dashboard" with individual goal management, prominent "Create New Savings Goal" button, redesigned footer with My College Finance logo, updated header, auto-populating goal names based on category selection, improved input validation with user feedback, fixed Ctrl+A behavior for input fields, enhanced monthly capacity slider with precise amount controls, improved "Save as Goal" button with visual state indicators, enhanced date picker accessibility, better toast notifications, consistent color schemes for light/dark modes, always-visible Reality Check summary cards that update in real-time, behavioral psychology features with 21-day habit formation plans, dynamic expense categories based on lifestyle patterns, positive reframing options, personalized habit tracking with "Day 1 of 21" progress indicators, and dynamic success rate analytics for different spending categories.
 - **Mobile Optimization**: Comprehensive mobile-first responsive design with optimized touch targets, stacked layouts, full-width buttons, improved spacing and padding, enhanced authentication modal with larger input fields (h-12), better visual hierarchy, security indicators, and improved feature badge layouts that stack vertically on mobile.
-- **OAuth Integration System**: ✅ **UPDATED** - Wix OAuth authentication configured with Client ID `2583909e-4c0c-429e-b4d3-8d58e7096828` (January 2025), featuring redirect-based authentication, state parameter validation, secure callback handling at `/wix-callback.html`, automatic member account linking/creation, manual token exchange utilities at `/wix-oauth-test.html`, and session management for Wix website member authentication. Requires Client Secret for token exchange.
-- **Guest User Functionality**: ✅ **COMPLETE with Enhanced Restrictions** - "Continue as Guest" option in authentication modal allows users to bypass login while maintaining temporary session storage for multiple savings goals. Features include:
-  - Session-based goal storage that persists during browser session
-  - Auto-dismissing welcome popup with 10-second timer and close button
-  - Recurring popup system that shows every 10 minutes for non-authenticated users
-  - Clear guest status bar showing temporary nature of storage
-  - Easy account creation pathway from guest mode
-  - Appropriate success messages for guest goal saving
-  - Goals appear immediately on dashboard after saving
-  - Popup system automatically stops when user logs in and resumes after logout
-  - **Daily Limitations**: Guest users limited to 3 goals per day and 1 PDF download per day with automatic 24-hour resets
-  - **Benefits Modal**: Daily popup explaining app benefits and guest vs account feature comparison with manual access via settings menu
 
 ### System Design Choices
-- **Data Models**: Users (with Wix ID for integration), Savings Goals, and Verification Codes.
-- **Database Schema**: PostgreSQL with foreign key constraints ensuring data integrity and user isolation; includes `wixUserId` for Wix integration.
+- **Data Models**: Savings Goals stored with a default user context.
+- **Database Schema**: PostgreSQL with Drizzle ORM for data persistence.
 - **Data Flow**: Client-side (user interaction, real-time calculations, TanStack Query for API calls), Server-side (Express routes for CRUD, Zod validation, Drizzle ORM for database).
 - **Configuration Management**: Environment variables for database URLs, theme persistence in localStorage, responsive design breakpoints.
+- **PDF Generation**: Consistent light theme colors for all PDF exports regardless of user's current light/dark mode setting.
 
 ## External Dependencies
 
 ### Data & Services
-- **Wix Data API**: ✅ Successfully integrated - automated user account synchronization between Wix website and application using external database adaptor with payload-based authentication.
-- **Google Sheets**: Real-time database synchronization for user data and savings goals, enabling live progress tracking and analytics.
-- **SendGrid Email**: For automated email notifications, including signup alerts and scheduled monthly reports.
-- **Neon Database**: Serverless PostgreSQL database provider.
+- **Neon Database**: Serverless PostgreSQL database provider for goal storage.
 
 ### Core Libraries
 - **React**: Frontend UI library.

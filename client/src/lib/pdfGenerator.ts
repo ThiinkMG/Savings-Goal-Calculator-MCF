@@ -62,7 +62,7 @@ export async function generateSavingsPlanPDF(
     stripe: [30, 41, 59] as [number, number, number],
     black: [255, 255, 255] as [number, number, number]     // white text in dark mode
   };
-  const c = isDarkMode ? dark : light;
+  const c = light; // Always use light theme for PDFs
 
   console.log('🧮 Starting calculations...');
   // --------- Core Calculations (MUST PRESERVE) ----------
